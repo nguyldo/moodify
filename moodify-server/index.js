@@ -15,3 +15,23 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`\nMoodify server listening on port ${port}`);
 });
+
+//
+const mongoose = require("mongoose");
+const Router = require("./routes")
+
+app.use(express.json());
+
+//app.use(Router);
+
+app.listen(3000, () => {
+  console.log("Server is running at port 3000");
+});
+
+mongoose.connect(`mongodb+srv://moodify:teletubbies@cluster1.wlzag.mongodb.net/Moodify?retryWrites=true&w=majority`);
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error: "));
+db.once("open", function () {
+  console.log("Connected successfully");
+});
