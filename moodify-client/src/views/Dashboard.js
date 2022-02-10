@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import Button from '../components/Button';
 
 function Dashboard() {
     const { hash } = window.location;
@@ -22,6 +23,8 @@ function Dashboard() {
             <p>Access token: {accessToken}</p>
             <p>Token type: {tokenType}</p>
             <p>Expires in: {expiresIn}</p>
+            
+            <Button style={{color: 'red'}}>hellooooooo</Button>
         </div>
     )
 }
