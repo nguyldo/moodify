@@ -1,38 +1,31 @@
 const express = require('express');
-
-const app = express();
 const port = 5000;
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-app.use(cors());
-app.use(bodyParser.json());
+const routeUser = require('./routes/user');
+const routeSong = require('./routes/song');
 
-const userRoutes = require('./routes/user');
-
-app.use('/user', userRoutes);
-
-app.get('/', (req, res) => {
-  res.send('Hello Moodify World');
-});
-
-app.listen(port, () => {
-  console.log(`\nMoodify server listening on port ${port}`);
-});
-
-//
 const mongoose = require("mongoose");
-const Router = require("./routes")
 
-app.use(express.json());
+mongoose.connect(`mongodb+srv://moodify:teletubbies@cluster1.wlzag.mongodb.net/Moodify?retryWrites=true&w=majority`)
+.then(() => {
+  const app = express();
+  app.use(cors());
+  app.use(bodyParser.json());
+  //app.use(express.json());
 
-//app.use(Router);
+  app.get('/', (req, res) => {
+    res.send('Hello Moodify World');
+  });
 
-app.listen(3000, () => {
-  console.log("Server is running at port 3000");
+  app.use('/song', routeSong);
+  app.use('/user', routeUser);
+
+  app.listen(port, () => {
+    console.log(`\nMoodify server listening on port ${port}`);
+  });
 });
-
-mongoose.connect(`mongodb+srv://moodify:teletubbies@cluster1.wlzag.mongodb.net/Moodify?retryWrites=true&w=majority`);
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error: "));
