@@ -11,6 +11,7 @@ import Dashboard from './views/Dashboard';
 import './styles/app.css';
 
 function App() {
+  console.log("does this work")
   return (
     <Router>
       <Routes>
