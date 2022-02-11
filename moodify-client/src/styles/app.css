@@ -1,3 +1,41 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+
 body {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 16pt;
     background-color: #2C2C2C;
+    color: white;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+.button {
+    width: 200px;
+    height: 200px;
+    justify-content: 'center';
+    align-items: 'center';
+    padding: 10px 20px 10px 20px;
+    margin: 0px;
+    border-style: none;
+    border-radius: 100%;
+    color: white;
+    font-size: 18pt;
+}
+
+.button:hover {
+    cursor: pointer;
+    box-shadow: 2px 2px 20px grey
+}
+
+.basic-frame {
+    margin: 75px;
+    text-align: center;
+}
+
+.quiz-row {
+    margin-bottom: 100px;
+    margin-top: 25px;
 }

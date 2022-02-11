@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import { Col, Row, Container } from 'react-bootstrap';
+import Button from '../components/Button';
 
 function Dashboard() {
     const { hash } = window.location;
@@ -18,10 +20,41 @@ function Dashboard() {
       }, []);
 
     return (
-        <div>
-            <p>Access token: {accessToken}</p>
+        <div className="basic-frame">
+            {/* <p>Access token: {accessToken}</p>
             <p>Token type: {tokenType}</p>
-            <p>Expires in: {expiresIn}</p>
+            <p>Expires in: {expiresIn}</p> */}
+
+            <h1>How are you feeling?</h1>
+            <br></br>
+            <br></br>
+            <Container>
+              <Row className="justify-content-md-center">
+                <Col md lg="4">
+                  <Button color="#ED6A20" text="excited"></Button>
+                </Col>
+                <Col md="auto">
+                  <Button color="#26CF37" text="content"></Button>
+                </Col>
+                <Col md lg="4">
+                  <Button color="#F3D226" text="happy"></Button>
+                </Col>
+              </Row>
+              <br></br>
+              <br></br>
+              <br></br>
+              <Row className="justify-content-md-center">
+                <Col md lg="4">
+                  <Button color="#A136F4" text="bad"></Button>
+                </Col>
+                <Col md="auto">
+                  <Button color="#3D93F9" text="sad"></Button>
+                </Col>
+                <Col md lg="4">
+                  <Button color="#F22D2D" text="angry"></Button>
+                </Col>
+              </Row>
+            </Container>
         </div>
     )
 }
