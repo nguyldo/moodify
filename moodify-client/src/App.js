@@ -9,6 +9,7 @@ import Login from './views/Login';
 import Dashboard from './views/Dashboard';
 
 import './styles/app.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
