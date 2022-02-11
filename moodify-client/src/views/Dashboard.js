@@ -31,13 +31,13 @@ function Dashboard() {
             <Container>
               <Row className="justify-content-md-center">
                 <Col md lg="4">
-                  <Button color="#ED6A20" text="Excited"></Button>
+                  <Button color="#ED6A20" text="excited"></Button>
                 </Col>
                 <Col md="auto">
-                  <Button color="#26CF37" text="Content"></Button>
+                  <Button color="#26CF37" text="content"></Button>
                 </Col>
                 <Col md lg="4">
-                  <Button color="#F3D226" text="Happy"></Button>
+                  <Button color="#F3D226" text="happy"></Button>
                 </Col>
               </Row>
               <br></br>
@@ -45,13 +45,13 @@ function Dashboard() {
               <br></br>
               <Row className="justify-content-md-center">
                 <Col md lg="4">
-                  <Button color="#A136F4" text="Bad"></Button>
+                  <Button color="#A136F4" text="bad"></Button>
                 </Col>
                 <Col md="auto">
-                  <Button color="#3D93F9" text="Sad"></Button>
+                  <Button color="#3D93F9" text="sad"></Button>
                 </Col>
                 <Col md lg="4">
-                  <Button color="#F22D2D" text="Angry"></Button>
+                  <Button color="#F22D2D" text="angry"></Button>
                 </Col>
               </Row>
             </Container>
