@@ -13,13 +13,13 @@ mongoose.connect(`mongodb+srv://moodify:teletubbies@cluster1.wlzag.mongodb.net/M
   const app = express();
   app.use(cors());
   app.use(bodyParser.json());
-  //app.use(express.json());
+  // app.use(express.json());
 
   app.get('/', (req, res) => {
     res.send('Hello Moodify World');
   });
 
-  app.use('/song', routeSong);
+  app.use('/', routeSong);
   app.use('/user', routeUser);
 
   app.listen(port, () => {
