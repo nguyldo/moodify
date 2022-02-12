@@ -10,6 +10,7 @@ function Login() {
       const scopes = [
         'user-read-currently-playing',
         'user-read-playback-state',
+        'user-top-read',
         'playlist-read-private',
         'playlist-read-collaborative',
         'playlist-modify-private',

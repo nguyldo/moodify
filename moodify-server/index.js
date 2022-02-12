@@ -19,7 +19,7 @@ mongoose.connect(`mongodb+srv://moodify:teletubbies@cluster1.wlzag.mongodb.net/M
     res.send('Hello Moodify World');
   });
 
-  app.use('/', routeSong);
+  app.use('/song', routeSong);
   app.use('/user', routeUser);
 
   app.listen(port, () => {
