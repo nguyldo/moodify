@@ -5,6 +5,10 @@ const router = express.Router();
 
 const spotify_url = 'https://api.spotify.com/v1';
 
+const User = require('../models/user');
+const { json } = require('body-parser');
+const { query } = require('express');
+
 //http://localhost:5000/user/{token}
 router.get('/:token', (req, res) => {
   console.log('running user profile api')
@@ -53,5 +57,41 @@ router.get('/tracks/:token', (req, res) => {
     console.log(err)
   })
 })
+
+// http://localhost:5000/user/dbprofile/{token}
+router.get('/dbprofile/:token', async function(req, res) {
+  console.log('running user info database retrieval');
+  const { token } = req.params;
+  
+  axios.get(spotify_url + '/me', {
+    headers: { Authorization: `Bearer ${token}` }
+  }).then((data) => {
+    console.log('Got user profile from spotify');
+    console.log(data.data.id);
+    return findUser(data.data.id);
+  }).then((data) => {
+    console.log(data);
+    res.json(data);
+  }).catch((err) => {
+    console.log(err);
+  })
+})
+
+// for some reason is connected to the collection 'users' and not 'User'
+async function findUser(userID) {
+  try {
+    let promise_obj = await User.findOne(
+      { "userID": userID },
+      'userID logins',
+    )
+    console.log(promise_obj);
+    return {
+      "userID": promise_obj.userID,
+      "logins": promise_obj.logins
+    };
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 module.exports = router;

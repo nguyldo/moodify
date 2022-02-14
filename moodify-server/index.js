@@ -13,6 +13,8 @@ mongoose.connect(`mongodb+srv://moodify:teletubbies@cluster1.wlzag.mongodb.net/M
   const app = express();
   app.use(cors());
   app.use(bodyParser.json());
+  // Enables express to parse body data from x-www-form-encoded data
+  app.use(bodyParser.urlencoded({ extended: false })); // Added because mongo uses the x-www-form-encoded data
   // app.use(express.json());
 
   app.get('/', (req, res) => {
