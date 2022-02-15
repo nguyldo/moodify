@@ -7,4 +7,4 @@ const schema = mongoose.Schema({
     associatedFeels: String,
 })
 
-module.exports = mongoose.model("Content", schema)
+module.exports = mongoose.model("Bad", schema)
