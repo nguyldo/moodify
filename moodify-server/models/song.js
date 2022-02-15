@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const schema = mongoose.Schema({
-    songID: Number,
+    songID: String,
     songName: String,
     songArtist: String,
     songAlbum: String,
