@@ -1,4 +1,10 @@
 const express = require("express");
+const Angry = require("../models/angry")
+const Bad = require("../models/bad")
+const Content = require("../models/content")
+const Excited = require("../models/excited")
+const Happy = require("../models/happy")
+const Sad = require("../models/sad")
 const Song = require("../models/song")
 const songRoutes = express.Router();
 const axios = require('axios');
@@ -29,7 +35,38 @@ songRoutes.get("/all", async (req, res) => {
   res.send(songs);
 })
 
+// get song by mood
+// http://localhost:5000/song/:mood
+songRoutes.get("/:mood", async (req, res) => {
+  const { mood } = req.params;
+  mood.toLowerCase();
+  console.log("getting songs from " + mood);
+
+  switch (mood) {
+    case 'angry':
+      res.send(await Angry.find());
+      break;
+    case 'bad':
+      res.send(await Bad.find());
+      break;
+    case 'content':
+      const temp = await Content.find();
+      res.send(temp);
+      break;
+    case 'excited':
+      res.send(await Excited.find());
+      break;
+    case 'happy':
+      res.send(await Happy.find());
+      break;
+    case 'sad':
+      res.send(await Sad.find());
+      break;
+  }
+})
+
 // http://localhost:5000/song/post
+// weirdly this is connected to the 'songs' collection, not the 'Song' collection
 songRoutes.post("/post", async (req, res) => {
   const song = {
     "songID": req.body.songID,

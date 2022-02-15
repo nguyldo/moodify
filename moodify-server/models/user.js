@@ -8,7 +8,7 @@ const schema = mongoose.Schema({
     topSongs: Object,
     topArtists: Object,
     communityTime: Number,
-    personalTime: Number    
+    personalTime: Number
 })
 
 module.exports = mongoose.model("User", schema)
