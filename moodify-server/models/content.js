@@ -8,4 +8,3 @@ const schema = mongoose.Schema({
 })
 
 module.exports = mongoose.model("Content", schema)
-//test

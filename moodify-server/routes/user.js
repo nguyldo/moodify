@@ -7,7 +7,6 @@ const spotify_url = 'https://api.spotify.com/v1';
 
 const User = require('../models/user');
 const Mood = require('../models/mood');
-const { now } = require('mongoose');
 
 //http://localhost:5000/user/{token}
 router.get('/:token', (req, res) => {

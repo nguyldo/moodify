@@ -66,7 +66,6 @@ songRoutes.get("/:mood", async (req, res) => {
 })
 
 // http://localhost:5000/song/post
-// weirdly this is connected to the 'songs' collection, not the 'Song' collection
 songRoutes.post("/post", async (req, res) => {
   const song = {
     "songID": req.body.songID,
