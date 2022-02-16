@@ -13,10 +13,10 @@ h1, h2, h3, h4 {
 }
 
 .button {
-    width: 200px;
-    height: 200px;
-    justify-content: 'center';
-    align-items: 'center';
+    width: 175px;
+    height: 175px;
+    justify-content: center;
+    align-items: center;
     padding: 10px 20px 10px 20px;
     margin: 0px;
     border-style: none;
@@ -27,7 +27,7 @@ h1, h2, h3, h4 {
 
 .button:hover {
     cursor: pointer;
-    box-shadow: 2px 2px 20px grey
+    box-shadow: 2px 2px 20px lightgray;
 }
 
 .basic-frame {
@@ -35,7 +35,49 @@ h1, h2, h3, h4 {
     text-align: center;
 }
 
-.quiz-row {
-    margin-bottom: 100px;
-    margin-top: 25px;
+.excited {
+    background-color: #F3884B;
+    /* margin: 75px; */
+    padding: 4.5%;
+    text-align: center;
+}
+
+.content {
+    background-color: #75CF7E;
+    padding: 4.5%;
+    text-align: center;
+}
+
+.happy {
+    background-color: #F3D84B;
+    padding: 4.5%;
+    text-align: center;
+}
+
+.bad {
+    background-color: #CB6DF8;
+    padding: 4.5%;
+    text-align: center;
+}
+
+.sad {
+    background-color: #6DC6F8;
+    padding: 4.5%;
+    text-align: center;
+}
+
+.angry {
+    background-color: #F86D6D;
+    padding: 4.5%;
+    text-align: center;
+}
+
+.back-butt, .skip-butt {
+    color: white;
+    text-decoration: none;
+}
+
+.back-butt:hover, .skip-butt:hover {
+    color: black;
+    text-decoration: underline;
 }
