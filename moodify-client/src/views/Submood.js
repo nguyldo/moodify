@@ -4,19 +4,15 @@ import { Col, Row, Container } from 'react-bootstrap';
 import Button from '../components/Button';
 import { Link, useSearchParams } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function Submood() {
-    const { hash } = window.location;
-    // const accessToken = hash.split('&')[0].split('=')[1];
-    // const tokenType = hash.split('&')[1].split('=')[1];
-    // const expiresIn = hash.split('&')[2].split('=')[1];
     const location = useLocation();
+    const accessToken = Cookies.get('SpotifyAccessToken');
 
     const query = new URLSearchParams(location.search);
     const mood = query.get("mood");
     console.log(query.get("mood"));
-    const accessToken = query.get("accesstoken")
-    console.log(query.get("accesstoken"));
     
     const moodsDict = {
         "excited": ["lustful", "intimate", "lively", "joyful", "wild"],
@@ -52,35 +48,35 @@ function Submood() {
             <Container>
                 <Row className="justify-content-md-center">
                     <Col>
-                        <Button color={moodColor[mood][0]} text={moodsDict[mood][0]}></Button>
+                        <Button color={moodColor[mood][0]} text={moodsDict[mood][0]} type="round"></Button>
                     </Col>
                 </Row>
                 <br></br>
                 <Row className="justify-content-md-center align-items-center">
                     <Col md={{ span: 3, offset: 0 }}>
-                        <Button color={moodColor[mood][1]} text={moodsDict[mood][1]}></Button>
+                        <Button color={moodColor[mood][1]} text={moodsDict[mood][1]} type="round"></Button>
                     </Col>
                     <Col md={{ span: 2, offset: 0 }}>
                         <h1>{mood}</h1>
                     </Col>
                     <Col md={{ span: 3, offset: 0 }}>
-                        <Button color={moodColor[mood][2]} text={moodsDict[mood][2]}></Button>
+                        <Button color={moodColor[mood][2]} text={moodsDict[mood][2]} type="round"></Button>
                     </Col>
                 </Row>
                 <br></br>
                 <br></br>
                 <Row className="justify-content-md-center">
                     <Col md={{ span: 3, offset: 0 }}>
-                        <Button color={moodColor[mood][3]} text={moodsDict[mood][3]}></Button>
+                        <Button color={moodColor[mood][3]} text={moodsDict[mood][3]} type="round"></Button>
                     </Col>
                     <Col md={{ span: 3, offset: 0 }}>
-                        <Button color={moodColor[mood][4]} text={moodsDict[mood][4]}></Button>
+                        <Button color={moodColor[mood][4]} text={moodsDict[mood][4]} type="round"></Button>
                     </Col>
                 </Row>
             </Container>
             <Row>
                 <Col md={{ span: 1, offset: 0 }}>
-                    <Link className="back-butt" to={{pathname: `/dashboard?accesstoken=${accessToken}`}}>
+                    <Link className="back-butt" to={{pathname: '/dashboard'}}>
                         <h4 style={{textAlign: "left"}}>Back</h4>
                     </Link>
                 </Col>
