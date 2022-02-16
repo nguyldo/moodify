@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { Col, Row, Container } from 'react-bootstrap';
+import { Link } from "react-router-dom";
 import Button from '../components/Button';
 
 function Dashboard() {
@@ -31,13 +32,19 @@ function Dashboard() {
             <Container>
               <Row className="justify-content-md-center">
                 <Col md lg="4">
-                  <Button color="#ED6A20" text="excited"></Button>
+                  <Link to={{pathname: `/submood?mood=excited&accesstoken=${accessToken}`}}>
+                    <Button color="#ED6A20" text="excited"></Button>
+                  </Link>
                 </Col>
                 <Col md="auto">
-                  <Button color="#26CF37" text="content"></Button>
+                  <Link to={{pathname: `/submood?mood=content&accesstoken=${accessToken}`}}>
+                    <Button color="#26CF37" text="content"></Button>
+                  </Link>
                 </Col>
                 <Col md lg="4">
-                  <Button color="#F3D226" text="happy"></Button>
+                  <Link to={{pathname: `/submood?mood=happy&accesstoken=${accessToken}`}}>
+                    <Button color="#F3D226" text="happy"></Button>
+                  </Link>
                 </Col>
               </Row>
               <br></br>
@@ -45,13 +52,19 @@ function Dashboard() {
               <br></br>
               <Row className="justify-content-md-center">
                 <Col md lg="4">
-                  <Button color="#A136F4" text="bad"></Button>
+                  <Link to={{pathname: `/submood?mood=bad&accesstoken=${accessToken}`}}>
+                    <Button color="#A136F4" text="bad"></Button>
+                  </Link>
                 </Col>
                 <Col md="auto">
-                  <Button color="#3D93F9" text="sad"></Button>
+                  <Link to={{pathname: `/submood?mood=sad&accesstoken=${accessToken}`}}>
+                    <Button color="#3D93F9" text="sad"></Button>
+                  </Link>
                 </Col>
                 <Col md lg="4">
-                  <Button color="#F22D2D" text="angry"></Button>
+                  <Link to={{pathname: `/submood?mood=angry&accesstoken=${accessToken}`}}>
+                    <Button color="#F22D2D" text="angry"></Button>
+                  </Link>
                 </Col>
               </Row>
             </Container>
