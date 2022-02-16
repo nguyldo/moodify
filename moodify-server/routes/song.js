@@ -66,8 +66,8 @@ songRoutes.get("/:mood", async (req, res) => {
 })
 
 // http://localhost:5000/song/post/:mood
-songRoutes.post("/post/:mood/:adminRec", async (req, res) => {
-  const { mood, adminRec } = req.params;
+songRoutes.post("/post/:mood/:adminRec/:assocFeel?", async (req, res) => {
+  const { mood, adminRec, assocFeel } = req.params;
   const admin = true;
   const song = {
     "songID": req.body.songID,
@@ -89,7 +89,7 @@ songRoutes.post("/post/:mood/:adminRec", async (req, res) => {
     "songID": req.body.songID,
     "songName": req.body.songName,
     "songURI": req.body.songURI,
-    "associatedFeels": req.body.associatedFeels,
+    "associatedFeels": assocFeel,
     "adminRec": admin,
   }
 
