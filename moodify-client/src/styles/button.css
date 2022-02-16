@@ -1,0 +1,30 @@
+.round-button {
+    width: 200px;
+    height: 200px;
+    justify-content: 'center';
+    align-items: 'center';
+    padding: 10px 20px 10px 20px;
+    margin: 0px;
+    border-style: none;
+    border-radius: 100%;
+    color: white;
+    font-size: 18pt;
+}
+
+.round-button:hover {
+    cursor: pointer;
+    box-shadow: 2px 2px 20px grey
+}
+
+.wide-button {
+    color: white;
+    font-size: 18pt;
+    padding: 8px 15px 8px 15px;
+    margin: 0px;
+    border-style: none;
+    border-radius: 10px;
+}
+
+.wide-button:hover {
+    color: #CCCCCC;
+}

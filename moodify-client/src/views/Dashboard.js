@@ -2,12 +2,20 @@ import React from 'react';
 import axios from 'axios';
 import { Col, Row, Container } from 'react-bootstrap';
 import Button from '../components/Button';
+import Cookies from 'js-cookie';
 
 function Dashboard() {
-    const { hash } = window.location;
-    const accessToken = hash.split('&')[0].split('=')[1];
-    const tokenType = hash.split('&')[1].split('=')[1];
-    const expiresIn = hash.split('&')[2].split('=')[1];
+    if (typeof Cookies.get('SpotifyAccessToken') === 'undefined') {
+      const { hash } = window.location;
+      const accessToken = hash.split('&')[0].split('=')[1];
+      const tokenType = hash.split('&')[1].split('=')[1];
+      const expiresIn = hash.split('&')[2].split('=')[1];
+
+      console.log(expiresIn)
+      Cookies.set('SpotifyAccessToken', accessToken, { expires: parseInt(expiresIn) / 86400 });
+    }
+
+    const accessToken = Cookies.get('SpotifyAccessToken')
 
     React.useEffect(() => {
         axios.get(`http://localhost:5000/user/${accessToken}`)
@@ -31,13 +39,13 @@ function Dashboard() {
             <Container>
               <Row className="justify-content-md-center">
                 <Col md lg="4">
-                  <Button color="#ED6A20" text="excited"></Button>
+                  <Button color="#ED6A20" text="excited" type="round"></Button>
                 </Col>
                 <Col md="auto">
-                  <Button color="#26CF37" text="content"></Button>
+                  <Button color="#26CF37" text="content" type="round"></Button>
                 </Col>
                 <Col md lg="4">
-                  <Button color="#F3D226" text="happy"></Button>
+                  <Button color="#F3D226" text="happy" type="round"></Button>
                 </Col>
               </Row>
               <br></br>
@@ -45,13 +53,13 @@ function Dashboard() {
               <br></br>
               <Row className="justify-content-md-center">
                 <Col md lg="4">
-                  <Button color="#A136F4" text="bad"></Button>
+                  <Button color="#A136F4" text="bad" type="round"></Button>
                 </Col>
                 <Col md="auto">
-                  <Button color="#3D93F9" text="sad"></Button>
+                  <Button color="#3D93F9" text="sad" type="round"></Button>
                 </Col>
                 <Col md lg="4">
-                  <Button color="#F22D2D" text="angry"></Button>
+                  <Button color="#F22D2D" text="angry" type="round"></Button>
                 </Col>
               </Row>
             </Container>

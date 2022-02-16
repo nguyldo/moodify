@@ -10,9 +10,9 @@ import Dashboard from './views/Dashboard';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/app.css';
+import './styles/button.css';
 
 function App() {
-  console.log("does this work")
   return (
     <Router>
       <Routes>

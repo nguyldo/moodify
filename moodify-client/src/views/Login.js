@@ -1,6 +1,20 @@
 import React from 'react';
+import Button from '../components/Button';
+import Cookies from 'js-cookie';
+
+import '../styles/login.css';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+    const accessToken = Cookies.get('SpotifyAccessToken')
+    let navigate = useNavigate()
+
+    React.useEffect(() => {
+        if (typeof accessToken !== 'undefined') {
+            return navigate('/dashboard')
+        }
+    })
+
     const {
         REACT_APP_CLIENT_ID,
         REACT_APP_AUTHORIZE_URL,
@@ -23,7 +37,20 @@ function Login() {
 
     return (
         <div>
-            <button onClick={authorizeSpotify}>Login</button>
+            <div className="login-page">
+                <div className="login-page-items">
+                    <div className="moodify-title">
+                        Moodify
+                    </div>
+                    <div>
+                        <img src="/logo.png" alt="logo" className="logo" />
+                    </div>
+                    <div>
+                        <Button text="Log in with Spotify" onClick={authorizeSpotify} type="wide" color="#000000" />
+                    </div>
+                </div>
+            </div>
+            <div className="stretch-page"></div>
         </div>
     )
 }
