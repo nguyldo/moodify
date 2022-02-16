@@ -65,8 +65,10 @@ songRoutes.get("/:mood", async (req, res) => {
   }
 })
 
-// http://localhost:5000/song/post
-songRoutes.post("/post", async (req, res) => {
+// http://localhost:5000/song/post/:mood
+songRoutes.post("/post/:mood/:adminRec", async (req, res) => {
+  const { mood, adminRec } = req.params;
+  const admin = true;
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
@@ -78,9 +80,24 @@ songRoutes.post("/post", async (req, res) => {
     "writtenBy": req.body.writtenBy,
     "producedBy": req.body.producedBy
   };
+
+  if (adminRec == "false") {
+    admin = false;
+  }
+
+  const core = {
+    "songID": req.body.songID,
+    "songName": req.body.songName,
+    "songURI": req.body.songURI,
+    "associatedFeels": req.body.associatedFeels,
+    "adminRec": admin,
+  }
+
   if (await CheckSong(song)) {
     console.log("why am i here")
     await PostSong(song);
+    await chooseMood(mood, core);
+    //await PostHappy(core);
     res.json({
       "song was inserted": "into the db"
     });
@@ -90,6 +107,126 @@ songRoutes.post("/post", async (req, res) => {
     });
   }
 })
+
+async function chooseMood(mood, core) {
+    switch (mood) {
+      case 'angry':
+        PostAngry(core);
+        break;
+      case 'bad':
+        PostBad(core);
+        break;
+      case 'content':
+        PostContent(core);
+        break;
+      case 'excited':
+        PostExcited(core);
+        break;
+      case 'happy':
+        PostHappy(core);
+        break;
+      case 'sad':
+        PostSad(core);
+        console.log("why u sad")
+        break;
+    }
+}
+
+async function PostHappy(core) {
+  try {
+    await new Happy(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostExcited(core) {
+  try {
+    await new Excited(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostContent(core) {
+  try {
+    await new Content(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostAngry(core) {
+  try {
+    await new Angry(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostBad(core) {
+  try {
+    await new Bad(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostSad(core) {
+  try {
+    await new Sad(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 async function CheckSong(song) {
   try {

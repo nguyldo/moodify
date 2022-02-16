@@ -5,6 +5,7 @@ const schema = mongoose.Schema({
     songName: String,
     songURI: String,
     associatedFeels: String,
+    adminRec: Boolean
 })
 
 module.exports = mongoose.model("Bad", schema)
