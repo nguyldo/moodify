@@ -7,6 +7,7 @@ import {
 
 import Login from './views/Login';
 import Dashboard from './views/Dashboard';
+import Submood from './views/Submood';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/app.css';
@@ -18,8 +19,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/submood" element={<Submood />} />
       </Routes>
     </Router>
+
   );
 }
 
