@@ -67,14 +67,14 @@ songRoutes.get("/:mood", async (req, res) => {
 
 // http://localhost:5000/song/post/:mood
 songRoutes.post("/post/:mood", async (req, res) => {
-  const { mood } = req.params;
+  const mood = req.params;
   //const admin = true;
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
     "songArtist": req.body.songArtist,
     "songAlbum": req.body.songAlbum,
-    "moodTag": req.body.moodTag,
+    "moodTag": mood,
     "popularity": req.body.popularity,
     "performedBy": req.body.performedBy,
     "writtenBy": req.body.writtenBy,
@@ -93,7 +93,7 @@ songRoutes.post("/post/:mood", async (req, res) => {
     "adminRec": req.body.adminRec,
   }
 
-  if (await CheckSong(song)) {
+  if (await CheckSong(song, mood, core)) {
     console.log("why am i here")
     await PostSong(song);
     console.log("why am i here2")
@@ -106,8 +106,18 @@ songRoutes.post("/post/:mood", async (req, res) => {
     res.json({
       "song was not inserted": "becuase it's in the db"
     });
+    console.log("hihihi")
+    console.log(song);
   }
 })
+
+//delete song from mood, update moodTag in song
+songRoutes.delete("/delete/:mood"), async (req, res) => {
+  const mood = req.params;
+
+}
+
+//FUNCTIONS
 
 async function chooseMood(mood, core) {
     switch (mood) {
@@ -229,12 +239,23 @@ async function PostSad(core) {
   }
 }
 
-async function CheckSong(song) {
+async function CheckSong(song, mood, core) {
+
   try {
     return await Song.findOne(
       { "songID": song.songID }
     ).then((data) => {
       if (data) {
+        console.log(data)
+        if (!data.moodTag.includes(mood)) {
+          chooseMood(mood, core);
+          data.moodTag.push(mood);
+          console.log(data.moodTag)
+          data.save()
+          console.log("inserting into "+ mood)
+        } else {
+          console.log(mood + " is already part of this song's mood tag")
+        }
         return false;
       } else {
         return true;
