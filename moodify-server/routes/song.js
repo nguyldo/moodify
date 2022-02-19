@@ -66,9 +66,9 @@ songRoutes.get("/:mood", async (req, res) => {
 })
 
 // http://localhost:5000/song/post/:mood
-songRoutes.post("/post/:mood/:adminRec/:assocFeel?", async (req, res) => {
-  const { mood, adminRec, assocFeel } = req.params;
-  const admin = true;
+songRoutes.post("/post/:mood", async (req, res) => {
+  const { mood } = req.params;
+  //const admin = true;
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
@@ -81,21 +81,22 @@ songRoutes.post("/post/:mood/:adminRec/:assocFeel?", async (req, res) => {
     "producedBy": req.body.producedBy
   };
 
-  if (adminRec == "false") {
-    admin = false;
-  }
+  // if (adminRec == "false") {
+  //   admin = false;
+  // }
 
   const core = {
     "songID": req.body.songID,
     "songName": req.body.songName,
     "songURI": req.body.songURI,
-    "associatedFeels": assocFeel,
-    "adminRec": admin,
+    "associatedFeels": req.body.associatedFeels,
+    "adminRec": req.body.adminRec,
   }
 
   if (await CheckSong(song)) {
     console.log("why am i here")
     await PostSong(song);
+    console.log("why am i here2")
     await chooseMood(mood, core);
     //await PostHappy(core);
     res.json({
