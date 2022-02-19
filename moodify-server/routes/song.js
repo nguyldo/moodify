@@ -112,8 +112,65 @@ songRoutes.post("/post/:mood", async (req, res) => {
 })
 
 //delete song from mood, update moodTag in song
-songRoutes.delete("/delete/:mood"), async (req, res) => {
-  const mood = req.params;
+//http://localhost:5000/song/delete/:mood
+songRoutes.delete("/remove/:id"), async (req, res) => {
+  console.log("made it to delete")
+  const id = req.params;
+    // const id = {
+    //   "songID": req.body.songID
+    // }
+  Angry.findByIdAndDelete(id).then((data) => {
+    if (!data) {
+        return res.status(404).send();
+    }
+    res.send(data);
+}).catch((error) => {
+    res.status(500).send(error);
+})
+  // console.log(id)
+  // try {
+  //   const id = {
+  //     "songID": req.body.songID
+  //   }
+  
+   // if (await Angry.exists(id)) {
+      // Angry.findOneAndDelete(id);
+      // console.log("deleting song " + id)
+    // } else {
+    //   console.log("song doesn't exists")
+    // }
+  // } catch (err) {
+  //   console.log(err)
+  // }
+  // const id = {
+  //   "songID": req.body.songID
+  // }
+
+  // if (Angry.exists(id)) {
+  //   Angry.deleteOne(id);
+  //   console.log("deleting song " + id)
+  // } else {
+  //   console.log("song doesn't exists")
+  // }
+
+  // try {
+  //   await new Song(
+  //     {
+  //       "songID": song.songID,
+  //       "songName": song.songName,
+  //       "songArtist": song.songArtist,
+  //       "songAlbum": song.songAlbum,
+  //       "moodTag": song.moodTag,
+  //       "popularity": song.popularity,
+  //       "performedBy": song.performedBy,
+  //       "writtenBy": song.writtenBy,
+  //       "producedBy": song.producedBy
+  //     }
+  //   ).save();
+  // } catch (err) {
+  //   console.log(err);
+  // }
+
 
 }
 
