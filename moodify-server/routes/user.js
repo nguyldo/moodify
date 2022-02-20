@@ -18,6 +18,7 @@ router.get('/:token', (req, res) => {
   })
     .then((data) => {
       console.log('successful user profile api')
+      console.log(token);
       res.json(data.data);
     })
     .catch((err) => {

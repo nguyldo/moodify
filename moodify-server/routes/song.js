@@ -65,22 +65,34 @@ songRoutes.get("/:mood", async (req, res) => {
   }
 })
 
-// http://localhost:5000/song/post
-songRoutes.post("/post", async (req, res) => {
+// http://localhost:5000/song/post/:mood
+songRoutes.post("/post/:mood", async (req, res) => {
+  const mood = req.params;
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
     "songArtist": req.body.songArtist,
     "songAlbum": req.body.songAlbum,
-    "moodTag": req.body.moodTag,
+    "moodTag": mood,
     "popularity": req.body.popularity,
     "performedBy": req.body.performedBy,
     "writtenBy": req.body.writtenBy,
     "producedBy": req.body.producedBy
   };
-  if (await CheckSong(song)) {
+
+  const core = {
+    "songID": req.body.songID,
+    "songName": req.body.songName,
+    "songURI": req.body.songURI,
+    "associatedFeels": req.body.associatedFeels,
+    "adminRec": req.body.adminRec,
+  }
+
+  if (await CheckSong(song, mood, core)) {
     console.log("why am i here")
     await PostSong(song);
+    console.log("why am i here2")
+    await chooseMood(mood, core);
     res.json({
       "song was inserted": "into the db"
     });
@@ -91,12 +103,145 @@ songRoutes.post("/post", async (req, res) => {
   }
 })
 
-async function CheckSong(song) {
+//FUNCTIONS
+
+async function chooseMood(mood, core) {
+    switch (mood) {
+      case 'angry':
+        PostAngry(core);
+        break;
+      case 'bad':
+        PostBad(core);
+        break;
+      case 'content':
+        PostContent(core);
+        break;
+      case 'excited':
+        PostExcited(core);
+        break;
+      case 'happy':
+        PostHappy(core);
+        break;
+      case 'sad':
+        PostSad(core);
+        console.log("why u sad")
+        break;
+    }
+}
+
+async function PostHappy(core) {
+  try {
+    await new Happy(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostExcited(core) {
+  try {
+    await new Excited(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostContent(core) {
+  try {
+    await new Content(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostAngry(core) {
+  try {
+    await new Angry(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostBad(core) {
+  try {
+    await new Bad(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostSad(core) {
+  try {
+    await new Sad(
+      {
+        "songID": core.songID,
+        "songName": core.songName,
+        "songURI": core.songURI,
+        "associatedFeels": core.associatedFeels,
+        "adminRec": core.adminRec,
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function CheckSong(song, mood, core) {
+
   try {
     return await Song.findOne(
       { "songID": song.songID }
     ).then((data) => {
       if (data) {
+        console.log(data)
+        if (!data.moodTag.includes(mood)) {
+          chooseMood(mood, core);
+          data.moodTag.push(mood);
+          console.log(data.moodTag)
+          data.save()
+          console.log("inserting into "+ mood)
+        } else {
+          console.log(mood + " is already part of this song's mood tag")
+        }
         return false;
       } else {
         return true;
