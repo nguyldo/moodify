@@ -68,7 +68,6 @@ songRoutes.get("/:mood", async (req, res) => {
 // http://localhost:5000/song/post/:mood
 songRoutes.post("/post/:mood", async (req, res) => {
   const mood = req.params;
-  //const admin = true;
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
@@ -80,10 +79,6 @@ songRoutes.post("/post/:mood", async (req, res) => {
     "writtenBy": req.body.writtenBy,
     "producedBy": req.body.producedBy
   };
-
-  // if (adminRec == "false") {
-  //   admin = false;
-  // }
 
   const core = {
     "songID": req.body.songID,
@@ -98,7 +93,6 @@ songRoutes.post("/post/:mood", async (req, res) => {
     await PostSong(song);
     console.log("why am i here2")
     await chooseMood(mood, core);
-    //await PostHappy(core);
     res.json({
       "song was inserted": "into the db"
     });
@@ -106,73 +100,8 @@ songRoutes.post("/post/:mood", async (req, res) => {
     res.json({
       "song was not inserted": "becuase it's in the db"
     });
-    console.log("hihihi")
-    console.log(song);
   }
 })
-
-//delete song from mood, update moodTag in song
-//http://localhost:5000/song/delete/:mood
-songRoutes.delete("/remove/:id"), async (req, res) => {
-  console.log("made it to delete")
-  const id = req.params;
-    // const id = {
-    //   "songID": req.body.songID
-    // }
-  Angry.findByIdAndDelete(id).then((data) => {
-    if (!data) {
-        return res.status(404).send();
-    }
-    res.send(data);
-}).catch((error) => {
-    res.status(500).send(error);
-})
-  // console.log(id)
-  // try {
-  //   const id = {
-  //     "songID": req.body.songID
-  //   }
-  
-   // if (await Angry.exists(id)) {
-      // Angry.findOneAndDelete(id);
-      // console.log("deleting song " + id)
-    // } else {
-    //   console.log("song doesn't exists")
-    // }
-  // } catch (err) {
-  //   console.log(err)
-  // }
-  // const id = {
-  //   "songID": req.body.songID
-  // }
-
-  // if (Angry.exists(id)) {
-  //   Angry.deleteOne(id);
-  //   console.log("deleting song " + id)
-  // } else {
-  //   console.log("song doesn't exists")
-  // }
-
-  // try {
-  //   await new Song(
-  //     {
-  //       "songID": song.songID,
-  //       "songName": song.songName,
-  //       "songArtist": song.songArtist,
-  //       "songAlbum": song.songAlbum,
-  //       "moodTag": song.moodTag,
-  //       "popularity": song.popularity,
-  //       "performedBy": song.performedBy,
-  //       "writtenBy": song.writtenBy,
-  //       "producedBy": song.producedBy
-  //     }
-  //   ).save();
-  // } catch (err) {
-  //   console.log(err);
-  // }
-
-
-}
 
 //FUNCTIONS
 
