@@ -1,6 +1,6 @@
 .round-button {
-    width: 200px;
-    height: 200px;
+    width: 175px;
+    height: 175px;
     justify-content: 'center';
     align-items: 'center';
     padding: 10px 20px 10px 20px;
@@ -13,7 +13,7 @@
 
 .round-button:hover {
     cursor: pointer;
-    box-shadow: 2px 2px 20px grey
+    box-shadow: 2px 2px 20px lightgray
 }
 
 .wide-button {
