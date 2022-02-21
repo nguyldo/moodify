@@ -66,8 +66,8 @@ songRoutes.get("/:mood", async (req, res) => {
 })
 
 // http://localhost:5000/song/post/:mood
-songRoutes.post("/post/:mood", async (req, res) => {
-  const mood = req.params;
+songRoutes.post("/post", async (req, res) => {
+  const { mood } = req.query;
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
