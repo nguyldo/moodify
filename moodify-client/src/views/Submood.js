@@ -5,6 +5,7 @@ import Button from '../components/Button';
 import { Link, useSearchParams } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import logo from '../images/logo-circle.png';
 
 function Submood() {
     const location = useLocation();
@@ -47,8 +48,13 @@ function Submood() {
         <div className="basic-frame" className={mood}>
             <Container>
                 <Row className="justify-content-md-center">
-                    <Col>
+                    <Col md={{ span: 10, offset: 1 }}>
                         <Button color={moodColor[mood][0]} text={moodsDict[mood][0]} type="round"></Button>
+                    </Col>
+                    <Col >
+                        <Link className="home-button" to={{pathname: '/dashboard'}}>
+                            <img style={{width: "90%"}} alt="" src={logo}></img>
+                        </Link>
                     </Col>
                 </Row>
                 <br></br>
