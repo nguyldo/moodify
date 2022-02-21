@@ -93,6 +93,65 @@ router.get('/update/mood', async (req, res) => {
   })
 })
 
+//new user
+//get info from spotify api after authentication
+router.post('/post', async (req, res) => {
+  const { id } = req.query;
+
+  const user = {
+    "userID": id,
+    "logins": 1
+  };
+
+  if (await checkUser(user)) {
+    await postUser(user);
+    res.json({
+      "user was inserted": "into the db"
+    });
+    console.log(user);
+  } else {
+    res.json({
+      "user was not inserted": "becuase they already exist"
+    });
+    console.log(user);
+  }
+
+})
+
+//FUNCTIONS
+
+async function postUser(user) {
+  try {
+    await new User(
+      {
+        "userID": user.userID,
+        "logins": 1
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }  
+}
+
+
+async function checkUser(user) {
+
+  try {
+    return await User.findOne(
+      { "userID": user.userID }
+    ).then((data) => {
+      if (data) {
+        console.log(data)
+        return false;
+      } else {
+        return true;
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 async function findUser(userID) {
   try {
     let promise_obj = await User.findOne(
