@@ -32,7 +32,8 @@ h1, h2, h3, h4 {
 }
 
 .happy {
-    background-color: #F3D84B;
+    /* background-color: #F5E06E; */
+    background-color: #FFE14A;
     padding: 4.5%;
     text-align: center;
 }
@@ -50,7 +51,7 @@ h1, h2, h3, h4 {
 }
 
 .angry {
-    background-color: #F86D6D;
+    background-color: #FA6967;
     padding: 4.5%;
     text-align: center;
 }
