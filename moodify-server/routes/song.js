@@ -65,9 +65,9 @@ songRoutes.get("/:mood", async (req, res) => {
   }
 })
 
-// http://localhost:5000/song/post/?mood={mood}
+// http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}
 songRoutes.post("/post", async (req, res) => {
-  const { mood } = req.query;
+  const { mood, af1, af2 } = req.query;
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
@@ -84,9 +84,11 @@ songRoutes.post("/post", async (req, res) => {
     "songID": req.body.songID,
     "songName": req.body.songName,
     "songURI": req.body.songURI,
-    "associatedFeels": req.body.associatedFeels,
+    "af1": af1,
+    "af2": af2,
     "adminRec": req.body.adminRec,
   }
+  //console.log("af2 is " + core.af2);
 
   if (await CheckSong(song, mood, core)) {
     console.log("why am i here")
@@ -129,14 +131,48 @@ async function chooseMood(mood, core) {
     }
 }
 
+async function chooseAssociatedFeels(mood, core) {
+  switch (mood) {
+    case 'angry':
+      updateAngry(core);
+      break;
+    case 'bad':
+      updateBad(core);
+      break;
+    case 'content':
+      updateContent(core);
+      break;
+    case 'excited':
+      updateExcited(core);
+      break;
+    case 'happy':
+      updateHappy(core)
+      break;
+    case 'sad':
+      updateSad(core);
+      console.log("why u sad")
+      break;    
+  }
+}
+
 async function PostHappy(core) {
+  let arr = [];
+
+  if (core.af1 != null) {
+    arr.push(core.af1);
+  }
+
+  if (core.af2 != null) {
+    arr.push(core.af2);
+  }
+  
   try {
     await new Happy(
       {
         "songID": core.songID,
         "songName": core.songName,
         "songURI": core.songURI,
-        "associatedFeels": core.associatedFeels,
+        "associatedFeels": arr,
         "adminRec": core.adminRec,
       }
     ).save();
@@ -145,14 +181,48 @@ async function PostHappy(core) {
   }
 }
 
+async function updateHappy(core) {
+  try {
+    return await Happy.findOne(
+      { "songID": core.songID }
+    ).then((data) => {
+      if (data) {
+        console.log(data)
+        if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
+          data.associatedFeels.push(core.af1);
+          data.save()
+        }
+
+        if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
+          data.associatedFeels.push(core.af2);
+          data.save()
+        }
+        console.log(data.associatedFeels)
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }  
+}
+
 async function PostExcited(core) {
+  let arr = [];
+
+  if (core.af1 != null) {
+    arr.push(core.af1);
+  }
+
+  if (core.af2 != null) {
+    arr.push(core.af2);
+  }
+
   try {
     await new Excited(
       {
         "songID": core.songID,
         "songName": core.songName,
         "songURI": core.songURI,
-        "associatedFeels": core.associatedFeels,
+        "associatedFeels": arr,
         "adminRec": core.adminRec,
       }
     ).save();
@@ -161,14 +231,48 @@ async function PostExcited(core) {
   }
 }
 
+async function updateExcited(core) {
+  try {
+    return await Excited.findOne(
+      { "songID": core.songID }
+    ).then((data) => {
+      if (data) {
+        console.log(data)
+        if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
+          data.associatedFeels.push(core.af1);
+          data.save()
+        }
+
+        if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
+          data.associatedFeels.push(core.af2);
+          data.save()
+        }
+        console.log(data.associatedFeels)
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }  
+}
+
 async function PostContent(core) {
+  let arr = [];
+
+  if (core.af1 != null) {
+    arr.push(core.af1);
+  }
+
+  if (core.af2 != null) {
+    arr.push(core.af2);
+  }  
+  
   try {
     await new Content(
       {
         "songID": core.songID,
         "songName": core.songName,
         "songURI": core.songURI,
-        "associatedFeels": core.associatedFeels,
+        "associatedFeels": arr,
         "adminRec": core.adminRec,
       }
     ).save();
@@ -177,14 +281,48 @@ async function PostContent(core) {
   }
 }
 
+async function updateContent(core) {
+  try {
+    return await Content.findOne(
+      { "songID": core.songID }
+    ).then((data) => {
+      if (data) {
+        console.log(data)
+        if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
+          data.associatedFeels.push(core.af1);
+          data.save()
+        }
+
+        if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
+          data.associatedFeels.push(core.af2);
+          data.save()
+        }
+        console.log(data.associatedFeels)
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }  
+}
+
 async function PostAngry(core) {
+  let arr = [];
+
+  if (core.af1 != null) {
+    arr.push(core.af1);
+  }
+
+  if (core.af2 != null) {
+    arr.push(core.af2);
+  }  
+  
   try {
     await new Angry(
       {
         "songID": core.songID,
         "songName": core.songName,
         "songURI": core.songURI,
-        "associatedFeels": core.associatedFeels,
+        "associatedFeels": arr,
         "adminRec": core.adminRec,
       }
     ).save();
@@ -193,14 +331,48 @@ async function PostAngry(core) {
   }
 }
 
+async function updateAngry(core) {
+  try {
+    return await Angry.findOne(
+      { "songID": core.songID }
+    ).then((data) => {
+      if (data) {
+        console.log(data)
+        if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
+          data.associatedFeels.push(core.af1);
+          data.save()
+        }
+
+        if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
+          data.associatedFeels.push(core.af2);
+          data.save()
+        }
+        console.log(data.associatedFeels)
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }  
+}
+
 async function PostBad(core) {
+  let arr = [];
+
+  if (core.af1 != null) {
+    arr.push(core.af1);
+  }
+
+  if (core.af2 != null) {
+    arr.push(core.af2);
+  }
+
   try {
     await new Bad(
       {
         "songID": core.songID,
         "songName": core.songName,
         "songURI": core.songURI,
-        "associatedFeels": core.associatedFeels,
+        "associatedFeels": arr,
         "adminRec": core.adminRec,
       }
     ).save();
@@ -209,20 +381,78 @@ async function PostBad(core) {
   }
 }
 
+async function updateBad(core) {
+  try {
+    return await Bad.findOne(
+      { "songID": core.songID }
+    ).then((data) => {
+      if (data) {
+        console.log(data)
+        if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
+          data.associatedFeels.push(core.af1);
+          data.save()
+        }
+
+        if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
+          data.associatedFeels.push(core.af2);
+          data.save()
+        }
+        console.log(data.associatedFeels)
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }  
+}
+
 async function PostSad(core) {
+  let arr = [];
+
+  if (core.af1 != null) {
+    arr.push(core.af1);
+  }
+
+  if (core.af2 != null) {
+    arr.push(core.af2);
+  }
+
   try {
     await new Sad(
       {
         "songID": core.songID,
         "songName": core.songName,
         "songURI": core.songURI,
-        "associatedFeels": core.associatedFeels,
+        "associatedFeels": arr,
         "adminRec": core.adminRec,
       }
     ).save();
   } catch (err) {
     console.log(err);
   }
+}
+
+async function updateSad(core) {
+  try {
+    return await Sad.findOne(
+      { "songID": core.songID }
+    ).then((data) => {
+      if (data) {
+        console.log(data)
+        if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
+          data.associatedFeels.push(core.af1);
+          data.save()
+        }
+
+        if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
+          data.associatedFeels.push(core.af2);
+          data.save()
+        }
+        console.log(data.associatedFeels)
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }  
 }
 
 async function CheckSong(song, mood, core) {
@@ -233,14 +463,16 @@ async function CheckSong(song, mood, core) {
     ).then((data) => {
       if (data) {
         console.log(data)
-        if (!data.moodTag.includes(mood)) {
+        if (!data.moodTag.includes(mood)) { //if song doesn't exist in mood table yet
           chooseMood(mood, core);
           data.moodTag.push(mood);
           console.log(data.moodTag)
           data.save()
-          console.log("inserting into "+ mood)
-        } else {
+          console.log("inserting into " + mood)
+        } else { //exist already
           console.log(mood + " is already part of this song's mood tag")
+          //HERE IS WHERE YOU LEFT OFF
+          chooseAssociatedFeels(mood, core);
         }
         return false;
       } else {
