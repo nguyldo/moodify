@@ -58,6 +58,7 @@ router.get('/tracks/:token', (req, res) => {
   })
 })
 
+// ASK ANDREW WHY NEED TOKEN
 // http://localhost:5000/user/dbprofile/{token}
 router.get('/dbprofile/:token', async (req, res) => {
   console.log('running user info database retrieval');
@@ -70,6 +71,7 @@ router.get('/dbprofile/:token', async (req, res) => {
     console.log(data.data.id);
     return findUser(data.data.id);
   }).then((data) => {
+    console.log("is it printing everything?")
     console.log(data);
     res.json(data);
   }).catch((err) => {
@@ -95,12 +97,12 @@ router.get('/update/mood', async (req, res) => {
 
 //new user
 //get info from spotify api after authentication
+// http://localhost5000/user/post?id={userID}
 router.post('/post', async (req, res) => {
   const { id } = req.query;
 
   const user = {
-    "userID": id,
-    "logins": 1
+    "userID": id
   };
 
   if (await checkUser(user)) {
@@ -108,12 +110,47 @@ router.post('/post', async (req, res) => {
     res.json({
       "user was inserted": "into the db"
     });
-    console.log(user);
   } else {
     res.json({
       "user was not inserted": "becuase they already exist"
     });
     console.log(user);
+  }
+
+})
+
+router.put('/recommended', async (req, res) =>  {
+  const { userID, songID } = req.query;
+  
+  const user = {
+    "userID" : userID,
+    "songID" : songID
+  };
+
+  try {
+    return await User.findOne(
+      { "userID": user.userID }
+    ).then((data) => {
+      if (data) {
+        console.log("hereeeeee")
+        console.log(data)
+        if (!data.recommendedSongIDs.includes(user.songID)) {
+          data.recommendedSongIDs.push(user.songID);
+          data.numRecommendations++;
+          console.log(data)
+          data.save()
+          console.log("inserting new recommended song")
+          res.sendStatus(200)
+        } else {
+          console.log("user already has this recommended song")
+          //res.sendStatus(400)
+        }
+      }
+    }).then(() => {
+      // res.sendStatus(200)
+    })
+  } catch (err) {
+    console.log(err);
   }
 
 })
@@ -125,7 +162,8 @@ async function postUser(user) {
     await new User(
       {
         "userID": user.userID,
-        "logins": 1
+        "logins": 1,
+        "numRecommendations": 0
       }
     ).save();
   } catch (err) {
@@ -155,13 +193,15 @@ async function checkUser(user) {
 async function findUser(userID) {
   try {
     let promise_obj = await User.findOne(
-      { "userID": userID },
-      'userID logins',
+      { "userID": userID }//,
+      //'userID logins',
     )
     console.log(promise_obj);
     return {
       "userID": promise_obj.userID,
-      "logins": promise_obj.logins
+      "logins": promise_obj.logins,
+      "recommendedSongsIDs": promise_obj.recommendedSongIDs,
+      "numRecommendations": promise_obj.numRecommendations
     };
   } catch (err) {
     console.log(err);
