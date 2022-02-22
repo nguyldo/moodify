@@ -4,7 +4,7 @@ const schema = mongoose.Schema({
     songID: String,
     songName: String,
     songURI: String,
-    associatedFeels: String,
+    associatedFeels: Array,
     adminRec: Boolean
 })
 
