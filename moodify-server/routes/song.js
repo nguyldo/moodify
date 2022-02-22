@@ -65,6 +65,7 @@ songRoutes.get("/:mood", async (req, res) => {
   }
 })
 
+//af1 & af1 are the optional associated feels
 // http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}
 songRoutes.post("/post", async (req, res) => {
   const { mood, af1, af2 } = req.query;
@@ -88,7 +89,6 @@ songRoutes.post("/post", async (req, res) => {
     "af2": af2,
     "adminRec": req.body.adminRec,
   }
-  //console.log("af2 is " + core.af2);
 
   if (await CheckSong(song, mood, core)) {
     console.log("why am i here")
@@ -106,6 +106,55 @@ songRoutes.post("/post", async (req, res) => {
 })
 
 //FUNCTIONS
+
+async function CheckSong(song, mood, core) {
+
+  try {
+    return await Song.findOne(
+      { "songID": song.songID }
+    ).then((data) => {
+      if (data) {
+        console.log(data)
+        if (!data.moodTag.includes(mood)) { //if song doesn't exist in mood table yet
+          chooseMood(mood, core);
+          data.moodTag.push(mood);
+          console.log(data.moodTag)
+          data.save()
+          console.log("inserting into " + mood)
+        } else { //exist already
+          console.log(mood + " is already part of this song's mood tag")
+          //HERE IS WHERE YOU LEFT OFF
+          chooseAssociatedFeels(mood, core);
+        }
+        return false;
+      } else {
+        return true;
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function PostSong(song) {
+  try {
+    await new Song(
+      {
+        "songID": song.songID,
+        "songName": song.songName,
+        "songArtist": song.songArtist,
+        "songAlbum": song.songAlbum,
+        "moodTag": song.moodTag,
+        "popularity": song.popularity,
+        "performedBy": song.performedBy,
+        "writtenBy": song.writtenBy,
+        "producedBy": song.producedBy
+      }
+    ).save();
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 async function chooseMood(mood, core) {
     switch (mood) {
@@ -453,55 +502,6 @@ async function updateSad(core) {
   } catch (err) {
     console.log(err);
   }  
-}
-
-async function CheckSong(song, mood, core) {
-
-  try {
-    return await Song.findOne(
-      { "songID": song.songID }
-    ).then((data) => {
-      if (data) {
-        console.log(data)
-        if (!data.moodTag.includes(mood)) { //if song doesn't exist in mood table yet
-          chooseMood(mood, core);
-          data.moodTag.push(mood);
-          console.log(data.moodTag)
-          data.save()
-          console.log("inserting into " + mood)
-        } else { //exist already
-          console.log(mood + " is already part of this song's mood tag")
-          //HERE IS WHERE YOU LEFT OFF
-          chooseAssociatedFeels(mood, core);
-        }
-        return false;
-      } else {
-        return true;
-      }
-    })
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-async function PostSong(song) {
-  try {
-    await new Song(
-      {
-        "songID": song.songID,
-        "songName": song.songName,
-        "songArtist": song.songArtist,
-        "songAlbum": song.songAlbum,
-        "moodTag": song.moodTag,
-        "popularity": song.popularity,
-        "performedBy": song.performedBy,
-        "writtenBy": song.writtenBy,
-        "producedBy": song.producedBy
-      }
-    ).save();
-  } catch (err) {
-    console.log(err);
-  }
 }
 
 module.exports = songRoutes;

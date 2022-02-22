@@ -119,6 +119,8 @@ router.post('/post', async (req, res) => {
 
 })
 
+//route for updating user's recommendedSongIDs and numRecommendations
+// https://localhost:5000/recommended?userID={userID}&songID={songID}
 router.put('/recommended', async (req, res) =>  {
   const { userID, songID } = req.query;
   
