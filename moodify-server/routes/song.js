@@ -12,6 +12,8 @@ const song = require("../models/song");
 
 const spotify_url = 'https://api.spotify.com/v1';
 
+// gets songs from Spotify's database based on user's search
+// returns songs found in Spotify's database based on user's search
 // https://localhost:5000/song/search?term={text_to_search}&type={track or album}&token={token}
 songRoutes.get('/search', (req, res) => {
   const { term, type, token } = req.query;
@@ -28,7 +30,8 @@ songRoutes.get('/search', (req, res) => {
     });
 })
 
-// Get all songs
+// gets all songs
+// returns all songs from Moodify's Song table
 // http://localhost:5000/song/all
 songRoutes.get("/all", async (req, res) => {
   console.log("hello");
@@ -36,7 +39,8 @@ songRoutes.get("/all", async (req, res) => {
   res.send(songs);
 })
 
-// get song by mood
+// get songs by mood
+// returns all songs from specific mood table
 // http://localhost:5000/song/:mood
 songRoutes.get("/:mood", async (req, res) => {
   const { mood } = req.params;
@@ -66,7 +70,9 @@ songRoutes.get("/:mood", async (req, res) => {
   }
 })
 
-//af1 & af1 are the optional associated feels
+// posts user's suggested song to Song table and respective mood tables, updates moodTags and respective mood tables if exist already
+// af1 & af1 are the optional associated feels, adminRec = true/false
+// returns json message
 // http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}&adminRec={adminRec}
 songRoutes.post("/post", async (req, res) => {
   const { mood, af1, af2, adminRec } = req.query;
@@ -111,6 +117,8 @@ songRoutes.post("/post", async (req, res) => {
   }
 })
 
+// deletes song from specific mood table and updates song's moodTag in Song table
+// returns json message
 // http://localhost:5000/song/delete/mood?songID={songID}&mood={mood}
 songRoutes.delete('/delete/mood', async(req, res) => {
   const { songID, mood } = req.query;
@@ -126,6 +134,7 @@ songRoutes.delete('/delete/mood', async(req, res) => {
   }
 })
 
+// deletes song entities in Song table and its other entities in respective mood tables
 // https://localhost:5000/song/delete?songID={songID}
 songRoutes.delete('/delete', async(req, res) => {
   const { songID } = req.query;
@@ -140,11 +149,10 @@ songRoutes.delete('/delete', async(req, res) => {
             chooseDelete(data.songID, data.moodTag[i]);
           } //end for
           console.log("moodTag now: " + data.moodTag)
-          await Song.findOneAndDelete({"songID": songID})
+          Song.findOneAndDelete({"songID": songID})
         }
         // res.json()
     });
-    await Song.findOneAndDelete({"songID": songID});
 
   } catch (err) {
     return err

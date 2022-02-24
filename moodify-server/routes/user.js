@@ -8,7 +8,7 @@ const spotify_url = 'https://api.spotify.com/v1';
 const User = require('../models/user');
 const Mood = require('../models/mood');
 
-//http://localhost:5000/user/{token}
+// http://localhost:5000/user/{token}
 router.get('/:token', (req, res) => {
   console.log('running user profile api')
   const { token } = req.params;
@@ -58,7 +58,6 @@ router.get('/tracks/:token', (req, res) => {
   })
 })
 
-// ASK ANDREW WHY NEED TOKEN
 // http://localhost:5000/user/dbprofile/{token}
 router.get('/dbprofile/:token', async (req, res) => {
   console.log('running user info database retrieval');
@@ -119,7 +118,7 @@ router.post('/post', async (req, res) => {
 
 })
 
-//route for updating user's recommendedSongIDs and numRecommendations
+// route for updating user's recommendedSongIDs and numRecommendations
 // https://localhost:5000/recommended?userID={userID}&songID={songID}
 router.put('/recommended', async (req, res) =>  {
   const { userID, songID } = req.query;
