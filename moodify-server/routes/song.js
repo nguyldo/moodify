@@ -67,9 +67,10 @@ songRoutes.get("/:mood", async (req, res) => {
 })
 
 //af1 & af1 are the optional associated feels
-// http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}
+// http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}&adminRec={adminRec}
 songRoutes.post("/post", async (req, res) => {
-  const { mood, af1, af2 } = req.query;
+  const { mood, af1, af2, adminRec } = req.query;
+  let rec = true;
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
@@ -82,13 +83,17 @@ songRoutes.post("/post", async (req, res) => {
     "producedBy": req.body.producedBy
   };
 
+  if (adminRec != "true") {
+    rec = false;
+  }
+
   const core = {
     "songID": req.body.songID,
     "songName": req.body.songName,
     "songURI": req.body.songURI,
     "af1": af1,
     "af2": af2,
-    "adminRec": req.body.adminRec,
+    "adminRec": rec
   }
 
   if (await CheckSong(song, mood, core)) {
