@@ -71,11 +71,11 @@ songRoutes.get("/:mood", async (req, res) => {
 })
 
 // posts user's suggested song to Song table and respective mood tables, updates moodTags and respective mood tables if exist already
-// af1 & af1 are the optional associated feels, adminRec = true/false
+// { af1, af2, af3, af4, af5} are the optional associated feels, adminRec = true/false
 // returns json message
-// http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}&adminRec={adminRec}
+// http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}&af3={af3}&af4={af4}&af5={af5}&adminRec={adminRec}
 songRoutes.post("/post", async (req, res) => {
-  const { mood, af1, af2, adminRec } = req.query;
+  const { mood, af1, af2, af3, af4, af5, adminRec } = req.query;
   let rec = true;
   const song = {
     "songID": req.body.songID,
@@ -99,6 +99,9 @@ songRoutes.post("/post", async (req, res) => {
     "songURI": req.body.songURI,
     "af1": af1,
     "af2": af2,
+    "af3": af3,
+    "af4": af4,
+    "af5": af5,
     "adminRec": rec
   }
 
@@ -323,6 +326,18 @@ async function PostHappy(core) {
     arr.push(core.af2);
   }
 
+  if (core.af3 != null) {
+    arr.push(core.af3);
+  }  
+
+  if (core.af4 != null) {
+    arr.push(core.af4);
+  }
+
+  if (core.af5 != null) {
+    arr.push(core.af5);
+  }    
+
   try {
     await new Happy(
       {
@@ -388,6 +403,18 @@ async function PostExcited(core) {
 
   if (core.af2 != null) {
     arr.push(core.af2);
+  }
+
+  if (core.af3 != null) {
+    arr.push(core.af3);
+  }  
+
+  if (core.af4 != null) {
+    arr.push(core.af4);
+  }
+
+  if (core.af5 != null) {
+    arr.push(core.af5);
   }
 
   try {
@@ -457,6 +484,18 @@ async function PostContent(core) {
     arr.push(core.af2);
   }
 
+  if (core.af3 != null) {
+    arr.push(core.af3);
+  }  
+
+  if (core.af4 != null) {
+    arr.push(core.af4);
+  }
+
+  if (core.af5 != null) {
+    arr.push(core.af5);
+  }  
+
   try {
     await new Content(
       {
@@ -523,6 +562,18 @@ async function PostAngry(core) {
   if (core.af2 != null) {
     arr.push(core.af2);
   }
+
+  if (core.af3 != null) {
+    arr.push(core.af3);
+  }  
+
+  if (core.af4 != null) {
+    arr.push(core.af4);
+  }
+
+  if (core.af5 != null) {
+    arr.push(core.af5);
+  }  
 
   try {
     await new Angry(
@@ -595,6 +646,18 @@ async function PostBad(core) {
     arr.push(core.af2);
   }
 
+  if (core.af3 != null) {
+    arr.push(core.af3);
+  }  
+
+  if (core.af4 != null) {
+    arr.push(core.af4);
+  }
+
+  if (core.af5 != null) {
+    arr.push(core.af5);
+  }     
+
   try {
     await new Bad(
       {
@@ -661,6 +724,18 @@ async function PostSad(core) {
   if (core.af2 != null) {
     arr.push(core.af2);
   }
+
+  if (core.af3 != null) {
+    arr.push(core.af3);
+  }  
+
+  if (core.af4 != null) {
+    arr.push(core.af4);
+  }
+
+  if (core.af5 != null) {
+    arr.push(core.af5);
+  }     
 
   try {
     await new Sad(
