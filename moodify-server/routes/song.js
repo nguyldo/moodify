@@ -136,7 +136,7 @@ songRoutes.delete('/delete/mood', async(req, res) => {
 
 // deletes song entities in Song table and its other entities in respective mood tables
 // https://localhost:5000/song/delete?songID={songID}
-songRoutes.delete('/delete', async(req, res) => {
+songRoutes.delete('/delete', async (req, res) => {
   const { songID } = req.query;
   try {
     await Song.findOne({"songID": songID})
@@ -145,14 +145,18 @@ songRoutes.delete('/delete', async(req, res) => {
           console.log("deleting this song")
           console.log(data)
           console.log("delete from individual mood tables")
-          for (let i = 0; i < data.moodTag.length; i++) {
+          temp = data.moodTag.length
+          for (let i = 0; i < temp; i++) {
             chooseDelete(data.songID, data.moodTag[i]);
           } //end for
           console.log("moodTag now: " + data.moodTag)
-          Song.findOneAndDelete({"songID": songID})
+          await Song.findOneAndDelete({"songID": songID})
+          res.sendStatus(200)
+        } else {
+          res.sendStatus(404)
         }
-        // res.json()
     });
+    // await Song.findOneAndDelete({"songID": songID});
 
   } catch (err) {
     return err
@@ -278,7 +282,7 @@ async function chooseAssociatedFeels(mood, core) {
     case 'sad':
       updateSad(core);
       console.log("why u sad")
-      break;    
+      break;
   }
 }
 
@@ -302,8 +306,8 @@ async function chooseDelete(songID, mood) {
     case 'sad':
       deleteSad(songID);
       console.log("why u sad")
-      break;    
-  }  
+      break;
+  }
 }
 
 // HAPPY
@@ -318,7 +322,7 @@ async function PostHappy(core) {
   if (core.af2 != null) {
     arr.push(core.af2);
   }
-  
+
   try {
     await new Happy(
       {
@@ -355,7 +359,7 @@ async function updateHappy(core) {
     })
   } catch (err) {
     console.log(err);
-  }  
+  }
 }
 
 async function deleteHappy(songID) {
@@ -422,7 +426,7 @@ async function updateExcited(core) {
     })
   } catch (err) {
     console.log(err);
-  }  
+  }
 }
 
 async function deleteExcited(songID) {
@@ -451,8 +455,8 @@ async function PostContent(core) {
 
   if (core.af2 != null) {
     arr.push(core.af2);
-  }  
-  
+  }
+
   try {
     await new Content(
       {
@@ -489,7 +493,7 @@ async function updateContent(core) {
     })
   } catch (err) {
     console.log(err);
-  }  
+  }
 }
 
 async function deleteContent(songID) {
@@ -518,8 +522,8 @@ async function PostAngry(core) {
 
   if (core.af2 != null) {
     arr.push(core.af2);
-  }  
-  
+  }
+
   try {
     await new Angry(
       {
@@ -556,7 +560,7 @@ async function updateAngry(core) {
     })
   } catch (err) {
     console.log(err);
-  }  
+  }
 }
 
 async function deleteAngry(songID) {
@@ -627,7 +631,7 @@ async function updateBad(core) {
     })
   } catch (err) {
     console.log(err);
-  }  
+  }
 }
 
 async function deleteBad(songID) {
@@ -694,7 +698,7 @@ async function updateSad(core) {
     })
   } catch (err) {
     console.log(err);
-  }  
+  }
 }
 
 async function deleteSad(songID) {
