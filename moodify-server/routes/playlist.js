@@ -78,7 +78,7 @@ router.post('/recommendations', async (req, res) => {
         for (let i = 0; i < 6; i++) {
             let randomIndices = [];
             while (randomIndices.length < 5) {
-                const randomNumber = Math.floor(Math.random() * filteredSongs.length());
+                const randomNumber = Math.floor(Math.random() * filteredSongs.length);
                 if (!randomIndices.includes(randomIndices)) randomIndices.push(randomNumber);
             }
 
