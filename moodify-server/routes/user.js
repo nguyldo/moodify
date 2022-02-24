@@ -182,6 +182,8 @@ async function checkUser(user) {
     ).then((data) => {
       if (data) {
         console.log(data)
+        data.logins = data.logins + 1;
+        data.save()
         return false;
       } else {
         return true;

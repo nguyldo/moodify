@@ -111,8 +111,8 @@ songRoutes.post("/post", async (req, res) => {
   }
 })
 
-// http://localhost:5000/song/delete?songID={songID}&mood={mood}
-songRoutes.delete('/delete', async(req, res) => {
+// http://localhost:5000/song/delete/mood?songID={songID}&mood={mood}
+songRoutes.delete('/delete/mood', async(req, res) => {
   const { songID, mood } = req.query;
   try {
     console.log("deleting song");
@@ -123,6 +123,31 @@ songRoutes.delete('/delete', async(req, res) => {
     );
   } catch (err) {
     return err;
+  }
+})
+
+// https://localhost:5000/song/delete?songID={songID}
+songRoutes.delete('/delete', async(req, res) => {
+  const { songID } = req.query;
+  try {
+    await Song.findOne({"songID": songID})
+    .then(async (data) => {
+        if (data) {
+          console.log("deleting this song")
+          console.log(data)
+          console.log("delete from individual mood tables")
+          for (let i = 0; i < data.moodTag.length; i++) {
+            chooseDelete(data.songID, data.moodTag[i]);
+          } //end for
+          console.log("moodTag now: " + data.moodTag)
+          await Song.findOneAndDelete({"songID": songID})
+        }
+        // res.json()
+    });
+    await Song.findOneAndDelete({"songID": songID});
+
+  } catch (err) {
+    return err
   }
 })
 
@@ -273,6 +298,8 @@ async function chooseDelete(songID, mood) {
   }  
 }
 
+// HAPPY
+
 async function PostHappy(core) {
   let arr = [];
 
@@ -337,6 +364,8 @@ async function deleteHappy(songID) {
     return err;
   }
 }
+
+// EXCITED
 
 async function PostExcited(core) {
   let arr = [];
@@ -403,6 +432,8 @@ async function deleteExcited(songID) {
   }
 }
 
+// CONTENT
+
 async function PostContent(core) {
   let arr = [];
 
@@ -467,6 +498,8 @@ async function deleteContent(songID) {
     return err;
   }
 }
+
+// ANGRY
 
 async function PostAngry(core) {
   let arr = [];
@@ -537,6 +570,8 @@ async function deleteAngry(songID) {
   }
 }
 
+// BAD
+
 async function PostBad(core) {
   let arr = [];
 
@@ -601,6 +636,8 @@ async function deleteBad(songID) {
     return err;
   }
 }
+
+// SAD
 
 async function PostSad(core) {
   let arr = [];
