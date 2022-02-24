@@ -118,15 +118,6 @@ songRoutes.delete('/delete', async(req, res) => {
     console.log("deleting song");
     chooseDelete(songID, mood);
     console.log("song should be deleted")
-    // await Angry.findOneAndDelete({"songID": songID})
-    // .then( async (data) => {
-    //   if (data) {
-    //     console.log(data)
-    //     await removeMood(songID, mood)
-    //     console.log("back from remove mood")
-    //     res.json(data)
-    //   }
-    // });
     res.json(
       {"song deleted from": mood}
     );
@@ -539,7 +530,6 @@ async function deleteAngry(songID) {
         await removeMood(songID, "angry")
         console.log("deleting from angry")
         return;
-        //res.json(data)
       }
     });
   } catch (err) {
