@@ -8,6 +8,7 @@ const Sad = require("../models/sad")
 const Song = require("../models/song")
 const songRoutes = express.Router();
 const axios = require('axios');
+const song = require("../models/song");
 
 const spotify_url = 'https://api.spotify.com/v1';
 
@@ -105,7 +106,55 @@ songRoutes.post("/post", async (req, res) => {
   }
 })
 
+// http://localhost:5000/song/delete?songID={songID}&mood={mood}
+songRoutes.delete('/delete', async(req, res) => {
+  const { songID, mood } = req.query;
+  try {
+    console.log("deleting song");
+    chooseDelete(songID, mood);
+    console.log("song should be deleted")
+    // await Angry.findOneAndDelete({"songID": songID})
+    // .then( async (data) => {
+    //   if (data) {
+    //     console.log(data)
+    //     await removeMood(songID, mood)
+    //     console.log("back from remove mood")
+    //     res.json(data)
+    //   }
+    // });
+    res.json(
+      {"song deleted from": mood}
+    );
+  } catch (err) {
+    return err;
+  }
+})
+
 //FUNCTIONS
+
+async function removeMood(songID, mood) {
+  try {
+    await Song.findOne({"songID": songID})
+    .then((data) => {
+      if (data) {
+        console.log(data.moodTag)
+        var arr = []
+        for (let i = 0; i < data.moodTag.length; i++) {
+          if (data.moodTag[i] != mood) {
+            arr.push(data.moodTag[i])
+          } 
+        } //end for
+        console.log("arr = " + arr)
+        data.moodTag = arr;
+        data.save()
+        console.log("data.moodTag = " + data.moodTag)
+        return
+      }
+    });
+  } catch (err) {
+    return err;
+  }
+}
 
 async function CheckSong(song, mood, core) {
 
@@ -204,6 +253,30 @@ async function chooseAssociatedFeels(mood, core) {
   }
 }
 
+async function chooseDelete(songID, mood) {
+  switch (mood) {
+    case 'angry':
+      deleteAngry(songID);
+      break;
+    case 'bad':
+      deleteBad(songID);
+      break;
+    case 'content':
+      deleteContent(songID);
+      break;
+    case 'excited':
+      deleteExcited(songID);
+      break;
+    case 'happy':
+      deleteHappy(songID)
+      break;
+    case 'sad':
+      deleteSad(songID);
+      console.log("why u sad")
+      break;    
+  }  
+}
+
 async function PostHappy(core) {
   let arr = [];
 
@@ -252,6 +325,21 @@ async function updateHappy(core) {
   } catch (err) {
     console.log(err);
   }  
+}
+
+async function deleteHappy(songID) {
+  try {
+    await Happy.findOneAndDelete({"songID": songID})
+    .then( async (data) => {
+      if (data) {
+        console.log(data)
+        await removeMood(songID, "happy")
+        res.json(data)
+      }
+    });
+  } catch (err) {
+    return err;
+  }
 }
 
 async function PostExcited(core) {
@@ -304,6 +392,21 @@ async function updateExcited(core) {
   }  
 }
 
+async function deleteExcited(songID) {
+  try {
+    await Excited.findOneAndDelete({"songID": songID})
+    .then( async (data) => {
+      if (data) {
+        console.log(data)
+        await removeMood(songID, "excited")
+        res.json(data)
+      }
+    });
+  } catch (err) {
+    return err;
+  }
+}
+
 async function PostContent(core) {
   let arr = [];
 
@@ -352,6 +455,21 @@ async function updateContent(core) {
   } catch (err) {
     console.log(err);
   }  
+}
+
+async function deleteContent(songID) {
+  try {
+    await Content.findOneAndDelete({"songID": songID})
+    .then( async (data) => {
+      if (data) {
+        console.log(data)
+        await removeMood(songID, "content")
+        res.json(data)
+      }
+    });
+  } catch (err) {
+    return err;
+  }
 }
 
 async function PostAngry(core) {
@@ -404,6 +522,26 @@ async function updateAngry(core) {
   }  
 }
 
+async function deleteAngry(songID) {
+  console.log("songID: "+ songID)
+  try {
+    await Angry.findOneAndDelete({"songID": songID})
+    .then( async (data) => {
+      console.log("data: "+ songID)
+      if (data) {
+        console.log("printing from angry")
+        console.log(data)
+        await removeMood(songID, "angry")
+        console.log("deleting from angry")
+        return;
+        //res.json(data)
+      }
+    });
+  } catch (err) {
+    return err;
+  }
+}
+
 async function PostBad(core) {
   let arr = [];
 
@@ -454,6 +592,21 @@ async function updateBad(core) {
   }  
 }
 
+async function deleteBad(songID) {
+  try {
+    await Content.findOneAndDelete({"songID": songID})
+    .then( async (data) => {
+      if (data) {
+        console.log(data)
+        await removeMood(songID, "bad")
+        res.json(data)
+      }
+    });
+  } catch (err) {
+    return err;
+  }
+}
+
 async function PostSad(core) {
   let arr = [];
 
@@ -502,6 +655,21 @@ async function updateSad(core) {
   } catch (err) {
     console.log(err);
   }  
+}
+
+async function deleteSad(songID) {
+  try {
+    await Sad.findOneAndDelete({"songID": songID})
+    .then( async (data) => {
+      if (data) {
+        console.log(data)
+        await removeMood(songID, "sad")
+        res.json(data)
+      }
+    });
+  } catch (err) {
+    return err;
+  }
 }
 
 module.exports = songRoutes;
