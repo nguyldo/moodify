@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 const routeUser = require('./routes/user');
 const routeSong = require('./routes/song');
+const routePlaylist = require('./routes/playlist');
 
 const mongoose = require("mongoose");
 
@@ -23,6 +24,7 @@ mongoose.connect(`mongodb+srv://moodify:teletubbies@cluster1.wlzag.mongodb.net/M
 
   app.use('/song', routeSong);
   app.use('/user', routeUser);
+  app.use('/playlist', routePlaylist);
 
   app.listen(port, () => {
     console.log(`\nMoodify server listening on port ${port}`);
