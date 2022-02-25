@@ -46,7 +46,7 @@ function Login() {
                         <img src="/logo-white.png" alt="logo" className="logo" />
                     </div>
                     <div>
-                        <Button text="Log in with Spotify" onClick={authorizeSpotify} type="wide" color="#FFFFFF" />
+                        <Button text="Log in with Spotify" onClick={authorizeSpotify} type="wide" color="green" />
                     </div>
                 </div>
             </div>
