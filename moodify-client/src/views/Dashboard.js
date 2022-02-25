@@ -4,10 +4,12 @@ import { Col, Row, Container } from 'react-bootstrap';
 import { Link } from "react-router-dom";
 import Button from '../components/Button';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
-    if (typeof Cookies.get('SpotifyAccessToken') === 'undefined') {
-      const { hash } = window.location;
+    let navigate = useNavigate();
+    const { hash } = window.location;
+    if (typeof Cookies.get('SpotifyAccessToken') === 'undefined' && hash !== "") {
       const accessToken = hash.split('&')[0].split('=')[1];
       const tokenType = hash.split('&')[1].split('=')[1];
       const expiresIn = hash.split('&')[2].split('=')[1];
@@ -19,6 +21,9 @@ function Dashboard() {
     const accessToken = Cookies.get('SpotifyAccessToken')
 
     React.useEffect(() => {
+        if (window.location.hash === "") {
+          return navigate("/")
+        }
         axios.get(`http://localhost:5000/user/${accessToken}`)
           .then((data) => {
             console.log(data);

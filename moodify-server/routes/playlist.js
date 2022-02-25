@@ -40,22 +40,17 @@ router.post('/recommendations', async (req, res) => {
 
 
     let filteredSongs = [];
-    try {
-        if (associatedFeels.length > 0) {
-            allSongs.map((song) => {
-                for (const moodTag of song.associatedFeels) {
-                    if (associatedFeels.includes(moodTag)) {
-                        filteredSongs.push(song);
-                        break;
-                    }
+    if (associatedFeels.length > 0) {
+        allSongs.map((song) => {
+            for (const moodTag of song.associatedFeels) {
+                if (associatedFeels.includes(moodTag)) {
+                    filteredSongs.push(song);
+                    break;
                 }
-            })
-        } else {
-            filteredSongs = allSongs;
-        }
-    } catch (err) {
-        console.log(err);
-        res.json("error");
+            }
+        })
+    } else {
+        filteredSongs = allSongs;
     }
 
     console.log(filteredSongs)
