@@ -14,7 +14,7 @@ const router = express.Router();
 const spotify_url = 'https://api.spotify.com/v1';
 
 router.post('/recommendations', async (req, res) => {
-    const { mood, associatedFeel, token } = req.body;
+    const { mood, associatedFeels, token } = req.body;
 
     let allSongs = [];
     switch (mood) {
@@ -40,10 +40,22 @@ router.post('/recommendations', async (req, res) => {
 
 
     let filteredSongs = [];
-    if (associatedFeel !== "") {
-        const filteredSongs = allSongs.filter(song => song.associatedFeels === associatedFeel);
-    } else {
-        filteredSongs = allSongs;
+    try {
+        if (associatedFeels.length > 0) {
+            allSongs.map((song) => {
+                for (const moodTag of song.associatedFeels) {
+                    if (associatedFeels.includes(moodTag)) {
+                        filteredSongs.push(song);
+                        break;
+                    }
+                }
+            })
+        } else {
+            filteredSongs = allSongs;
+        }
+    } catch (err) {
+        console.log(err);
+        res.json("error");
     }
 
     console.log(filteredSongs)
