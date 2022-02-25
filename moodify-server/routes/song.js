@@ -362,13 +362,30 @@ async function updateHappy(core) {
         console.log(data)
         if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
           data.associatedFeels.push(core.af1);
-          data.save()
+          //data.save()
         }
 
         if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
           data.associatedFeels.push(core.af2);
-          data.save()
+          //data.save()
         }
+
+        if (!data.associatedFeels.includes(core.af3) && core.af3 != null) {
+          data.associatedFeels.push(core.af3);
+          //data.save()
+        }
+
+        if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
+          data.associatedFeels.push(core.af4);
+          //data.save()
+        }
+        
+        if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
+          data.associatedFeels.push(core.af5);
+          //data.save()
+        }   
+        
+        data.save()
         console.log(data.associatedFeels)
       }
     })
@@ -441,13 +458,30 @@ async function updateExcited(core) {
         console.log(data)
         if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
           data.associatedFeels.push(core.af1);
-          data.save()
+          //data.save()
         }
 
         if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
           data.associatedFeels.push(core.af2);
-          data.save()
+          //data.save()
         }
+
+        if (!data.associatedFeels.includes(core.af3) && core.af3 != null) {
+          data.associatedFeels.push(core.af3);
+          //data.save()
+        }
+
+        if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
+          data.associatedFeels.push(core.af4);
+          //data.save()
+        }
+        
+        if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
+          data.associatedFeels.push(core.af5);
+          //data.save()
+        }   
+        
+        data.save()
         console.log(data.associatedFeels)
       }
     })
@@ -520,13 +554,25 @@ async function updateContent(core) {
         console.log(data)
         if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
           data.associatedFeels.push(core.af1);
-          data.save()
         }
 
         if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
           data.associatedFeels.push(core.af2);
-          data.save()
         }
+
+        if (!data.associatedFeels.includes(core.af3) && core.af3 != null) {
+          data.associatedFeels.push(core.af3);
+        }
+
+        if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
+          data.associatedFeels.push(core.af4);
+        }
+        
+        if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
+          data.associatedFeels.push(core.af5);
+        }   
+        
+        data.save()
         console.log(data.associatedFeels)
       }
     })
@@ -599,13 +645,25 @@ async function updateAngry(core) {
         console.log(data)
         if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
           data.associatedFeels.push(core.af1);
-          data.save()
         }
 
         if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
           data.associatedFeels.push(core.af2);
-          data.save()
         }
+
+        if (!data.associatedFeels.includes(core.af3) && core.af3 != null) {
+          data.associatedFeels.push(core.af3);
+        }
+
+        if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
+          data.associatedFeels.push(core.af4);
+        }
+        
+        if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
+          data.associatedFeels.push(core.af5);
+        }   
+        
+        data.save()
         console.log(data.associatedFeels)
       }
     })
@@ -679,16 +737,27 @@ async function updateBad(core) {
       { "songID": core.songID }
     ).then((data) => {
       if (data) {
-        console.log(data)
         if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
           data.associatedFeels.push(core.af1);
-          data.save()
         }
 
         if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
           data.associatedFeels.push(core.af2);
-          data.save()
         }
+
+        if (!data.associatedFeels.includes(core.af3) && core.af3 != null) {
+          data.associatedFeels.push(core.af3);
+        }
+
+        if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
+          data.associatedFeels.push(core.af4);
+        }
+        
+        if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
+          data.associatedFeels.push(core.af5);
+        }   
+        
+        data.save()
         console.log(data.associatedFeels)
       }
     })
@@ -761,13 +830,25 @@ async function updateSad(core) {
         console.log(data)
         if (!data.associatedFeels.includes(core.af1) && core.af1 != null) {
           data.associatedFeels.push(core.af1);
-          data.save()
         }
 
         if (!data.associatedFeels.includes(core.af2) && core.af2 != null) {
           data.associatedFeels.push(core.af2);
-          data.save()
         }
+
+        if (!data.associatedFeels.includes(core.af3) && core.af3 != null) {
+          data.associatedFeels.push(core.af3);
+        }
+
+        if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
+          data.associatedFeels.push(core.af4);
+        }
+        
+        if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
+          data.associatedFeels.push(core.af5);
+        }   
+        
+        data.save()
         console.log(data.associatedFeels)
       }
     })
