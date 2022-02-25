@@ -13,7 +13,7 @@
 
 .round-button:hover {
     cursor: pointer;
-    box-shadow: 2px 2px 20px lightgray
+    box-shadow: 2px 2px 20px lightgray;
 }
 
 .wide-button {
