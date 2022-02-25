@@ -22,7 +22,7 @@ function Dashboard() {
     const accessToken = Cookies.get('SpotifyAccessToken')
 
     React.useEffect(() => {
-        if (window.location.hash === "" && Cookies.get('SpotifyAccessToken') === 'undefined') {
+        if (window.location.hash === "" && Cookies.get('SpotifyAccessToken') === undefined) {
           return navigate("/")
         }
         axios.get(`http://localhost:5000/user/${accessToken}`)
