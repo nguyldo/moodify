@@ -20,7 +20,6 @@ h1, h2, h3, h4 {
 
 .excited {
     background-color: #F3884B;
-    /* margin: 75px; */
     padding: 4.5%;
     text-align: center;
 }
@@ -32,7 +31,8 @@ h1, h2, h3, h4 {
 }
 
 .happy {
-    background-color: #F3D84B;
+    /* background-color: #F5E06E; */
+    background-color: #FFE14A;
     padding: 4.5%;
     text-align: center;
 }
@@ -50,7 +50,7 @@ h1, h2, h3, h4 {
 }
 
 .angry {
-    background-color: #F86D6D;
+    background-color: #FA6967;
     padding: 4.5%;
     text-align: center;
 }
@@ -63,4 +63,14 @@ h1, h2, h3, h4 {
 .back-butt:hover, .skip-butt:hover {
     color: black;
     text-decoration: underline;
+}
+
+.home-button {
+    opacity: 1;
+    transition: .3s ease-in-out;
+}
+
+.home-button:hover {
+    cursor: pointer;
+    opacity: 0.75;
 }

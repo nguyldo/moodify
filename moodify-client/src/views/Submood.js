@@ -5,6 +5,7 @@ import Button from '../components/Button';
 import { Link, useSearchParams } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import logo from '../images/logo-circle.png';
 
 function Submood() {
     const location = useLocation();
@@ -26,10 +27,10 @@ function Submood() {
     //top, left middle, right middle, left bottom, right bottom
     const moodColor = {
         "excited": ["#FFB083", "#F36D21", "#864724", "#993700", "#FF9A61"],
-        "content": ["#73FF81", "#1E9237", "#005B09", "#45B112", "#47EC4D"],
-        "happy": ["#FBFF50", "#FFC809", "#E7B918", "#FAFF17", "#FFF388"],
-        "bad": ["#611F81", "#B021F3", "#EE83FF", "#A761FF", "#840099"],
-        "sad": ["#1F6481", "#003499", "#6184FF", "#8CE3FF", "#2175F3"],
+        "content": ["#73FF81", "#1E9237", "#005B09", "#45B112", "#4BFA51"],
+        "happy": ["#DBBF09", "#F5C929", "#CFA615", "#706310", "#F5D523"],
+        "bad": ["#611F81", "#A01FDB", "#E57DF5", "#A761FF", "#840099"],
+        "sad": ["#1F6481", "#003499", "#4EC0E6", "#8CE3FF", "#2175F3"],
         "angry": ["#F3212D", "#FF8C93", "#E84343", "#990012", "#811F25"],
     }
 
@@ -47,8 +48,13 @@ function Submood() {
         <div className="basic-frame" className={mood}>
             <Container>
                 <Row className="justify-content-md-center">
-                    <Col>
+                    <Col md={{ span: 10, offset: 1 }}>
                         <Button color={moodColor[mood][0]} text={moodsDict[mood][0]} type="round"></Button>
+                    </Col>
+                    <Col >
+                        <Link className="home-button" to={{pathname: '/dashboard'}}>
+                            <img style={{width: "90%"}} alt="" src={logo}></img>
+                        </Link>
                     </Col>
                 </Row>
                 <br></br>
