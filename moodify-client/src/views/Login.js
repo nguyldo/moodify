@@ -43,14 +43,13 @@ function Login() {
                         Moodify
                     </div>
                     <div>
-                        <img src="/logo.png" alt="logo" className="logo" />
+                        <img src="/logo-white.png" alt="logo" className="logo" />
                     </div>
                     <div>
-                        <Button text="Log in with Spotify" onClick={authorizeSpotify} type="wide" color="#000000" />
+                        <Button text="Log in with Spotify" onClick={authorizeSpotify} type="wide" color="green" />
                     </div>
                 </div>
             </div>
-            <div className="stretch-page"></div>
         </div>
     )
 }

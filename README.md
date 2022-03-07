@@ -1,4 +1,4 @@
-# # moodify
+# moodify
 
 ## Server Development Rules
  - token is always a parameter

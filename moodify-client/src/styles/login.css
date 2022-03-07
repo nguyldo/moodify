@@ -1,7 +1,6 @@
 .login-page {
     text-align: center;
     align-items: center;
-    background-color: white;
     width: 100%;
     height: 550px;
     z-index: 10;
@@ -16,22 +15,14 @@
 }
 
 .moodify-title {
-    color: black;
+    color: white;
     font-size: 32pt;
     font-weight: 700;
-    margin-top: 10px;
+    margin-top: 75px;
 }
 
 .logo {
     width: 20%;
     height: 20%;
     margin: 60px;
-}
-
-.stretch-page {
-    background-color: white;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 100%;
 }

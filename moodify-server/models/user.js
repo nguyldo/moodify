@@ -5,6 +5,7 @@ const schema = mongoose.Schema({
     recommendedSongIDs: Array,
     logins: Number,
     numRecommendations: Number,
+    loggedin: Boolean,
     topSongs: Object,
     topArtists: Object,
     communityTime: Number,

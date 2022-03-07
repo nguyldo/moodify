@@ -1,98 +1,93 @@
+/*
+** Current to do on back-end is throwing errors in the try-catches
+** based on the return value of the functions.
+*/
+// Server Imports
 const express = require('express');
-const axios = require('axios');
-
 const router = express.Router();
-
-const spotify_url = 'https://api.spotify.com/v1';
-
 const User = require('../models/user');
-const Mood = require('../models/mood');
 
-//http://localhost:5000/user/{token}
-router.get('/:token', (req, res) => {
+// Function Imports
+let { checkPlaylistFollow } = require('../functions/spotifyPlaylist');
+let { getUserId, getPlaylistFollow, userTop, getUserProfile } = require('../functions/spotifyUser');
+let { audioFeatures, idsToTracks, spotifyRecommend, filterTracks } = require('../functions/spotifySong');
+let { getSongByMood } = require('../functions/mongoSong');
+let { postUser, findUser, checkUser, logout, saveUser } = require('../functions/mongoUser');
+let { checkMood } = require('../functions/mongoMood');
+
+// http://localhost:5000/user/{token}
+// Get User Profile from Spotify
+// Return Raw User Profile from Spotify
+router.get('/:token', async (req, res) => {
   console.log('running user profile api')
   const { token } = req.params;
-
-  axios.get(spotify_url + '/me', {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then((data) => {
-      console.log('successful user profile api')
-      console.log(token);
-      res.json(data.data);
-    })
-    .catch((err) => {
-      console.log('unsuccessful user profile api')
-      console.log(err);
-    });
+  try {
+    res.status(200).send(await getUserProfile(token));
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
 });
 
 // https://localhost:5000/user/tracks/:token
-router.get('/tracks/:token', (req, res) => {
+// Get User's Top Tracks From Spotify
+// Returns User's Top Tracks in form of DB Song
+router.get('/tracks/:token', async (req, res) => {
   console.log('running user top tracks');
   const { token } = req.params;
 
-  axios.get(spotify_url + '/me/top/tracks', {
-    headers: { Authorization: `Bearer ${token}` },
-  }).then((data) => {
-    console.log('Got user top tracks!');
-    var items = data.data.items;
-    var toReturn = [];
-    items.forEach(element => {
-      toReturn.push({
-        "songID": element.id,
-        "songName": element.name,
-        "songArtist": element.artists,
-        "songAlbum": element.album.name,
-        "moodTag": "",
-        "popularity": element.popularity,
-        "performedBy": element.artists,
-        "writtenBy": element.artists,
-        "producedBy": element.artists
-      });
-    });
-    res.json(toReturn);
-  }).catch((err) => {
-    console.log('unsuccessful user top tracks')
-    console.log(err)
-  })
+  try {
+    res.status(200).send(await userTop(token, 'tracks'));
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
 })
 
-// ASK ANDREW WHY NEED TOKEN
+// https://localhost:5000/user/artists/:token
+// Get User's Top Artists From Spotify
+// Returns User's Top Artists by Name
+router.get('/artists/:token', async (req, res) => {
+  console.log('running user top artists');
+  const { token } = req.params;
+  try {
+    res.status(200).send(await userTop(token, 'artists'));
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+})
+
 // http://localhost:5000/user/dbprofile/{token}
+// Gets User's Profile from mongo using Spotify API to get UserID
+// Returns user's info from mongo
 router.get('/dbprofile/:token', async (req, res) => {
   console.log('running user info database retrieval');
   const { token } = req.params;
 
-  axios.get(spotify_url + '/me', {
-    headers: { Authorization: `Bearer ${token}` }
-  }).then((data) => {
-    console.log('Got user profile from spotify');
-    console.log(data.data.id);
-    return findUser(data.data.id);
-  }).then((data) => {
-    console.log("is it printing everything?")
-    console.log(data);
-    res.json(data);
-  }).catch((err) => {
-    console.log(err);
-  })
+  try {
+    let id = await getUserId(token);
+    res.status(200).send(await findUser(id));
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
 })
 
 // http://localhost:5000/user/update/mood?type={core emotion}&token={token}
-router.get('/update/mood', async (req, res) => {
+// Posts user's mood to mongo, updates the time and click count
+// Returns status code
+router.post('/update/mood', async (req, res) => {
   console.log('running user update mood info');
   const { type, token } = req.query;
 
-  axios.get(spotify_url + '/me', {
-    headers: { Authorization: `Bearer ${token}`}
-  }).then((data) => {
-    return checkMood(type, data.data.id);
-  }).then(() => {
-    res.sendStatus(200);
-  }).catch((err) => {
-    console.log(err);
-  })
+  try {
+    let id = await getUserId(token);
+    res.status(200).send(await checkMood(type, id));
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
 })
 
 //new user
@@ -105,144 +100,144 @@ router.post('/post', async (req, res) => {
     "userID": id
   };
 
-  if (await checkUser(user)) {
-    await postUser(user);
-    res.json({
-      "user was inserted": "into the db"
-    });
-  } else {
-    res.json({
-      "user was not inserted": "becuase they already exist"
-    });
-    console.log(user);
+  try {
+    if (await checkUser(user)) {
+      await postUser(user); // TODO: Figure out how to error throw this function
+      res.status(200).send("User Successfully Added");
+    } else
+      res.status(200).send("User Already Exists");
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
   }
-
 })
 
+router.post('/logout', async (req, res) => {
+  const { id } = req.query;
+
+  try {
+    res.status(200).send(await logout(id));
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(400);
+  }
+})
+
+// route for updating user's recommendedSongIDs and numRecommendations
+// https://localhost:5000/recommended?userID={userID}&songID={songID}
+// Puts a recommended song into user's recommended list
+// Returns status code
 router.put('/recommended', async (req, res) =>  {
   const { userID, songID } = req.query;
-  
+
   const user = {
     "userID" : userID,
     "songID" : songID
   };
 
   try {
-    return await User.findOne(
-      { "userID": user.userID }
-    ).then((data) => {
-      if (data) {
-        console.log("hereeeeee")
+    let data = await findUser(user.userID);
+    if (data) {
+      console.log(data.recommendedSongIDs);
+      if (!data.recommendedSongIDs.includes(user.songID)) {
+        data.recommendedSongIDs.push(user.songID);
+        data.numRecommendations++;
+        data = await saveUser(data);
         console.log(data)
-        if (!data.recommendedSongIDs.includes(user.songID)) {
-          data.recommendedSongIDs.push(user.songID);
-          data.numRecommendations++;
-          console.log(data)
-          data.save()
-          console.log("inserting new recommended song")
-          res.sendStatus(200)
-        } else {
-          console.log("user already has this recommended song")
-          //res.sendStatus(400)
-        }
+        console.log("inserting new recommended song")
+        res.sendStatus(200)
+      } else {
+        console.log("user already has this recommended song")
+        res.sendStatus(400)
       }
-    }).then(() => {
-      // res.sendStatus(200)
-    })
-  } catch (err) {
-    console.log(err);
+    }
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+})
+
+// http://localhost:5000/user/plalists/{token}?playlist={playlist_id}
+router.get('/playlists/:token', async (req, res) => {
+  const { token } = req.params;
+  const { playlist } = req.query;
+
+  if (playlist) {
+    try {
+      let id = await getUserId(token);
+      res.status(200).send(await checkPlaylistFollow(playlist, id, token));
+    } catch (err) {
+      console.log(err);
+      res.sendStatus(400);
+    }
+  } else {
+    let toReturn = await getPlaylistFollow(token);
+    if (toReturn)
+      res.status(200).send(toReturn);
+    else
+      res.sendStatus(400);
   }
 
 })
 
-//FUNCTIONS
-
-async function postUser(user) {
+// http://localhost:5000/user/personal/{token}?cm={coremood}&am1={associatedmood}&am2={associatedmood}
+router.get('/personal/:token', async (req, res) => {
+  const { token } = req.params;
+  const { cm, am1, am2 } = req.query;
+  console.log("what the heck")
   try {
-    await new User(
-      {
-        "userID": user.userID,
-        "logins": 1,
-        "numRecommendations": 0
-      }
-    ).save();
-  } catch (err) {
-    console.log(err);
-  }  
-}
+    // Grab User's Top Tracks
+    userTracks = (await userTopTracks(token)).slice(0, 50).map((item) => {
+      return item.songID;
+    });
+    // console.log(userTracks)
 
+    // Grab Mongo's Mood & Associated Mood
+    mongoTracks = (await getSongByMood(cm, am1, am2)).slice(0, 50).map((item) => {
+      return item.songID;
+    });
+    // console.log(mongoTracks);
 
-async function checkUser(user) {
+    // Concat User Tracks & Mongo Tracks
+    combinedTracks = userTracks.concat(mongoTracks);
+    // console.log(combinedTracks);
 
-  try {
-    return await User.findOne(
-      { "userID": user.userID }
-    ).then((data) => {
-      if (data) {
-        console.log(data)
-        return false;
-      } else {
-        return true;
-      }
-    })
-  } catch (err) {
-    console.log(err);
+    // Collect Audio Features of User's Top Tracks
+    trackFeatures = await audioFeatures(combinedTracks, token);
+    // console.log(trackFeatures);
+
+    // Filter User's Top Moods Using Mongo Songs
+    filteredTracks = await filterTracks(userTracks, mongoTracks, trackFeatures);
+    // console.log(filteredTracks);
+
+    // Concat Filtered Tracks w/ Mongo's Tracks Randomly
+    combinedTracks = mongoTracks.slice(0,2).concat(filteredTracks).slice(0,5);
+    // console.log(combinedTracks);
+
+    // Get Recommendations using User's & Mongo's
+    recommendedTracks = await spotifyRecommend(combinedTracks, token);
+    // console.log(recommendedTracks)
+
+    // Concat the new recommended with the previously filtered
+    combinedTracks = filteredTracks.concat(recommendedTracks);
+
+    // Collect Audio Features from Spotify of the Tracks (Max 100)
+    trackFeatures = await audioFeatures(combinedTracks, token);
+    // console.log(trackFeatures)
+
+    // Filter Recommendations Using the Filtered User's Songs
+    personalizedTracks = (await filterTracks(filteredTracks, recommendedTracks, trackFeatures)).slice(0,5);
+
+    // Get recommended tracks based the personalized tracks
+    recommendedTracks = await spotifyRecommend(personalizedTracks, token);
+
+    recommendedTracks = await idsToTracks(recommendedTracks, token);
+
+    res.status(200).json(recommendedTracks);
+  } catch (error) {
+    console.log(error);
+    res.status(400);
   }
-}
-
-async function findUser(userID) {
-  try {
-    let promise_obj = await User.findOne(
-      { "userID": userID }//,
-      //'userID logins',
-    )
-    console.log(promise_obj);
-    return {
-      "userID": promise_obj.userID,
-      "logins": promise_obj.logins,
-      "recommendedSongsIDs": promise_obj.recommendedSongIDs,
-      "numRecommendations": promise_obj.numRecommendations
-    };
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-// checks if mood is already in db and updates, if not it'll create it.
-async function checkMood(mood, userID) {
-  try {
-    let promise_obj = await Mood.findOne(
-      { "userID": userID, "type": mood }
-    )
-    if (promise_obj) {
-      let arr = promise_obj.timeStamp;
-      let timeNow = new Date();
-      arr.push(timeNow.getTime());
-      await Mood.updateOne(
-        {
-          "userID": userID,
-          "type": mood
-        },
-        {
-          "timeStamp": arr,
-          "totalCount": promise_obj.totalCount + 1
-        }
-      )
-    } else {
-      let timeNow = new Date();
-      let userMood = new Mood(
-        {
-          "userID": userID,
-          "type": mood,
-          "timeStamp": [timeNow.getTime()],
-          "totalCount": 1,
-        }
-      )
-      await userMood.save()
-    }
-  } catch (err) {
-    console.log(err)
-  }
-}
+})
 
 module.exports = router;

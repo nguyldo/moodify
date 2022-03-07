@@ -13,7 +13,7 @@
 
 .round-button:hover {
     cursor: pointer;
-    box-shadow: 2px 2px 20px lightgray
+    box-shadow: 2px 2px 20px lightgray;
 }
 
 .wide-button {
@@ -26,5 +26,6 @@
 }
 
 .wide-button:hover {
-    color: #CCCCCC;
+    background-color: #C2C2C2;
+    box-shadow: 2px 2px 20px grey;
 }
