@@ -34,7 +34,7 @@ songRoutes.get('/search', (req, res) => {
 // returns all songs from Moodify's Song table
 // http://localhost:5000/song/all
 songRoutes.get("/all", async (req, res) => {
-  console.log("hello");
+  console.log("getting all songs");
   const songs = await Song.find();
   res.send(songs);
 })
@@ -47,27 +47,33 @@ songRoutes.get("/:mood", async (req, res) => {
   mood.toLowerCase();
   console.log("getting songs from " + mood);
 
-  switch (mood) {
-    case 'angry':
-      res.send(await Angry.find());
-      break;
-    case 'bad':
-      res.send(await Bad.find());
-      break;
-    case 'content':
-      const temp = await Content.find();
-      res.send(temp);
-      break;
-    case 'excited':
-      res.send(await Excited.find());
-      break;
-    case 'happy':
-      res.send(await Happy.find());
-      break;
-    case 'sad':
-      res.send(await Sad.find());
-      break;
-  }
+  const songs = await Song.find({
+    "moodTag": mood
+  });
+
+  res.send(songs);
+
+  // switch (mood) {
+  //   case 'angry':
+  //     res.send(await Angry.find());
+  //     break;
+  //   case 'bad':
+  //     res.send(await Bad.find());
+  //     break;
+  //   case 'content':
+  //     const temp = await Content.find();
+  //     res.send(temp);
+  //     break;
+  //   case 'excited':
+  //     res.send(await Excited.find());
+  //     break;
+  //   case 'happy':
+  //     res.send(await Happy.find());
+  //     break;
+  //   case 'sad':
+  //     res.send(await Sad.find());
+  //     break;
+  // }
 })
 
 // posts user's suggested song to Song table and respective mood tables, updates moodTags and respective mood tables if exist already
