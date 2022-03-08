@@ -83,12 +83,18 @@ songRoutes.get("/:mood", async (req, res) => {
 songRoutes.post("/post", async (req, res) => {
   const { mood, af1, af2, af3, af4, af5, adminRec } = req.query;
   let rec = true;
+  let arr = checkAssociatedFeels(af1, af2, af3, af4, af5);
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
     "songArtist": req.body.songArtist,
+    "artistURL": req.body.artistURL,
     "songAlbum": req.body.songAlbum,
+    "albumURL": req.body.albumURL,
+    "genre": req.body.genre,
     "moodTag": mood,
+    "associatedFeels": arr,
+    "explicit": req.body.explicit,
     "popularity": req.body.popularity,
     "performedBy": req.body.performedBy,
     "writtenBy": req.body.writtenBy,
@@ -174,6 +180,31 @@ songRoutes.delete('/delete', async (req, res) => {
 
 //FUNCTIONS
 
+async function checkAssociatedFeels(af1, af2, af3, af4, af5) {
+  try {
+    let arr = [];
+
+    if (af1 != null) {
+      arr.push(af1);
+    }
+    if (af2 != null) {
+      arr.push(af2);
+    }
+    if (af3 != null) {
+      arr.push(af3);
+    }
+    if (af4 != null) {
+      arr.push(af4);
+    }
+    if (af5 != null) {
+      arr.push(af5);
+    }
+    return arr;
+  } catch (error) {
+    return error;
+  }
+}
+
 async function removeMood(songID, mood) {
   try {
     await Song.findOne({"songID": songID})
@@ -184,7 +215,7 @@ async function removeMood(songID, mood) {
         for (let i = 0; i < data.moodTag.length; i++) {
           if (data.moodTag[i] != mood) {
             arr.push(data.moodTag[i])
-          } 
+          }
         } //end for
         console.log("arr = " + arr)
         data.moodTag = arr;
@@ -334,7 +365,7 @@ async function PostHappy(core) {
 
   if (core.af3 != null) {
     arr.push(core.af3);
-  }  
+  }
 
   if (core.af4 != null) {
     arr.push(core.af4);
@@ -342,7 +373,7 @@ async function PostHappy(core) {
 
   if (core.af5 != null) {
     arr.push(core.af5);
-  }    
+  }
 
   try {
     await new Happy(
@@ -385,12 +416,12 @@ async function updateHappy(core) {
           data.associatedFeels.push(core.af4);
           //data.save()
         }
-        
+
         if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
           data.associatedFeels.push(core.af5);
           //data.save()
-        }   
-        
+        }
+
         data.save()
         console.log(data.associatedFeels)
       }
@@ -481,12 +512,12 @@ async function updateExcited(core) {
           data.associatedFeels.push(core.af4);
           //data.save()
         }
-        
+
         if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
           data.associatedFeels.push(core.af5);
           //data.save()
-        }   
-        
+        }
+
         data.save()
         console.log(data.associatedFeels)
       }
@@ -526,7 +557,7 @@ async function PostContent(core) {
 
   if (core.af3 != null) {
     arr.push(core.af3);
-  }  
+  }
 
   if (core.af4 != null) {
     arr.push(core.af4);
@@ -534,7 +565,7 @@ async function PostContent(core) {
 
   if (core.af5 != null) {
     arr.push(core.af5);
-  }  
+  }
 
   try {
     await new Content(
@@ -573,11 +604,11 @@ async function updateContent(core) {
         if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
           data.associatedFeels.push(core.af4);
         }
-        
+
         if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
           data.associatedFeels.push(core.af5);
-        }   
-        
+        }
+
         data.save()
         console.log(data.associatedFeels)
       }
@@ -617,7 +648,7 @@ async function PostAngry(core) {
 
   if (core.af3 != null) {
     arr.push(core.af3);
-  }  
+  }
 
   if (core.af4 != null) {
     arr.push(core.af4);
@@ -625,7 +656,7 @@ async function PostAngry(core) {
 
   if (core.af5 != null) {
     arr.push(core.af5);
-  }  
+  }
 
   try {
     await new Angry(
@@ -664,11 +695,11 @@ async function updateAngry(core) {
         if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
           data.associatedFeels.push(core.af4);
         }
-        
+
         if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
           data.associatedFeels.push(core.af5);
-        }   
-        
+        }
+
         data.save()
         console.log(data.associatedFeels)
       }
@@ -712,7 +743,7 @@ async function PostBad(core) {
 
   if (core.af3 != null) {
     arr.push(core.af3);
-  }  
+  }
 
   if (core.af4 != null) {
     arr.push(core.af4);
@@ -720,7 +751,7 @@ async function PostBad(core) {
 
   if (core.af5 != null) {
     arr.push(core.af5);
-  }     
+  }
 
   try {
     await new Bad(
@@ -758,11 +789,11 @@ async function updateBad(core) {
         if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
           data.associatedFeels.push(core.af4);
         }
-        
+
         if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
           data.associatedFeels.push(core.af5);
-        }   
-        
+        }
+
         data.save()
         console.log(data.associatedFeels)
       }
@@ -802,7 +833,7 @@ async function PostSad(core) {
 
   if (core.af3 != null) {
     arr.push(core.af3);
-  }  
+  }
 
   if (core.af4 != null) {
     arr.push(core.af4);
@@ -810,7 +841,7 @@ async function PostSad(core) {
 
   if (core.af5 != null) {
     arr.push(core.af5);
-  }     
+  }
 
   try {
     await new Sad(
@@ -849,11 +880,11 @@ async function updateSad(core) {
         if (!data.associatedFeels.includes(core.af4) && core.af4 != null) {
           data.associatedFeels.push(core.af4);
         }
-        
+
         if (!data.associatedFeels.includes(core.af5) && core.af5 != null) {
           data.associatedFeels.push(core.af5);
-        }   
-        
+        }
+
         data.save()
         console.log(data.associatedFeels)
       }
