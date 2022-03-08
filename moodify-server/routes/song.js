@@ -51,7 +51,6 @@ songRoutes.get("/:mood", async (req, res) => {
     "moodTag": mood
   });
 
-  
   res.send(songs);
 
   // switch (mood) {
@@ -84,12 +83,40 @@ songRoutes.get("/:mood", async (req, res) => {
 songRoutes.post("/post", async (req, res) => {
   const { mood, af1, af2, af3, af4, af5, adminRec } = req.query;
   let rec = true;
+
+  let arr = []
+
+  if (af1 != null) {
+    arr.push(af1);
+  }
+
+  if (af2 != null) {
+    arr.push(af2);
+  }
+
+  if (af3 != null) {
+    arr.push(af3);
+  }
+
+  if (af4 != null) {
+    arr.push(af4);
+  }
+
+  if (af5 != null) {
+    arr.push(af5);
+  }
+
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
     "songArtist": req.body.songArtist,
+    "artistURI": req.body.artistURI,
     "songAlbum": req.body.songAlbum,
+    "albumURI": req.body.albumURI,
+    "genre": req.body.genre,
     "moodTag": mood,
+    "associatedFeels": arr,
+    "explicit": req.body.explicit,
     "popularity": req.body.popularity,
     "performedBy": req.body.performedBy,
     "writtenBy": req.body.writtenBy,
@@ -100,17 +127,17 @@ songRoutes.post("/post", async (req, res) => {
     rec = false;
   }
 
-  const core = {
-    "songID": req.body.songID,
-    "songName": req.body.songName,
-    "songURI": req.body.songURI,
-    "af1": af1,
-    "af2": af2,
-    "af3": af3,
-    "af4": af4,
-    "af5": af5,
-    "adminRec": rec
-  }
+  // const core = {
+  //   "songID": req.body.songID,
+  //   "songName": req.body.songName,
+  //   "songURI": req.body.songURI,
+    // "af1": af1,
+    // "af2": af2,
+    // "af3": af3,
+    // "af4": af4,
+    // "af5": af5,
+  //   "adminRec": rec
+  // }
 
   if (await CheckSong(song, mood, core)) {
     console.log("why am i here")
@@ -185,7 +212,7 @@ async function removeMood(songID, mood) {
         for (let i = 0; i < data.moodTag.length; i++) {
           if (data.moodTag[i] != mood) {
             arr.push(data.moodTag[i])
-          } 
+          }
         } //end for
         console.log("arr = " + arr)
         data.moodTag = arr;
@@ -205,12 +232,23 @@ async function CheckSong(song, mood, core) {
     return await Song.findOne(
       { "songID": song.songID }
     ).then((data) => {
-      if (data) {
+      if (data) { //song exists
         console.log(data)
         if (!data.moodTag.includes(mood)) { //if song doesn't exist in mood table yet
-          chooseMood(mood, core);
+          //chooseMood(mood, core);
           data.moodTag.push(mood);
-          console.log(data.moodTag)
+          console.log(data.moodTag);
+          let songAss = song.associatedFeels; //new associated feels
+          let dataAss = data.associatedFeels; //current associated feels
+          if (songAss.length != 0) {
+            let i = 0;
+            let j = 0;
+            while (i < songAss.length) {
+              if (songAss[i] == dataAss[j]) {
+                
+              }
+            } //LEFT HERE
+          }
           data.save()
           console.log("inserting into " + mood)
         } else { //exist already
