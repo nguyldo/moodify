@@ -14,7 +14,8 @@ const schema = mongoose.Schema({
     popularity: Number,
     performedBy: Array,
     writtenBy: Array,
-    producedBy: Array
+    producedBy: Array,
+    adminRec: Boolean
 })
 
 module.exports = mongoose.model("Song", schema)
