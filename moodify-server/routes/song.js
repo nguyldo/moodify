@@ -83,7 +83,10 @@ songRoutes.get("/:mood", async (req, res) => {
 songRoutes.post("/post", async (req, res) => {
   const { mood, af1, af2, af3, af4, af5, adminRec } = req.query;
   let rec = true;
-  let arr = checkAssociatedFeels(af1, af2, af3, af4, af5);
+  if (adminRec != "true") {
+    rec = false;
+  }
+  let associatedFeelsArr = checkAssociatedFeels(af1, af2, af3, af4, af5);
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
@@ -93,35 +96,32 @@ songRoutes.post("/post", async (req, res) => {
     "albumURL": req.body.albumURL,
     "genre": req.body.genre,
     "moodTag": mood,
-    "associatedFeels": arr,
+    "associatedFeels": associatedFeelsArr,
     "explicit": req.body.explicit,
     "popularity": req.body.popularity,
     "performedBy": req.body.performedBy,
     "writtenBy": req.body.writtenBy,
-    "producedBy": req.body.producedBy
+    "producedBy": req.body.producedBy,
+    "adminRec": adminRec
   };
 
-  if (adminRec != "true") {
-    rec = false;
-  }
+  // const core = {
+  //   "songID": req.body.songID,
+  //   "songName": req.body.songName,
+  //   "songURI": req.body.songURI,
+  //   "af1": af1,
+  //   "af2": af2,
+  //   "af3": af3,
+  //   "af4": af4,
+  //   "af5": af5,
+  //   "adminRec": rec
+  // }
 
-  const core = {
-    "songID": req.body.songID,
-    "songName": req.body.songName,
-    "songURI": req.body.songURI,
-    "af1": af1,
-    "af2": af2,
-    "af3": af3,
-    "af4": af4,
-    "af5": af5,
-    "adminRec": rec
-  }
-
-  if (await CheckSong(song, mood, core)) {
+  if (await CheckSong(song, mood, associatedFeelsArr)) {
     console.log("why am i here")
     await PostSong(song);
     console.log("why am i here2")
-    await chooseMood(mood, core);
+    //await chooseMood(mood, core);
     res.json({
       "song was inserted": "into the db"
     });
@@ -229,27 +229,41 @@ async function removeMood(songID, mood) {
   }
 }
 
-async function CheckSong(song, mood, core) {
+async function CheckSong(song, mood, associatedFeelsArr) {
 
   try {
     return await Song.findOne(
       { "songID": song.songID }
     ).then((data) => {
-      if (data) {
+      if (data) { //song exists
         console.log(data)
-        if (!data.moodTag.includes(mood)) { //if song doesn't exist in mood table yet
-          chooseMood(mood, core);
+        if (!data.moodTag.includes(mood)) { //if moodTag doesn't include new mood
+          //chooseMood(mood, core);
+          console.log("moodTag before: " + data.moodTag)
+          console.log("assFeels before: " + data.associatedFeels)
           data.moodTag.push(mood);
-          console.log(data.moodTag)
+          //check associatedFeelsTag
+          for (let i = 0; i < associatedFeelsArr.length; i++) {
+            if (!data.associatedFeels.includes(associatedFeelsArr[i])) {
+              data.associatedFeels.push(associatedFeelsArr[i]);
+            }
+          } //end for
           data.save()
-          console.log("inserting into " + mood)
+          console.log("moodTag after: " + data.moodTag)
+          console.log("assFeels after: " + data.associatedFeels)
         } else { //exist already
-          console.log(mood + " is already part of this song's mood tag")
+          //console.log(mood + " is already part of this song's mood tag")
           //HERE IS WHERE YOU LEFT OFF
-          chooseAssociatedFeels(mood, core);
+          //chooseAssociatedFeels(mood, core);
+          //check associatedFeelsTag
+          for (let i = 0; i < associatedFeelsArr.length; i++) {
+            if (!data.associatedFeels.includes(associatedFeelsArr[i])) {
+              data.associatedFeels.push(associatedFeelsArr[i]);
+            }
+          } //end for
         }
         return false;
-      } else {
+      } else { //song don't exist yet
         return true;
       }
     })
@@ -265,12 +279,18 @@ async function PostSong(song) {
         "songID": song.songID,
         "songName": song.songName,
         "songArtist": song.songArtist,
+        "artistURL": song.artistURL,
         "songAlbum": song.songAlbum,
+        "albumURL": song.albumURL,
+        "genre": song.genre,
         "moodTag": song.moodTag,
+        "associatedFeels": song.associatedFeels,
+        "explicit": song.explicit,
         "popularity": song.popularity,
         "performedBy": song.performedBy,
         "writtenBy": song.writtenBy,
-        "producedBy": song.producedBy
+        "producedBy": song.producedBy,
+        "adminRec": song.adminRec
       }
     ).save();
   } catch (err) {
