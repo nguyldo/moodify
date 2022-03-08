@@ -79,7 +79,7 @@ songRoutes.get("/:mood", async (req, res) => {
 // posts user's suggested song to Song table and respective mood tables, updates moodTags and respective mood tables if exist already
 // { af1, af2, af3, af4, af5} are the optional associated feels, adminRec = true/false
 // returns json message
-// http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}&af3={af3}&af4={af4}&af5={af5}&adminRec={adminRec}
+// http://localhost:5000/song/post?mood={mood}&af1={af1}&af2={af2}&af3={af3}&af4={af4}&af5={af5}&adminRec={adminRec}
 songRoutes.post("/post", async (req, res) => {
   const { mood, af1, af2, af3, af4, af5, adminRec } = req.query;
   let rec = true;
@@ -87,6 +87,7 @@ songRoutes.post("/post", async (req, res) => {
     rec = false;
   }
   let associatedFeelsArr = checkAssociatedFeels(af1, af2, af3, af4, af5);
+  console.log("associatedFeelsArr: " + associatedFeelsArr)
   const song = {
     "songID": req.body.songID,
     "songName": req.body.songName,
@@ -180,7 +181,7 @@ songRoutes.delete('/delete', async (req, res) => {
 
 //FUNCTIONS
 
-async function checkAssociatedFeels(af1, af2, af3, af4, af5) {
+function checkAssociatedFeels(af1, af2, af3, af4, af5) {
   try {
     let arr = [];
 
@@ -248,7 +249,7 @@ async function CheckSong(song, mood, associatedFeelsArr) {
               data.associatedFeels.push(associatedFeelsArr[i]);
             }
           } //end for
-          data.save()
+          data.save();
           console.log("moodTag after: " + data.moodTag)
           console.log("assFeels after: " + data.associatedFeels)
         } else { //exist already
@@ -261,6 +262,9 @@ async function CheckSong(song, mood, associatedFeelsArr) {
               data.associatedFeels.push(associatedFeelsArr[i]);
             }
           } //end for
+          data.save();
+          console.log("moodTag after: " + data.moodTag)
+          console.log("assFeels after: " + data.associatedFeels)
         }
         return false;
       } else { //song don't exist yet
