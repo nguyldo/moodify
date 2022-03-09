@@ -58,12 +58,12 @@ function Dashboard() {
             <p>Expires in: {expiresIn}</p> */}
 
             <Row>
-              <Col md={{ span: 10, offset: 1 }}>
+              <Col style={{marginTop: "50px"}} md={{ span: 10, offset: 1 }}>
                 <h1>How are you feeling?</h1>
               </Col>
               <Col>
                 <Link className="home-button" to={{pathname: '/dashboard'}}>
-                    <img style={{width: "90%"}} alt="" src={logo}></img>
+                    <img style={{width: "90%", marginTop: "25px", marginRight: "25px"}} alt="" src={logo}></img>
                 </Link>
               </Col>
             </Row>

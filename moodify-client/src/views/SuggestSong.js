@@ -88,8 +88,10 @@ function SuggestSong() {
             axios.put(`http://localhost:5000/user/recommended?userID=${userID}&songID=${song.songID}`)
             .then((data) => {
                 console.log(data);
+                alert("Song successfully added")
             }).catch((err) => {
                 console.log(err);
+                alert("Song already exists")
             });
           })
           .catch((err) => {
