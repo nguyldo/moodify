@@ -34,13 +34,13 @@ songRoutes.get('/search', (req, res) => {
 // returns all songs from Moodify's Song table
 // http://localhost:5000/song/all
 songRoutes.get("/all", async (req, res) => {
-  console.log("hello");
+  console.log("returning all songs");
   const songs = await Song.find();
   res.send(songs);
 })
 
 // get songs by mood
-// returns all songs from specific mood table
+// returns all songs from that has a specific mood tag
 // http://localhost:5000/song/:mood
 songRoutes.get("/:mood", async (req, res) => {
   const { mood } = req.params;
@@ -118,7 +118,7 @@ songRoutes.post("/post", async (req, res) => {
   //   "adminRec": rec
   // }
 
-  if (await CheckSong(song, mood, associatedFeelsArr)) {
+  if (await checkSong(song, mood, associatedFeelsArr)) {
     console.log("why am i here")
     await PostSong(song);
     console.log("why am i here2")
@@ -231,7 +231,7 @@ async function removeMood(songID, mood) {
   }
 }
 
-async function CheckSong(song, mood, associatedFeelsArr) {
+async function checkSong(song, mood, associatedFeelsArr) {
 
   try {
     return await Song.findOne(
@@ -486,7 +486,7 @@ async function PostExcited(core) {
 
   if (core.af3 != null) {
     arr.push(core.af3);
-  }  
+  }
 
   if (core.af4 != null) {
     arr.push(core.af4);
