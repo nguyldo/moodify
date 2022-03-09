@@ -22,7 +22,31 @@ songRoutes.get('/search', (req, res) => {
   })
     .then((data) => {
       console.log('successful search')
-      res.json(data.data);
+      //console.log(data.data.tracks.items)
+      var items = data.data.tracks.items; //LEFT HERE
+      var toReturn = [];
+      items.forEach(element => {
+        let rawArtists = element.artists;
+        let artists = [];
+        let artistURLs = []
+        rawArtists.forEach(artist => {
+          artists.push(artist.name)
+          artistURLs.push(artist.external_urls.spotify)
+        });
+
+        toReturn.push({
+          "songID": element.id,
+          "songName": element.name,
+          "songArtist": artists,
+          "artistURL": artistURLs,
+          "songAlbum": element.album.name,
+          "albumURL": element.album.external_urls.spotify,
+          "genre": element.genre,
+          "explicit": element.explicit,
+          "popularity": element.popularity
+        });
+      });
+      res.json(items);
     })
     .catch((err) => {
       console.log('unsuccessful search')
