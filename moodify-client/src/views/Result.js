@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Col, Row, Container, Card } from 'react-bootstrap';
 import Button from '../components/Button';
@@ -25,6 +25,37 @@ function Result() {
     console.log(submood4);
     const submood5 = query.get("submood5");
     console.log(submood5);
+
+    let [filterActive, setFilterActive] = useState(false)
+    let [filterPopText, setFilterPopText] = useState("Popularity")
+    let [filterPopActive, setFilterPopActive] = useState(false)
+
+    function isFilterActive() {
+      filterActive = !filterActive
+      setFilterActive(filterActive)
+    }
+    console.log("filterActive: " + filterActive)
+
+    const upArrow = "\u{02191}"
+    const downArrow = "\u{02193}"
+    async function isFilterPopActive(filterPopText) {
+      if (filterPopText === "Popularity") {
+        filterPopActive = true
+        filterPopText = "Popularity " + upArrow
+
+      } else if (filterPopText === "Popularity " + upArrow) {
+        filterPopActive = true
+        filterPopText = "Popularity " + downArrow
+
+      } else if (filterPopText === "Popularity " + downArrow) {
+        filterPopActive = false
+        filterPopText = "Popularity"
+
+      }
+
+      setFilterPopText(filterPopText)
+      setFilterPopActive(filterPopActive)
+    }
 
     React.useEffect(() => {
         axios.get(`http://localhost:5000/user/${accessToken}`)
@@ -88,11 +119,13 @@ function Result() {
 
           <br></br>
           <div style={{textAlign: "left"}}>
+            <Button color="#2C2C2C" type="pill" filterActive={filterActive} text="Explicit" onClick={() => isFilterActive()}></Button>
+            <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)}></Button>
             {suggestButton}
           </div>
-          <br></br>
-          <Card>
-            <Card.Body style={{color: "black"}}>Songs go here</Card.Body>
+
+          <Card className="rec-playlist">
+            <Card.Body>Songs go here</Card.Body>
           </Card>
         </div>
     )

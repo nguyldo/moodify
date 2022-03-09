@@ -29,3 +29,18 @@
     background-color: #C2C2C2;
     box-shadow: 2px 2px 20px grey;
 }
+
+.pill-button {
+    color: white;
+    font-size: 14pt;
+    padding: 8px 12px 6px 12px;
+    border-radius: 25pt;
+    border-style: solid;
+    border-color: white;
+    margin: 15px;
+    margin-right: 20px;
+}
+
+.pill-button:hover {
+    box-shadow: 2px 2px 20px grey;
+}

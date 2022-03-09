@@ -75,7 +75,12 @@ h1, h2, h3, h4 {
     opacity: 0.75;
 }
 
-.isActive-button {
+/* .isActive-button {
     color: #CB6DF8;
     box-shadow: 2px 2px 20px lightgray;
+} */
+
+.rec-playlist {
+    color: black;
+    margin-top: 25px;
 }
