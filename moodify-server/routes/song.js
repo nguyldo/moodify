@@ -133,6 +133,7 @@ songRoutes.post("/post", async (req, res) => {
   }
 })
 
+//DO NOT USE
 // deletes song from specific mood table and updates song's moodTag in Song table
 // returns json message
 // http://localhost:5000/song/delete/mood?songID={songID}&mood={mood}
@@ -151,6 +152,8 @@ songRoutes.delete('/delete/mood', async(req, res) => {
 })
 
 // deletes song entities in Song table and its other entities in respective mood tables
+// delete song from Song table
+// returns status code 200 if successful, status code if song does not exist
 // https://localhost:5000/song/delete?songID={songID}
 songRoutes.delete('/delete', async (req, res) => {
   const { songID } = req.query;
@@ -159,21 +162,19 @@ songRoutes.delete('/delete', async (req, res) => {
     .then(async (data) => {
         if (data) {
           console.log("deleting this song")
-          console.log(data)
-          console.log("delete from individual mood tables")
-          temp = data.moodTag.length
-          for (let i = 0; i < temp; i++) {
-            chooseDelete(data.songID, data.moodTag[i]);
-          } //end for
-          console.log("moodTag now: " + data.moodTag)
+          console.log("song: " + data.songName)
+          // console.log("delete from individual mood tables")
+          // temp = data.moodTag.length
+          // for (let i = 0; i < temp; i++) {
+          //   chooseDelete(data.songID, data.moodTag[i]);
+          // } //end for
+          // console.log("moodTag now: " + data.moodTag)
           await Song.findOneAndDelete({"songID": songID})
           res.sendStatus(200)
         } else {
           res.sendStatus(404)
         }
     });
-    // await Song.findOneAndDelete({"songID": songID});
-
   } catch (err) {
     return err
   }
