@@ -46,7 +46,7 @@ songRoutes.get('/search', (req, res) => {
           "popularity": element.popularity
         });
       });
-      res.json(items);
+      res.json(toReturn);
     })
     .catch((err) => {
       console.log('unsuccessful search')
