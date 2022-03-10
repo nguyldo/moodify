@@ -63,9 +63,13 @@ songRoutes.get('/search', (req, res) => {
 // returns all songs from Moodify's Song table
 // http://localhost:5000/song/all
 songRoutes.get("/all", async (req, res) => {
-  console.log("returning all songs");
-  const songs = await Song.find();
-  res.send(songs);
+  try {
+    console.log("returning all songs");
+    const songs = await Song.find();
+    res.status(200).send(songs);
+  } catch (error) {
+    res.sendStatus(400)
+  }
 })
 
 // get songs by mood
@@ -276,9 +280,9 @@ async function PostSong(song) {
         "songID": song.songID,
         "songName": song.songName,
         "songArtist": song.songArtist,
-        "artistURL": song.artistURL,
+        "artistUrl": song.artistURL,
         "songAlbum": song.songAlbum,
-        "albumURL": song.albumURL,
+        "albumUrl": song.albumURL,
         "genre": song.genre,
         "moodTag": song.moodTag,
         "associatedFeels": song.associatedFeels,
