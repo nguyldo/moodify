@@ -54,28 +54,32 @@ function SuggestSong() {
     useEffect(() => getResults(), []);
 
     function showResults(data) {
-        var items = data.data.tracks.items
-        items.forEach(element => {
+        let items = data.data
+        items.forEach((element) => {
             results.push({
-                "songID": element.id,
-                "songName": element.name,
-                "songArtist": element.artists[0].name,
-                "songAlbum": element.album.name,
+                "songID": element.songId,
+                "songName": element.songName,
+                "songArtist": element.songArtist,
+                "artistUrl": element.artistUrl,
+                "songAlbum": element.songAlbum,
+                "albumUrl": element.albumUrl,
                 "popularity": element.popularity,
-                "songURI": element.uri
+                "explicit": element.explicit
             });
         });
         console.log(results);
     }
 
-    const sendSong = (id, title, artist, album, popularity, uri) => {
+    const sendSong = (id, title, artist, artistUrl, album, albumUrl, popularity, explicit) => {
         const song = {
-            "songID": id,
+            "songId": id,
             "songName": title,
             "songArtist": artist,
+            "artistUrl": artistUrl,
             "songAlbum": album,
+            "albumUrl": albumUrl,
             "popularity": popularity,
-            "songURI": uri
+            "explicit": explicit
         }
         console.log(song);
 
@@ -165,7 +169,7 @@ function SuggestSong() {
                                     <td>{list.songArtist}</td>
                                     <td>{list.songAlbum}</td>
                                     <td><Button color="green" type="wide" text="Add" 
-                                        onClick={() => sendSong(list.songID, list.songName, list.songArtist, list.songAlbum, list.popularity, list.songURI)}>
+                                        onClick={() => sendSong(list.songID, list.songName, list.songArtist, list.artistUrl, list.songAlbum, list.albumUrl, list.popularity, list.explicit)}>
                                     </Button></td>
                                 </tr>
                             </tbody>
