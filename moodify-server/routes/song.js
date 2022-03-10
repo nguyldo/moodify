@@ -1,14 +1,18 @@
 const express = require("express");
-const Angry = require("../models/angry")
-const Bad = require("../models/bad")
-const Content = require("../models/content")
-const Excited = require("../models/excited")
-const Happy = require("../models/happy")
-const Sad = require("../models/sad")
+const Angry = require("../models/angry") //don't need
+const Bad = require("../models/bad") //don't need
+const Content = require("../models/content") //don't need
+const Excited = require("../models/excited") //don't need
+const Happy = require("../models/happy") //don't need
+const Sad = require("../models/sad") //don't need
+
+// Server Imports
 const Song = require("../models/song")
 const songRoutes = express.Router();
 const axios = require('axios');
-const song = require("../models/song");
+
+// Function Imports
+let { getSongByMood } = require("../functions/mongoSong");
 
 const spotify_url = 'https://api.spotify.com/v1';
 
@@ -28,19 +32,20 @@ songRoutes.get('/search', (req, res) => {
       items.forEach(element => {
         let rawArtists = element.artists;
         let artists = [];
-        let artistURLs = []
+        let artistUrl = []
         rawArtists.forEach(artist => {
           artists.push(artist.name)
-          artistURLs.push(artist.external_urls.spotify)
+          artistUrl.push(artist.external_urls.spotify)
         });
 
         toReturn.push({
-          "songID": element.id,
+          "songId": element.id,
           "songName": element.name,
           "songArtist": artists,
-          "artistURL": artistURLs,
+          "artistUrl": artistUrl,
           "songAlbum": element.album.name,
-          "albumURL": element.album.external_urls.spotify,
+          "albumUrl": element.album.external_urls.spotify,
+          "imageUrl": element.album.images[0].url,
           "genre": element.genre,
           "explicit": element.explicit,
           "popularity": element.popularity
@@ -68,36 +73,21 @@ songRoutes.get("/all", async (req, res) => {
 // http://localhost:5000/song/:mood
 songRoutes.get("/:mood", async (req, res) => {
   const { mood } = req.params;
-  mood.toLowerCase();
-  console.log("getting songs from " + mood);
+  try {
+    console.log("got here")
+    // const songs = await getSongByMood(mood);
+    const songs = await Song.find({
+      "moodTag": mood
+    });
+    res.status(200).send(songs);
+  } catch (error) {
+    res.status(400);
+  }
+  // const songs = await Song.find({
+  //   "moodTag": mood
+  // });
 
-  const songs = await Song.find({
-    "moodTag": mood
-  });
-
-  res.send(songs);
-
-  // switch (mood) {
-  //   case 'angry':
-  //     res.send(await Angry.find());
-  //     break;
-  //   case 'bad':
-  //     res.send(await Bad.find());
-  //     break;
-  //   case 'content':
-  //     const temp = await Content.find();
-  //     res.send(temp);
-  //     break;
-  //   case 'excited':
-  //     res.send(await Excited.find());
-  //     break;
-  //   case 'happy':
-  //     res.send(await Happy.find());
-  //     break;
-  //   case 'sad':
-  //     res.send(await Sad.find());
-  //     break;
-  // }
+  // res.status(200).send(songs);
 })
 
 // posts user's suggested song to Song table and respective mood tables, updates moodTags and respective mood tables if exist already
@@ -113,12 +103,12 @@ songRoutes.post("/post", async (req, res) => {
   let associatedFeelsArr = checkAssociatedFeels(af1, af2, af3, af4, af5);
   console.log("associatedFeelsArr: " + associatedFeelsArr)
   const song = {
-    "songID": req.body.songID,
+    "songId": req.body.songID,
     "songName": req.body.songName,
     "songArtist": req.body.songArtist,
-    "artistURL": req.body.artistURL,
+    "artistUrl": req.body.artistURL,
     "songAlbum": req.body.songAlbum,
-    "albumURL": req.body.albumURL,
+    "albumUrl": req.body.albumURL,
     "genre": req.body.genre,
     "moodTag": mood,
     "associatedFeels": associatedFeelsArr,
@@ -130,23 +120,10 @@ songRoutes.post("/post", async (req, res) => {
     "adminRec": adminRec
   };
 
-  // const core = {
-  //   "songID": req.body.songID,
-  //   "songName": req.body.songName,
-  //   "songURI": req.body.songURI,
-  //   "af1": af1,
-  //   "af2": af2,
-  //   "af3": af3,
-  //   "af4": af4,
-  //   "af5": af5,
-  //   "adminRec": rec
-  // }
-
   if (await checkSong(song, mood, associatedFeelsArr)) {
     console.log("why am i here")
     await PostSong(song);
     console.log("why am i here2")
-    //await chooseMood(mood, core);
     res.json({
       "song was inserted": "into the db"
     });
@@ -175,7 +152,6 @@ songRoutes.delete('/delete/mood', async(req, res) => {
   }
 })
 
-// deletes song entities in Song table and its other entities in respective mood tables
 // delete song from Song table
 // returns status code 200 if successful, status code if song does not exist
 // https://localhost:5000/song/delete?songID={songID}
@@ -187,12 +163,6 @@ songRoutes.delete('/delete', async (req, res) => {
         if (data) {
           console.log("deleting this song")
           console.log("song: " + data.songName)
-          // console.log("delete from individual mood tables")
-          // temp = data.moodTag.length
-          // for (let i = 0; i < temp; i++) {
-          //   chooseDelete(data.songID, data.moodTag[i]);
-          // } //end for
-          // console.log("moodTag now: " + data.moodTag)
           await Song.findOneAndDelete({"songID": songID})
           res.sendStatus(200)
         } else {
@@ -264,7 +234,6 @@ async function checkSong(song, mood, associatedFeelsArr) {
       if (data) { //song exists
         console.log(data)
         if (!data.moodTag.includes(mood)) { //if moodTag doesn't include new mood
-          //chooseMood(mood, core);
           console.log("moodTag before: " + data.moodTag)
           console.log("assFeels before: " + data.associatedFeels)
           data.moodTag.push(mood);
@@ -280,7 +249,6 @@ async function checkSong(song, mood, associatedFeelsArr) {
         } else { //exist already
           //console.log(mood + " is already part of this song's mood tag")
           //HERE IS WHERE YOU LEFT OFF
-          //chooseAssociatedFeels(mood, core);
           //check associatedFeelsTag
           for (let i = 0; i < associatedFeelsArr.length; i++) {
             if (!data.associatedFeels.includes(associatedFeelsArr[i])) {
