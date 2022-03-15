@@ -8,7 +8,6 @@ const schema = mongoose.Schema({
     songAlbum: String,
     albumUrl: String,
     imageUrl: String,
-    genre: Array,
     moodTag: Array,
     associatedFeels: Array,
     explicit: Boolean,
