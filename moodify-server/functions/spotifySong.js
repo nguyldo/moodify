@@ -39,7 +39,7 @@ async function idsToTracks(combinedTracks, token) {
       var toReturn = [];
       items.forEach(element => {
         toReturn.push({
-          "songID": element.id,
+          "songId": element.id,
           "songName": element.name,
           "songArtist": element.artists,
           "songAlbum": element.album.name,
@@ -111,4 +111,40 @@ async function filterTracks(toFilter, list, features) {
   return toFilter.map(item => item.id)
 }
 
-module.export = { spotifyRecommend, idsToTracks, audioFeatures, filterTracks };
+async function searchSong(term, type, token) {
+  return await axios.get(spotify_url + '/search?q=' + term + '&type=' + type, {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then((data) => {
+      console.log('successful search')
+      var items = data.data.tracks.items;
+      var toReturn = [];
+      items.forEach(element => {
+        let rawArtists = element.artists;
+        let artists = [];
+        let artistUrl = []
+        rawArtists.forEach(artist => {
+          artists.push(artist.name)
+          artistUrl.push(artist.external_urls.spotify)
+        });
+
+        toReturn.push({
+          "songId": element.id,
+          "songName": element.name,
+          "songArtist": artists,
+          "artistUrl": artistUrl,
+          "songAlbum": element.album.name,
+          "albumUrl": element.album.external_urls.spotify,
+          "imageUrl": element.album.images[0].url,
+          "explicit": element.explicit,
+          "popularity": element.popularity
+        });
+      });
+      return toReturn;
+    })
+    .catch((error) => {
+      console.log('unsuccessful search')
+      console.log(error.data);
+    });
+}
+
+module.exports = { spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong };

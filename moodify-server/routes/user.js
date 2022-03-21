@@ -97,7 +97,7 @@ router.post('/post', async (req, res) => {
   const { id } = req.query;
 
   const user = {
-    "userID": id
+    "userId": id
   };
 
   try {
@@ -193,7 +193,7 @@ router.get('/personal/:token', async (req, res) => {
     // console.log(userTracks)
 
     // Grab Mongo's Mood & Associated Mood
-    mongoTracks = (await getSongByMood(cm, am1, am2)).slice(0, 50).map((item) => {
+    mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => {
       return item.songID;
     });
     // console.log(mongoTracks);

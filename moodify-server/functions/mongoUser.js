@@ -1,15 +1,15 @@
 const User = require('../models/user');
 
-async function findUser(userID) {
+async function findUser(userId) {
     try {
       let promise_obj = await User.findOne(
-        { "userID": userID }
+        { "userId": userId }
       )
       console.log(promise_obj);
       return {
-        "userID": promise_obj.userID,
+        "userId": promise_obj.userId,
         "logins": promise_obj.logins,
-        "recommendedSongIDs": promise_obj.recommendedSongIDs,
+        "recommendedSongIds": promise_obj.recommendedSongIds,
         "numRecommendations": promise_obj.numRecommendations
       };
     } catch (err) {
@@ -20,7 +20,7 @@ async function findUser(userID) {
 async function saveUser(data) {
     try {
         let toReturn = await User.findOneAndUpdate(
-            { "userID": data.userID },
+            { "userId": data.userId },
             data
         );
         return toReturn;
@@ -34,7 +34,7 @@ async function postUser(user) {
     try {
       await new User(
         {
-          "userID": user.userID,
+          "userId": user.userId,
           "logins": 1,
           "numRecommendations": 0,
           "loggedin": true
@@ -48,7 +48,7 @@ async function postUser(user) {
 async function checkUser(user) {
     try {
       return await User.findOne(
-        { "userID": user.userID }
+        { "userId": user.userId }
       ).then((data) => {
         if (data) {
           // console.log(data)
@@ -68,7 +68,7 @@ async function checkUser(user) {
 async function logout(id) {
     try {
         return User.findOneAndUpdate(
-            { "userID": id },
+            { "userId": id },
             { "loggedin": false }
         ).then((data) => {
             if (data) {
