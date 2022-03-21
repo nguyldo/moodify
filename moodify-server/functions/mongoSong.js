@@ -49,7 +49,7 @@ async function postSong(song) {
 async function checkSong(song, mood, associatedFeelsArr) {
   try {
     return await Song.findOne(
-      { "songID": song.songId }
+      { "songId": song.songId }
     ).then((data) => {
       if (data) { //song exists
         console.log("dataaaaaa: " + data.songId)

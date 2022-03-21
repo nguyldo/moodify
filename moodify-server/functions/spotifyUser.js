@@ -57,7 +57,7 @@ async function userTop(token, type) {
       var toReturn = [];
       items.forEach(element => {
         toReturn.push({
-          "songID": element.id,
+          "songId": element.id,
           "songName": element.name,
           "songArtist": element.artists,
           "songAlbum": element.album.name,

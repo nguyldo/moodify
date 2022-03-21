@@ -97,7 +97,7 @@ router.post('/post', async (req, res) => {
   const { id } = req.query;
 
   const user = {
-    "userID": id
+    "userId": id
   };
 
   try {
