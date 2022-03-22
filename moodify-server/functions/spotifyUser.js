@@ -58,11 +58,19 @@ async function userTop(token, type) {
       const toReturn = [];
       items.forEach((element) => {
         toReturn.push({
+<<<<<<< HEAD
           songID: element.id,
           songName: element.name,
           songArtist: element.artists,
           songAlbum: element.album.name,
           moodTag: '',
+=======
+          "songId": element.id,
+          "songName": element.name,
+          "songArtist": element.artists,
+          "songAlbum": element.album.name,
+          "moodTag": "",
+>>>>>>> c8ea9b52bb49c1dbae5211514e4a0274ac30fbcd
         });
       });
       return toReturn;
