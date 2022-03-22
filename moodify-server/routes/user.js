@@ -4,22 +4,29 @@
 */
 // Server Imports
 const express = require('express');
+
 const router = express.Router();
 const User = require('../models/user');
 
 // Function Imports
-let { checkPlaylistFollow } = require('../functions/spotifyPlaylist');
-let { getUserId, getPlaylistFollow, userTop, getUserProfile } = require('../functions/spotifyUser');
-let { audioFeatures, idsToTracks, spotifyRecommend, filterTracks } = require('../functions/spotifySong');
-let { getSongByMood } = require('../functions/mongoSong');
-let { postUser, findUser, checkUser, logout, saveUser } = require('../functions/mongoUser');
-let { checkMood } = require('../functions/mongoMood');
+const { checkPlaylistFollow } = require('../functions/spotifyPlaylist');
+const {
+  getUserId, getPlaylistFollow, userTop, getUserProfile,
+} = require('../functions/spotifyUser');
+const {
+  audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
+} = require('../functions/spotifySong');
+const { getSongByMood } = require('../functions/mongoSong');
+const {
+  postUser, findUser, checkUser, logout, saveUser,
+} = require('../functions/mongoUser');
+const { checkMood } = require('../functions/mongoMood');
 
 // http://localhost:5000/user/{token}
 // Get User Profile from Spotify
 // Return Raw User Profile from Spotify
 router.get('/:token', async (req, res) => {
-  console.log('running user profile api')
+  console.log('running user profile api');
   const { token } = req.params;
   try {
     res.status(200).send(await getUserProfile(token));
@@ -42,7 +49,7 @@ router.get('/tracks/:token', async (req, res) => {
     console.log(error);
     res.sendStatus(400);
   }
-})
+});
 
 // https://localhost:5000/user/artists/:token
 // Get User's Top Artists From Spotify
@@ -56,7 +63,7 @@ router.get('/artists/:token', async (req, res) => {
     console.log(error);
     res.sendStatus(400);
   }
-})
+});
 
 // http://localhost:5000/user/dbprofile/{token}
 // Gets User's Profile from mongo using Spotify API to get UserID
@@ -66,13 +73,13 @@ router.get('/dbprofile/:token', async (req, res) => {
   const { token } = req.params;
 
   try {
-    let id = await getUserId(token);
+    const id = await getUserId(token);
     res.status(200).send(await findUser(id));
   } catch (error) {
     console.log(error);
     res.sendStatus(400);
   }
-})
+});
 
 // http://localhost:5000/user/update/mood?type={core emotion}&token={token}
 // Posts user's mood to mongo, updates the time and click count
@@ -82,35 +89,34 @@ router.post('/update/mood', async (req, res) => {
   const { type, token } = req.query;
 
   try {
-    let id = await getUserId(token);
+    const id = await getUserId(token);
     res.status(200).send(await checkMood(type, id));
   } catch (error) {
     console.log(error);
     res.sendStatus(400);
   }
-})
+});
 
-//new user
-//get info from spotify api after authentication
+// new user
+// get info from spotify api after authentication
 // http://localhost5000/user/post?id={userID}
 router.post('/post', async (req, res) => {
   const { id } = req.query;
 
   const user = {
-    "userId": id
+    userId: id,
   };
 
   try {
     if (await checkUser(user)) {
       await postUser(user); // TODO: Figure out how to error throw this function
-      res.status(200).send("User Successfully Added");
-    } else
-      res.status(200).send("User Already Exists");
+      res.status(200).send('User Successfully Added');
+    } else res.status(200).send('User Already Exists');
   } catch (error) {
     console.log(error);
     res.sendStatus(400);
   }
-})
+});
 
 router.post('/logout', async (req, res) => {
   const { id } = req.query;
@@ -121,18 +127,18 @@ router.post('/logout', async (req, res) => {
     console.log(err);
     res.sendStatus(400);
   }
-})
+});
 
 // route for updating user's recommendedSongIDs and numRecommendations
 // https://localhost:5000/recommended?userID={userID}&songID={songID}
 // Puts a recommended song into user's recommended list
 // Returns status code
-router.put('/recommended', async (req, res) =>  {
+router.put('/recommended', async (req, res) => {
   const { userID, songID } = req.query;
 
   const user = {
-    "userID" : userID,
-    "songID" : songID
+    userID,
+    songID,
   };
 
   try {
@@ -143,19 +149,19 @@ router.put('/recommended', async (req, res) =>  {
         data.recommendedSongIDs.push(user.songID);
         data.numRecommendations++;
         data = await saveUser(data);
-        console.log(data)
-        console.log("inserting new recommended song")
-        res.sendStatus(200)
+        console.log(data);
+        console.log('inserting new recommended song');
+        res.sendStatus(200);
       } else {
-        console.log("user already has this recommended song")
-        res.sendStatus(400)
+        console.log('user already has this recommended song');
+        res.sendStatus(400);
       }
     }
   } catch (error) {
     console.log(error);
     res.sendStatus(400);
   }
-})
+});
 
 // http://localhost:5000/user/plalists/{token}?playlist={playlist_id}
 router.get('/playlists/:token', async (req, res) => {
@@ -164,38 +170,31 @@ router.get('/playlists/:token', async (req, res) => {
 
   if (playlist) {
     try {
-      let id = await getUserId(token);
+      const id = await getUserId(token);
       res.status(200).send(await checkPlaylistFollow(playlist, id, token));
     } catch (err) {
       console.log(err);
       res.sendStatus(400);
     }
   } else {
-    let toReturn = await getPlaylistFollow(token);
-    if (toReturn)
-      res.status(200).send(toReturn);
-    else
-      res.sendStatus(400);
+    const toReturn = await getPlaylistFollow(token);
+    if (toReturn) res.status(200).send(toReturn);
+    else res.sendStatus(400);
   }
-
-})
+});
 
 // http://localhost:5000/user/personal/{token}?cm={coremood}&am1={associatedmood}&am2={associatedmood}
 router.get('/personal/:token', async (req, res) => {
   const { token } = req.params;
   const { cm, am1, am2 } = req.query;
-  console.log("what the heck")
+  console.log('what the heck');
   try {
     // Grab User's Top Tracks
-    userTracks = (await userTopTracks(token)).slice(0, 50).map((item) => {
-      return item.songID;
-    });
+    userTracks = (await userTopTracks(token)).slice(0, 50).map((item) => item.songID);
     // console.log(userTracks)
 
     // Grab Mongo's Mood & Associated Mood
-    mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => {
-      return item.songID;
-    });
+    mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songID);
     // console.log(mongoTracks);
 
     // Concat User Tracks & Mongo Tracks
@@ -211,7 +210,7 @@ router.get('/personal/:token', async (req, res) => {
     // console.log(filteredTracks);
 
     // Concat Filtered Tracks w/ Mongo's Tracks Randomly
-    combinedTracks = mongoTracks.slice(0,2).concat(filteredTracks).slice(0,5);
+    combinedTracks = mongoTracks.slice(0, 2).concat(filteredTracks).slice(0, 5);
     // console.log(combinedTracks);
 
     // Get Recommendations using User's & Mongo's
@@ -226,7 +225,7 @@ router.get('/personal/:token', async (req, res) => {
     // console.log(trackFeatures)
 
     // Filter Recommendations Using the Filtered User's Songs
-    personalizedTracks = (await filterTracks(filteredTracks, recommendedTracks, trackFeatures)).slice(0,5);
+    personalizedTracks = (await filterTracks(filteredTracks, recommendedTracks, trackFeatures)).slice(0, 5);
 
     // Get recommended tracks based the personalized tracks
     recommendedTracks = await spotifyRecommend(personalizedTracks, token);
@@ -238,6 +237,6 @@ router.get('/personal/:token', async (req, res) => {
     console.log(error);
     res.status(400);
   }
-})
+});
 
 module.exports = router;
