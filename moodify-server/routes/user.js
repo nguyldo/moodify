@@ -104,11 +104,7 @@ router.post('/post', async (req, res) => {
   const { id } = req.query;
 
   const user = {
-<<<<<<< HEAD
-    userID: id,
-=======
-    "userId": id
->>>>>>> c8ea9b52bb49c1dbae5211514e4a0274ac30fbcd
+    userId: id,
   };
 
   try {
@@ -198,13 +194,7 @@ router.get('/personal/:token', async (req, res) => {
     // console.log(userTracks)
 
     // Grab Mongo's Mood & Associated Mood
-<<<<<<< HEAD
-    mongoTracks = (await getSongByMood(cm, am1, am2)).slice(0, 50).map((item) => item.songID);
-=======
-    mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => {
-      return item.songID;
-    });
->>>>>>> c8ea9b52bb49c1dbae5211514e4a0274ac30fbcd
+    mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songID);
     // console.log(mongoTracks);
 
     // Concat User Tracks & Mongo Tracks

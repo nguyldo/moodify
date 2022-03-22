@@ -35,6 +35,8 @@ router.post('/recommendations', async (req, res) => {
     case 'sad':
       allSongs = await Sad.find();
       break;
+    default:
+      break;
   }
 
   let filteredSongs = [];
@@ -52,17 +54,17 @@ router.post('/recommendations', async (req, res) => {
   }
 
   console.log(filteredSongs);
-  let seed_tracks = '';
+  let seedTracks = '';
 
   if (filteredSongs.length <= 5) {
     filteredSongs.map((song) => {
-      seed_tracks = `${seed_tracks},${song.songID}`;
+      seedTracks = `${seedTracks},${song.songID}`;
     });
 
-    seed_tracks = seed_tracks.slice(1);
+    seedTracks = seedTracks.slice(1);
 
     const params = {
-      seed_tracks,
+      seedTracks,
       limit: 30,
     };
 
@@ -72,7 +74,11 @@ router.post('/recommendations', async (req, res) => {
     })
       .then((data) => {
         console.log(data.data.tracks);
-        res.json(data.data.tracks.map((track) => ({ id: track.id, name: track.name, artists: track.artists.map((artist) => artist.name) })));
+        res.json(data.data.tracks.map((track) => ({
+          id: track.id,
+          name: track.name,
+          artists: track.artists.map((artist) => artist.name),
+        })));
       })
       .catch((err) => {
         console.log(err);
@@ -80,26 +86,24 @@ router.post('/recommendations', async (req, res) => {
       });
   } else {
     const requests = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 6; i += 1) {
       const randomIndices = [];
       while (randomIndices.length < 5) {
         const randomNumber = Math.floor(Math.random() * filteredSongs.length);
         if (!randomIndices.includes(randomIndices)) randomIndices.push(randomNumber);
       }
 
-      let seed_tracks = '';
-
-      for (const i of randomIndices) {
-        seed_tracks = `${seed_tracks},${filteredSongs[i].songID}`;
+      for (const j of randomIndices) {
+        seedTracks = `${seedTracks},${filteredSongs[j].songID}`;
       }
 
-      seed_tracks = seed_tracks.slice(1);
+      seedTracks = seedTracks.slice(1);
 
       requests.push(
         axios.get(`${spotifyUrl}/recommendations`, {
           headers: { Authorization: `Bearer ${token}` },
           params: {
-            seed_tracks,
+            seedTracks,
             limit: 5,
           },
         }),

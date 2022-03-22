@@ -11,5 +11,7 @@
         "ecmaVersion": "latest"
     },
     "rules": {
+        "no-restricted-syntax": "off",
+        "array-callback-return": "off",
     }
 }

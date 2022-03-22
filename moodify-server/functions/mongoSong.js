@@ -1,41 +1,8 @@
-<<<<<<< HEAD
-const Angry = require('../models/angry');
-const Bad = require('../models/bad');
-const Content = require('../models/content');
-const Excited = require('../models/excited');
-const Happy = require('../models/happy');
-const Sad = require('../models/sad');
-=======
 const Song = require("../models/song");
->>>>>>> c8ea9b52bb49c1dbae5211514e4a0274ac30fbcd
 
 // Request to mongo for song by mood and associated feels
 // Returns list of song ids
 async function getSongByMood(coreMood) {
-<<<<<<< HEAD
-  coreMood.toLowerCase();
-  console.log(`getting songs from ${coreMood}`);
-
-  switch (coreMood) {
-    case 'angry':
-      return Angry.find();
-    case 'bad':
-      return Bad.find();
-    case 'content':
-      return Content.find();
-    case 'excited':
-      return Excited.find();
-    case 'happy':
-      return Happy.find();
-    case 'sad':
-      return Sad.find();
-    default:
-      return undefined;
-  }
-}
-
-module.export = { getSongByMood };
-=======
     coreMood.toLowerCase();
     console.log("getting songs from " + coreMood);
 
@@ -156,4 +123,3 @@ function checkAssociatedFeels(af1, af2, af3, af4, af5) {
 }
 
 module.exports = { getSongByMood, postSong, checkSong, checkAssociatedFeels };
->>>>>>> c8ea9b52bb49c1dbae5211514e4a0274ac30fbcd
