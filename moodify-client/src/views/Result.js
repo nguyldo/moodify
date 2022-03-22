@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import {
   Col, Row, Container, Card,
 } from 'react-bootstrap';
-import { Link, useSearchParams, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
@@ -15,23 +15,41 @@ function Result() {
 
   const query = new URLSearchParams(location.search);
   const mood = query.get('mood');
-  console.log(mood);
   const submood1 = query.get('submood1');
-  console.log(submood1);
   const submood2 = query.get('submood2');
-  console.log(submood2);
   const submood3 = query.get('submood3');
-  console.log(submood3);
   const submood4 = query.get('submood4');
-  console.log(submood4);
   const submood5 = query.get('submood5');
-  console.log(submood5);
+
+  const [filterActive, setFilterActive] = useState(false);
+  const [filterPopText, setFilterPopText] = useState('Popularity');
+  const [filterPopActive, setFilterPopActive] = useState(false);
+
+  function isFilterActive() {
+    setFilterActive(!filterActive);
+  }
+
+  const upArrow = '\u{02191}';
+  const downArrow = '\u{02193}';
+
+  async function isFilterPopActive() {
+    if (filterPopText === 'Popularity') {
+      setFilterPopActive(true);
+      setFilterPopText(`Popularity ${upArrow}`);
+    } else if (filterPopText === `Popularity ${upArrow}`) {
+      setFilterPopActive(true);
+      setFilterPopText(`Popularity ${downArrow}`);
+    } else if (filterPopText === `Popularity ${downArrow}`) {
+      setFilterPopActive(false);
+      setFilterPopText('Popularity');
+    }
+
+    setFilterPopText(filterPopText);
+    setFilterPopActive(filterPopActive);
+  }
 
   React.useEffect(() => {
     axios.get(`http://localhost:5000/user/${accessToken}`)
-      .then((data) => {
-        console.log(data);
-      })
       .catch((err) => {
         console.log(err);
       });
@@ -111,11 +129,13 @@ function Result() {
 
       <br />
       <div style={{ textAlign: 'left' }}>
+        <Button color="#2C2C2C" type="pill" filterActive={filterActive} text="Explicit" onClick={() => isFilterActive()} />
+        <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
         {suggestButton}
       </div>
-      <br />
-      <Card>
-        <Card.Body style={{ color: 'black' }}>Songs go here</Card.Body>
+
+      <Card className="rec-playlist">
+        <Card.Body>Songs go here</Card.Body>
       </Card>
     </div>
   );

@@ -1,9 +1,8 @@
 import React from 'react';
-import Button from '../components/Button';
 import Cookies from 'js-cookie';
-
-import '../styles/login.css';
 import { useNavigate } from 'react-router-dom';
+import Button from '../components/Button';
+import '../styles/login.css';
 
 function Login() {
   const accessToken = Cookies.get('SpotifyAccessToken');

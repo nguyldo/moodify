@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Col, Row, Container } from 'react-bootstrap';
-import { Link, useSearchParams, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
@@ -38,13 +38,9 @@ function Submood() {
   };
 
   function isActive(submoodTitle, number) {
-    console.log(submoodTitle);
-    console.log(number);
-
     const newButtonsActive = [...buttonsActive];
     newButtonsActive[number] = !newButtonsActive[number];
     setButtonsActive(newButtonsActive);
-    console.log(buttonsActive);
 
     if (buttonsActive[number] === false) {
       submoods.push(submoodTitle);
@@ -108,55 +104,57 @@ function Submood() {
   }
 
   return (
-    <div className="basic-frame" className={mood}>
-      <Container>
-        <Row className="justify-content-md-center">
-          <Col md={{ span: 10, offset: 1 }}>
-            <Button active={buttonsActive[0]} color={moodColor[mood][0]} text={moodsDict[mood][0]} type="round" onClick={() => isActive(moodsDict[mood][0], 0)} />
-          </Col>
-          <Col>
-            <Link className="home-button" to={{ pathname: '/dashboard' }}>
-              <img style={{ width: '90%' }} alt="" src={logo} />
+    <div className={mood}>
+      <div className="basic-frame">
+        <Container>
+          <Row className="justify-content-md-center">
+            <Col md={{ span: 10, offset: 1 }}>
+              <Button active={buttonsActive[0]} color={moodColor[mood][0]} text={moodsDict[mood][0]} type="round" onClick={() => isActive(moodsDict[mood][0], 0)} />
+            </Col>
+            <Col>
+              <Link className="home-button" to={{ pathname: '/dashboard' }}>
+                <img style={{ width: '90%' }} alt="" src={logo} />
+              </Link>
+            </Col>
+          </Row>
+          <br />
+          <Row className="justify-content-md-center align-items-center">
+            <Col md={{ span: 3, offset: 0 }}>
+              <Button active={buttonsActive[1]} color={moodColor[mood][1]} text={moodsDict[mood][1]} type="round" onClick={() => isActive(moodsDict[mood][1], 1)} />
+            </Col>
+            <Col md={{ span: 2, offset: 0 }}>
+              <h1>{mood}</h1>
+              <Link className="skip-butt" to={{ pathname: `/result?mood=${mood}` }}>
+                <p>(Skip)</p>
+              </Link>
+            </Col>
+            <Col md={{ span: 3, offset: 0 }}>
+              <Button active={buttonsActive[2]} color={moodColor[mood][2]} text={moodsDict[mood][2]} type="round" onClick={() => isActive(moodsDict[mood][2], 2)} />
+            </Col>
+          </Row>
+          <br />
+          <br />
+          <Row className="justify-content-md-center">
+            <Col md={{ span: 3, offset: 0 }}>
+              <Button active={buttonsActive[3]} color={moodColor[mood][3]} text={moodsDict[mood][3]} type="round" onClick={() => isActive(moodsDict[mood][3], 3)} />
+            </Col>
+            <Col md={{ span: 3, offset: 0 }}>
+              <Button active={buttonsActive[4]} color={moodColor[mood][4]} text={moodsDict[mood][4]} type="round" onClick={() => isActive(moodsDict[mood][4], 4)} />
+            </Col>
+          </Row>
+        </Container>
+        <Row>
+          <Col md={{ span: 1, offset: 0 }}>
+            <Link className="back-butt" to={{ pathname: '/dashboard' }}>
+              <h4 style={{ textAlign: 'left' }}>Back</h4>
             </Link>
           </Col>
-        </Row>
-        <br />
-        <Row className="justify-content-md-center align-items-center">
-          <Col md={{ span: 3, offset: 0 }}>
-            <Button active={buttonsActive[1]} color={moodColor[mood][1]} text={moodsDict[mood][1]} type="round" onClick={() => isActive(moodsDict[mood][1], 1)} />
-          </Col>
-          <Col md={{ span: 2, offset: 0 }}>
-            <h1>{mood}</h1>
-            <Link className="skip-butt" to={{ pathname: `/result?mood=${mood}` }}>
-              <p>(Skip)</p>
-            </Link>
-          </Col>
-          <Col md={{ span: 3, offset: 0 }}>
-            <Button active={buttonsActive[2]} color={moodColor[mood][2]} text={moodsDict[mood][2]} type="round" onClick={() => isActive(moodsDict[mood][2], 2)} />
+          <Col />
+          <Col md={{ span: 1, offset: 0 }}>
+            {nextButton}
           </Col>
         </Row>
-        <br />
-        <br />
-        <Row className="justify-content-md-center">
-          <Col md={{ span: 3, offset: 0 }}>
-            <Button active={buttonsActive[3]} color={moodColor[mood][3]} text={moodsDict[mood][3]} type="round" onClick={() => isActive(moodsDict[mood][3], 3)} />
-          </Col>
-          <Col md={{ span: 3, offset: 0 }}>
-            <Button active={buttonsActive[4]} color={moodColor[mood][4]} text={moodsDict[mood][4]} type="round" onClick={() => isActive(moodsDict[mood][4], 4)} />
-          </Col>
-        </Row>
-      </Container>
-      <Row>
-        <Col md={{ span: 1, offset: 0 }}>
-          <Link className="back-butt" to={{ pathname: '/dashboard' }}>
-            <h4 style={{ textAlign: 'left' }}>Back</h4>
-          </Link>
-        </Col>
-        <Col />
-        <Col md={{ span: 1, offset: 0 }}>
-          {nextButton}
-        </Col>
-      </Row>
+      </div>
     </div>
   );
 }

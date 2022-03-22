@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
   Col, Row, Container, Card, Form, Table,
 } from 'react-bootstrap';
-import { Link, useSearchParams, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
@@ -22,7 +22,7 @@ function SuggestSong() {
   const submood5 = query.get('submood5');
 
   const [songTitle, setSong] = useState('');
-  let [songList, setResults] = useState([]);
+  const [songList, setSongList] = useState([]);
   const [userID, setUserID] = useState('');
 
   const results = [];
@@ -30,29 +30,6 @@ function SuggestSong() {
   const handleSong = (e) => {
     setSong(e.target.value);
   };
-
-  const getResults = async () => {
-    console.log(songTitle);
-    await axios.get(`http://localhost:5000/song/search?term=${songTitle}&type=track&token=${accessToken}`)
-      .then((data) => {
-        console.log(data);
-        // console.log(data.data.tracks.items[0].name);
-        // console.log(data.data.tracks.items[0].album.name);
-        // console.log(data.data.tracks.items[0].artists[0].name);
-
-        console.log('before show results');
-        showResults(data);
-        console.log('after show results');
-
-        songList = results;
-        setResults(songList);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  useEffect(() => getResults(), []);
 
   function showResults(data) {
     const { items } = data.data.tracks;
@@ -68,6 +45,20 @@ function SuggestSong() {
     });
     console.log(results);
   }
+
+  const getResults = async () => {
+    console.log(songTitle);
+    await axios.get(`http://localhost:5000/song/search?term=${songTitle}&type=track&token=${accessToken}`)
+      .then((data) => {
+        showResults(data);
+        setSongList(results);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => getResults(), []);
 
   const sendSong = (id, title, artist, album, popularity, uri) => {
     const song = {
@@ -89,8 +80,10 @@ function SuggestSong() {
         axios.put(`http://localhost:5000/user/recommended?userID=${userID}&songID=${song.songID}`)
           .then((data) => {
             console.log(data);
+            alert('Song successfully added');
           }).catch((err) => {
             console.log(err);
+            alert('Song already exists');
           });
       })
       .catch((err) => {
@@ -98,15 +91,10 @@ function SuggestSong() {
       });
   };
 
-  // useEffect(() => sendSong(), []);
-
   React.useEffect(() => {
     axios.get(`http://localhost:5000/user/${accessToken}`)
       .then((data) => {
-        console.log(data);
         setUserID(data.data.id);
-        // console.log(data.data.id)
-        console.log(`userID: ${userID}`);
       })
       .catch((err) => {
         console.log(err);
@@ -170,7 +158,9 @@ function SuggestSong() {
                 <th>Song Title</th>
                 <th>Artist</th>
                 <th>Album</th>
+                {/*
                 <th />
+                */}
               </tr>
             </thead>
             {songList.map((list) => (
@@ -181,10 +171,20 @@ function SuggestSong() {
                   <td>{list.songAlbum}</td>
                   <td>
                     <Button
-                        color="green" type="wide" text="Add"
-                        onClick={() => sendSong(list.songID, list.songName, list.songArtist, list.songAlbum, list.popularity, list.songURI)}
-                      >
-                      </Button>
+                      color="green"
+                      type="wide"
+                      text="Add"
+                      onClick={() => {
+                        sendSong(
+                          list.songID,
+                          list.songName,
+                          list.songArtist,
+                          list.songAlbum,
+                          list.popularity,
+                          list.songURI,
+                        );
+                      }}
+                    />
                   </td>
                 </tr>
               </tbody>

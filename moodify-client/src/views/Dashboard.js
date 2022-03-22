@@ -11,11 +11,9 @@ function Dashboard() {
   const { hash } = window.location;
   if (typeof Cookies.get('SpotifyAccessToken') === 'undefined' && hash !== '') {
     const accessToken = hash.split('&')[0].split('=')[1];
-    const tokenType = hash.split('&')[1].split('=')[1];
     const expiresIn = hash.split('&')[2].split('=')[1];
 
-    console.log(expiresIn);
-    Cookies.set('SpotifyAccessToken', accessToken, { expires: parseInt(expiresIn) / 86400 });
+    Cookies.set('SpotifyAccessToken', accessToken, { expires: parseInt('0x', expiresIn) / 86400 });
   }
 
   const accessToken = Cookies.get('SpotifyAccessToken');
@@ -26,14 +24,7 @@ function Dashboard() {
     }
     axios.get(`http://localhost:5000/user/${accessToken}`)
       .then((data) => {
-        console.log(data);
-        axios.post(`http://localhost:5000/user/post?id=${data.data.id}`)
-          .then((data) => {
-            console.log(data);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        axios.post(`http://localhost:5000/user/post?id=${data.data.id}`);
       })
       .catch((err) => {
         console.log(err);
@@ -42,9 +33,6 @@ function Dashboard() {
 
   function postMood(mood) {
     axios.post(`http://localhost:5000/user/update/mood?type=${mood}&token=${accessToken}`)
-      .then((data) => {
-        console.log(data);
-      })
       .catch((err) => {
         console.log(err);
       });
@@ -52,17 +40,13 @@ function Dashboard() {
 
   return (
     <div className="basic-frame">
-      {/* <p>Access token: {accessToken}</p>
-            <p>Token type: {tokenType}</p>
-            <p>Expires in: {expiresIn}</p> */}
-
       <Row>
-        <Col md={{ span: 10, offset: 1 }}>
+        <Col style={{ marginTop: '50px' }} md={{ span: 10, offset: 1 }}>
           <h1>How are you feeling?</h1>
         </Col>
         <Col>
           <Link className="home-button" to={{ pathname: '/dashboard' }}>
-            <img style={{ width: '90%' }} alt="" src={logo} />
+            <img style={{ width: '90%', marginTop: '25px', marginRight: '25px' }} alt="" src={logo} />
           </Link>
         </Col>
       </Row>
