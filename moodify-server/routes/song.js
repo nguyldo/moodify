@@ -5,7 +5,7 @@ const songRoutes = express.Router();
 
 // Function Imports
 let { getSongByMood, postSong, checkSong, checkAssociatedFeels } = require("../functions/mongoSong");
-let { searchSong, idsToTracks } = require('../functions/spotifySong');
+let { searchSong } = require('../functions/spotifySong');
 
 // gets songs from Spotify's database based on user's search
 // returns songs found in Spotify's database based on user's search
@@ -95,16 +95,16 @@ songRoutes.post("/post", async (req, res) => {
 
 // delete song from Song table
 // returns status code 200 if successful, status code 404 if song does not exist
-// https://localhost:5000/song/delete?songID={songID}
+// https://localhost:5000/song/delete?songId={songId}
 songRoutes.delete('/delete', async (req, res) => {
-  const { songID } = req.query;
+  const { songId } = req.query;
   try {
-    await Song.findOne({"songID": songID})
+    await Song.findOne({"songId": songId})
     .then(async (data) => {
         if (data) {
           console.log("deleting this song")
           console.log("song: " + data.songName)
-          await Song.findOneAndDelete({"songID": songID})
+          await Song.findOneAndDelete({"songId": songId})
           res.sendStatus(200)
         } else {
           res.sendStatus(404)
