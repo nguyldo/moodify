@@ -8,7 +8,7 @@ const songRoutes = express.Router();
 const {
   getSongByMood, postSong, checkSong, checkAssociatedFeels,
 } = require('../functions/mongoSong');
-const { searchSong, idsToTracks } = require('../functions/spotifySong');
+const { searchSong } = require('../functions/spotifySong');
 
 // gets songs from Spotify's database based on user's search
 // returns songs found in Spotify's database based on user's search
@@ -51,16 +51,16 @@ songRoutes.get('/:mood', async (req, res) => {
 // posts user's suggested song to Song table, updates moodTags and associatedFeels if exists already
 // { af1, af2, af3, af4, af5 } are the optional associated feels, adminRec = true/false
 // returns json message
-// http://localhost:5000/song/post?mood={mood}&af1={af1}&af2={af2}&af3={af3}&af4={af4}&af5={af5}&adminRec={adminRec}
+// http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}&af3={af3}&af4={af4}&af5={af5}&adminRec={adminRec}&songid={}
 songRoutes.post('/post', async (req, res) => {
   const {
     mood, af1, af2, af3, af4, af5, adminRec,
   } = req.query;
-
   let rec = true;
-  if (adminRec != 'true') {
+  if (adminRec !== 'true') {
     rec = false;
   }
+
   const associatedFeelsArr = checkAssociatedFeels(af1, af2, af3, af4, af5);
   console.log(`associatedFeelsArr: ${associatedFeelsArr}`);
 
@@ -79,7 +79,7 @@ songRoutes.post('/post', async (req, res) => {
     performedBy: req.body.performedBy,
     writtenBy: req.body.writtenBy,
     producedBy: req.body.producedBy,
-    adminRec,
+    adminRec: rec,
   };
 
   console.log(`song: ${song.songName}`);
