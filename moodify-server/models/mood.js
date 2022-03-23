@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const schema = mongoose.Schema({
-  userID: String,
+  userId: String,
   type: String,
   timeStamp: Array,
   totalCount: Number,

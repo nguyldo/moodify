@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const schema = mongoose.Schema({
-  songID: String,
+  songId: String,
   songName: String,
   songArtist: Array,
-  artistURL: Array,
+  artistUrl: Array,
   songAlbum: String,
-  albumURL: String,
+  albumUrl: String,
   genre: Array,
   moodTag: Array,
   associatedFeels: Array,
