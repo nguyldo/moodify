@@ -64,7 +64,7 @@ router.post('/recommendations', async (req, res) => {
     seedTracks = seedTracks.slice(1);
 
     const params = {
-      seedTracks,
+      seed_tracks: seedTracks,
       limit: 30,
     };
 
@@ -73,7 +73,9 @@ router.post('/recommendations', async (req, res) => {
       params,
     })
       .then((data) => {
+        console.log('2');
         console.log(data.data.tracks);
+        console.log('2');
         res.json(data.data.tracks.map((track) => ({
           id: track.id,
           name: track.name,
@@ -103,11 +105,13 @@ router.post('/recommendations', async (req, res) => {
         axios.get(`${spotifyUrl}/recommendations`, {
           headers: { Authorization: `Bearer ${token}` },
           params: {
-            seedTracks,
+            seed_tracks: seedTracks,
             limit: 5,
           },
         }),
       );
+
+      seedTracks = '';
     }
 
     axios.all(requests)
@@ -115,17 +119,23 @@ router.post('/recommendations', async (req, res) => {
         const result = [];
         for (const response of responses) {
           response.data.tracks.map((track) => {
+            console.log(track);
             const filteredTrack = {
               id: track.id,
               name: track.name,
               artists: track.artists.map((artist) => artist.name),
+              image: track.album.images[0],
+              explicit: track.explicit,
             };
             if (!result.includes(filteredTrack)) result.push(filteredTrack);
           });
         }
 
         res.json(result);
-      }));
+      }))
+      .catch((err) => {
+        res.json(err);
+      })
   }
 });
 

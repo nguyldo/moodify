@@ -7,6 +7,7 @@ import { Link, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
+import Playlist from '../components/Playlist';
 
 function Result() {
   const accessToken = Cookies.get('SpotifyAccessToken');
@@ -24,6 +25,7 @@ function Result() {
   const [filterActive, setFilterActive] = useState(false);
   const [filterPopText, setFilterPopText] = useState('Popularity');
   const [filterPopActive, setFilterPopActive] = useState(false);
+  const [songs, setSongs] = useState([]);
 
   function isFilterActive() {
     setFilterActive(!filterActive);
@@ -32,7 +34,7 @@ function Result() {
   const upArrow = '\u{02191}';
   const downArrow = '\u{02193}';
 
-  async function isFilterPopActive() {
+  function isFilterPopActive() {
     if (filterPopText === 'Popularity') {
       setFilterPopActive(true);
       setFilterPopText(`Popularity ${upArrow}`);
@@ -50,6 +52,33 @@ function Result() {
 
   React.useEffect(() => {
     axios.get(`http://localhost:5000/user/${accessToken}`)
+      .then(() => {
+        const associatedFeels = [];
+        if (submood1 && submood1 !== '') {
+          associatedFeels.push(submood1);
+        }
+        if (submood2 && submood2 !== '') {
+          associatedFeels.push(submood2);
+        }
+        if (submood3 && submood3 !== '') {
+          associatedFeels.push(submood3);
+        }
+        if (submood4 && submood4 !== '') {
+          associatedFeels.push(submood4);
+        }
+        if (submood5 && submood5 !== '') {
+          associatedFeels.push(submood5);
+        }
+
+        axios.post('http://localhost:5000/playlist/recommendations', {
+          mood,
+          associatedFeels,
+          token: accessToken,
+        })
+          .then((data) => {
+            setSongs(data.data);
+          });
+      })
       .catch((err) => {
         console.log(err);
       });
@@ -135,7 +164,7 @@ function Result() {
       </div>
 
       <Card className="rec-playlist">
-        <Card.Body>Songs go here</Card.Body>
+        <Card.Body><Playlist songs={songs} /></Card.Body>
       </Card>
     </div>
   );

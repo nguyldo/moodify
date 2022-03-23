@@ -1,0 +1,62 @@
+.playlist-table {
+  width: 100%;
+}
+
+.playlist-header {
+  font-weight: 700;
+  font-size: 24px;
+  text-align: left;
+}
+
+.playlist-song {
+  font-size: 18px;
+  text-align: left;
+}
+
+.playlist-song-heart {
+  height: 25px;
+  width: 25px;
+}
+
+.playlist-song-image {
+  height: 30px;
+  width: 30px;
+}
+
+.playlist-song-album {
+  font-size: 14px;
+}
+
+
+.playlist-song-artists {
+}
+
+.playlist-song-kebab {
+  height: 20px;
+  width: 20px;
+}
+
+.c0 {
+  width: 4%;
+  vertical-align: baseline;
+}
+
+.c1 {
+  width: 4%;
+  vertical-align: baseline;
+}
+
+.c2 {
+  width: 44%;
+  vertical-align: baseline;
+}
+
+.c3 {
+  width: 44%;
+  vertical-align: baseline;
+}
+
+.c4 {
+  width: 4%;
+  vertical-align: baseline;
+}
