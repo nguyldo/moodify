@@ -98,7 +98,7 @@ router.post('/update/mood', async (req, res) => {
 
 // new user
 // get info from spotify api after authentication
-// http://localhost5000/user/post?id={userID}
+// http://localhost:5000/user/post?id={userId}
 router.post('/post', async (req, res) => {
   const { id } = req.query;
 
@@ -128,24 +128,24 @@ router.post('/logout', async (req, res) => {
   }
 });
 
-// route for updating user's recommendedSongIDs and numRecommendations
-// https://localhost:5000/recommended?userID={userID}&songID={songID}
+// route for updating user's recommendedSongIds and numRecommendations
+// https://localhost:5000/recommended?userId={userId}&songId={songId}
 // Puts a recommended song into user's recommended list
 // Returns status code
 router.put('/recommended', async (req, res) => {
-  const { userID, songID } = req.query;
+  const { userId, songId } = req.query;
 
   const user = {
-    userID,
-    songID,
+    userId,
+    songId,
   };
 
   try {
-    let data = await findUser(user.userID);
+    let data = await findUser(user.userId);
     if (data) {
-      console.log(data.recommendedSongIDs);
-      if (!data.recommendedSongIDs.includes(user.songID)) {
-        data.recommendedSongIDs.push(user.songID);
+      console.log(data.recommendedSongIds);
+      if (!data.recommendedSongIds.includes(user.songId)) {
+        data.recommendedSongIds.push(user.songId);
         data.numRecommendations += 1;
         data = await saveUser(data);
         console.log(data);
@@ -188,11 +188,11 @@ router.get('/personal/:token', async (req, res) => {
   const { cm } = req.query;
   try {
     // Grab User's Top Tracks
-    const userTracks = (await userTop(token, 'tracks')).slice(0, 50).map((item) => item.songID);
+    const userTracks = (await userTop(token, 'tracks')).slice(0, 50).map((item) => item.songId);
     // console.log(userTracks)
 
     // Grab Mongo's Mood & Associated Mood
-    const mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songID);
+    const mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songId);
     // console.log(mongoTracks);
 
     // Concat User Tracks & Mongo Tracks
