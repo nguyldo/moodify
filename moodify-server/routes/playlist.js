@@ -226,7 +226,6 @@ router.get('/follow', async (req, res) => {
 // http://localhost:5000/playlist/follow?token={token}&id={playlistId}&follow={true || false}
 router.get('/create', async (req, res) => {
   const { token, id, follow } = req.params;
-  const { ids } = req.body;
 
   try {
     let result;

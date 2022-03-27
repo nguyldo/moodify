@@ -4,6 +4,7 @@ import {
   Col, Row, Container, Card,
 } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
+import CustomButton from 'react-bootstrap/Button';
 import Cookies from 'js-cookie';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
@@ -22,13 +23,32 @@ function Result() {
   const submood4 = query.get('submood4');
   const submood5 = query.get('submood5');
 
+  const customStyle = {
+    'font-size': '2rem',
+    color: 'white',
+  };
+
   const [filterActive, setFilterActive] = useState(false);
   const [filterPopText, setFilterPopText] = useState('Popularity');
   const [filterPopActive, setFilterPopActive] = useState(false);
+  const [filterGenreText, setFilterGenreText] = useState('Genre');
+  const [filterGenreActive, setFilterGenreActive] = useState(false);
   const [songs, setSongs] = useState([]);
+  const [heartButton, setHeartButton] = useState(<i className="bi bi-heart" style={customStyle} />);
+  const [heartFill, setHeartFill] = useState(false);
 
   function isFilterActive() {
     setFilterActive(!filterActive);
+  }
+
+  function isFilterGenreActive() {
+    if (!filterGenreActive) {
+      setFilterGenreActive(!filterGenreActive);
+      setFilterGenreText('next');
+    } else {
+      setFilterGenreActive(!filterGenreActive);
+      setFilterGenreText('Genre');
+    }
   }
 
   const upArrow = '\u{02191}';
@@ -48,6 +68,26 @@ function Result() {
 
     setFilterPopText(filterPopText);
     setFilterPopActive(filterPopActive);
+  }
+
+  function followPlaylist() {
+    // TODO: Check if playlist exists
+    // Create playlist if not existd
+    if (!heartFill) {
+      setHeartFill(true);
+      setHeartButton(<i className="bi bi-heart-fill" style={customStyle} />);
+    } else {
+      setHeartFill(false);
+      setHeartButton(<i className="bi bi-heart" style={customStyle} />);
+    }
+  }
+
+  function sharePlaylist() {
+    // TODO: Notify User that they will be forced to follow the playlist first
+    if (!heartFill) {
+      setHeartFill(true);
+      setHeartButton(<i className="bi bi-heart-fill" style={customStyle} />);
+    }
   }
 
   React.useEffect(() => {
@@ -158,9 +198,16 @@ function Result() {
 
       <br />
       <div style={{ textAlign: 'left' }}>
+        <CustomButton variant="outline-dark" onClick={() => followPlaylist()}>
+          {heartButton}
+        </CustomButton>
         <Button color="#2C2C2C" type="pill" filterActive={filterActive} text="Explicit" onClick={() => isFilterActive()} />
         <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
+        <Button color="#2C2C2C" type="pill" filterActive={filterGenreActive} text={filterGenreText} onClick={() => isFilterGenreActive(filterPopText)} />
         {suggestButton}
+        <CustomButton variant="outline-dark" onClick={() => sharePlaylist()}>
+          <i className="bi bi-box-arrow-up" style={customStyle} />
+        </CustomButton>
       </div>
 
       <Card className="rec-playlist">
