@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import {
-  Col, Row, Container, Card,
+  Col, Row, Container, Card, Toast,
 } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import CustomButton from 'react-bootstrap/Button';
@@ -28,6 +28,19 @@ function Result() {
     color: 'white',
   };
 
+  const toastStyle = {
+    position: 'absolute',
+    top: '5%',
+    left: '50%',
+    /* bring your own prefixes */
+    transform: 'translate(-50%, -50%)',
+  };
+
+  const toastBodyStyle = {
+    'text-align': 'center',
+    color: 'black',
+  };
+
   const [filterActive, setFilterActive] = useState(false);
   const [filterPopText, setFilterPopText] = useState('Popularity');
   const [filterPopActive, setFilterPopActive] = useState(false);
@@ -36,6 +49,14 @@ function Result() {
   const [songs, setSongs] = useState([]);
   const [heartButton, setHeartButton] = useState(<i className="bi bi-heart" style={customStyle} />);
   const [heartFill, setHeartFill] = useState(false);
+  const [toastActive, setToastActive] = useState(false);
+  const [toastContent, setToastContent] = useState(undefined);
+
+  const andrewToast = (
+    <Toast style={toastStyle}>
+      <Toast.Body style={toastBodyStyle}>Woohoo, youre reading this text in a Toast!</Toast.Body>
+    </Toast>
+  );
 
   function isFilterActive() {
     setFilterActive(!filterActive);
@@ -72,7 +93,7 @@ function Result() {
 
   function followPlaylist() {
     // TODO: Check if playlist exists
-    // Create playlist if not existd
+    // Create playlist if not exist
     if (!heartFill) {
       setHeartFill(true);
       setHeartButton(<i className="bi bi-heart-fill" style={customStyle} />);
@@ -84,6 +105,15 @@ function Result() {
 
   function sharePlaylist() {
     // TODO: Notify User that they will be forced to follow the playlist first
+    // Check if user already followed the playlist!
+    if (!toastActive) {
+      setToastContent(andrewToast);
+      setToastActive(true);
+      setTimeout(() => {
+        setToastActive(false);
+        setToastContent(!toastContent);
+      }, 10000);
+    }
     if (!heartFill) {
       setHeartFill(true);
       setHeartButton(<i className="bi bi-heart-fill" style={customStyle} />);
@@ -208,6 +238,7 @@ function Result() {
         <CustomButton variant="outline-dark" onClick={() => sharePlaylist()}>
           <i className="bi bi-box-arrow-up" style={customStyle} />
         </CustomButton>
+        {toastContent}
       </div>
 
       <Card className="rec-playlist">

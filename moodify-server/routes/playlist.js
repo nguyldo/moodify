@@ -240,4 +240,28 @@ router.get('/create', async (req, res) => {
   }
 });
 
+// http://localhost:5000/playlist/generateimage/{text}
+router.get('/generateimage/:text', async (req, res) => {
+  const { text } = req.params;
+
+  try {
+    const img = await axios.get(`https://picsum.photos/seed/${text}/500`);
+    const imgId = img.headers['picsum-id'];
+    const uri = await axios.get(`https://picsum.photos/id/${imgId}/info`);
+    res.status(200).send(uri.data.url);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+// http://localhost:5000/playlist/generatetitle/
+router.get('/generatetitle', async (req, res) => {
+  try {
+    const text = await axios.get('https://randomuser.me/api/');
+    res.status(200).send(`${text.data.results[0].name.last} ${text.data.results[0].location.street.name}`);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
 module.exports = router;
