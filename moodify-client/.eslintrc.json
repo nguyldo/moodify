@@ -22,6 +22,8 @@
         "react/function-component-definition": "off",
         "react/prop-types": "off",
         "consistent-return": "off",
-        "import/no-named-as-default": "off"
+        "import/no-named-as-default": "off",
+        "linebreak-style": "off",
+        "no-console": "off"
     }
 }

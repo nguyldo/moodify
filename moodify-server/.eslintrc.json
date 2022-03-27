@@ -16,6 +16,7 @@
         "no-useless-return": "off",
         "consistent-return": "off",
         "no-console": "off",
-        "no-param-reassign": "off"
+        "no-param-reassign": "off",
+        "linebreak-style": "off"
     }
 }
