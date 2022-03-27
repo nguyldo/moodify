@@ -35,7 +35,7 @@ function SuggestSong() {
     const items = data.data;
     items.forEach((element) => {
       results.push({
-        songID: element.songId,
+        songId: element.songId,
         songName: element.songName,
         songArtist: element.songArtist,
         artistUrl: element.artistUrl,
@@ -80,13 +80,19 @@ function SuggestSong() {
 
     axios.post(`http://localhost:5000/song/post/?mood=${mood}&af1=${submood1}&af2=${submood2}&af3=${submood3}&af4=${submood4}&af5=${submood5}&adminRec=false`, song)
       .then(() => {
-        axios.put(`http://localhost:5000/user/recommended?userID=${userID}&songID=${song.songID}`)
+        axios.put(`http://localhost:5000/user/recommended?userId=${userID}&songId=${song.songId}`)
           .then((data) => {
             console.log(data);
             alert('Song successfully added');
           }).catch((err) => {
             console.log(err);
             alert('Song already exists');
+          });
+        axios.post(`http://localhost:5000/user/update/mood?type=${mood}&token=${accessToken}`)
+          .then(() => {
+            console.log('user mood added or updated');
+          }).catch((err) => {
+            console.log(err);
           });
       })
       .catch((err) => {
@@ -168,7 +174,7 @@ function SuggestSong() {
             </thead>
             {songList.map((list) => (
               <tbody>
-                <tr key={list.songID}>
+                <tr key={list.songId}>
                   <td>{list.songName}</td>
                   <td>{list.songArtist}</td>
                   <td>{list.songAlbum}</td>
@@ -179,12 +185,14 @@ function SuggestSong() {
                       text="Add"
                       onClick={() => {
                         sendSong(
-                          list.songID,
+                          list.songId,
                           list.songName,
                           list.songArtist,
+                          list.artistUrl,
                           list.songAlbum,
+                          list.albumUrl,
                           list.popularity,
-                          list.songURI,
+                          list.explicit,
                         );
                       }}
                     />
