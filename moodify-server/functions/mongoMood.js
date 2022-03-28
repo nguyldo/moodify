@@ -1,10 +1,10 @@
 const Mood = require('../models/mood');
 
 // checks if mood is already in db and updates, if not it'll create it.
-async function checkMood(mood, userID) {
+async function checkMood(mood, userId) {
   try {
     const promiseObj = await Mood.findOne(
-      { userID, type: mood },
+      { userId, type: mood },
     );
     if (promiseObj) {
       const arr = promiseObj.timeStamp;
@@ -12,7 +12,7 @@ async function checkMood(mood, userID) {
       arr.push(timeNow.getTime());
       await Mood.updateOne(
         {
-          userID,
+          userId,
           type: mood,
         },
         {
@@ -24,7 +24,7 @@ async function checkMood(mood, userID) {
       const timeNow = new Date();
       const userMood = new Mood(
         {
-          userID,
+          userId,
           type: mood,
           timeStamp: [timeNow.getTime()],
           totalCount: 1,

@@ -6,7 +6,6 @@
 const express = require('express');
 
 const router = express.Router();
-const User = require('../models/user');
 
 // Function Imports
 const { checkPlaylistFollow } = require('../functions/spotifyPlaylist');
@@ -186,27 +185,26 @@ router.get('/playlists/:token', async (req, res) => {
 // http://localhost:5000/user/personal/{token}?cm={coremood}&am1={associatedmood}&am2={associatedmood}
 router.get('/personal/:token', async (req, res) => {
   const { token } = req.params;
-  const { cm, am1, am2 } = req.query;
-  console.log('what the heck');
+  const { cm } = req.query;
   try {
     // Grab User's Top Tracks
-    userTracks = (await userTopTracks(token)).slice(0, 50).map((item) => item.songID);
+    const userTracks = (await userTop(token, 'tracks')).slice(0, 50).map((item) => item.songID);
     // console.log(userTracks)
 
     // Grab Mongo's Mood & Associated Mood
-    mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songID);
+    const mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songID);
     // console.log(mongoTracks);
 
     // Concat User Tracks & Mongo Tracks
-    combinedTracks = userTracks.concat(mongoTracks);
+    let combinedTracks = userTracks.concat(mongoTracks);
     // console.log(combinedTracks);
 
     // Collect Audio Features of User's Top Tracks
-    trackFeatures = await audioFeatures(combinedTracks, token);
+    let trackFeatures = await audioFeatures(combinedTracks, token);
     // console.log(trackFeatures);
 
     // Filter User's Top Moods Using Mongo Songs
-    filteredTracks = await filterTracks(userTracks, mongoTracks, trackFeatures);
+    const filteredTracks = await filterTracks(userTracks, mongoTracks, trackFeatures);
     // console.log(filteredTracks);
 
     // Concat Filtered Tracks w/ Mongo's Tracks Randomly
@@ -214,7 +212,7 @@ router.get('/personal/:token', async (req, res) => {
     // console.log(combinedTracks);
 
     // Get Recommendations using User's & Mongo's
-    recommendedTracks = await spotifyRecommend(combinedTracks, token);
+    let recommendedTracks = await spotifyRecommend(combinedTracks, token);
     // console.log(recommendedTracks)
 
     // Concat the new recommended with the previously filtered
@@ -225,7 +223,11 @@ router.get('/personal/:token', async (req, res) => {
     // console.log(trackFeatures)
 
     // Filter Recommendations Using the Filtered User's Songs
-    personalizedTracks = (await filterTracks(filteredTracks, recommendedTracks, trackFeatures)).slice(0, 5);
+    const personalizedTracks = (await filterTracks(
+      filteredTracks,
+      recommendedTracks,
+      trackFeatures,
+    )).slice(0, 5);
 
     // Get recommended tracks based the personalized tracks
     recommendedTracks = await spotifyRecommend(personalizedTracks, token);
@@ -234,7 +236,7 @@ router.get('/personal/:token', async (req, res) => {
 
     res.status(200).json(recommendedTracks);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(400);
   }
 });
