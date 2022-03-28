@@ -133,20 +133,20 @@ router.post('/logout', async (req, res) => {
 // Puts a recommended song into user's recommended list
 // Returns status code
 router.put('/recommended', async (req, res) => {
-  const { userID, songID } = req.query;
+  const { userId, songId } = req.query;
 
   const user = {
-    userID,
-    songID,
+    userId,
+    songId,
   };
 
   try {
-    let data = await findUser(user.userID);
+    let data = await findUser(user.userId);
     if (data) {
-      console.log(data.recommendedSongIDs);
-      if (!data.recommendedSongIDs.includes(user.songID)) {
-        data.recommendedSongIDs.push(user.songID);
-        data.numRecommendations += 1;
+      console.log(data.recommendedSongIds);
+      if (!data.recommendedSongIds.includes(user.songId)) {
+        data.recommendedSongIds.push(user.songId);
+        data.numRecommendations++;
         data = await saveUser(data);
         console.log(data);
         console.log('inserting new recommended song');
