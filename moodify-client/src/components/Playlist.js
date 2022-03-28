@@ -6,8 +6,6 @@ import '../styles/playlist.css';
 const Song = (props) => {
   const { name, artists, key, albumName, albumLink, image } = props;
 
-  // const artistNames = artists.map((artist) => artist.name);
-
   const [heart, setHeart] = useState('/heart-black.svg');
 
   function isHeart() {
@@ -20,8 +18,6 @@ const Song = (props) => {
 
   return (
     <tr key={key} className="playlist-song">
-      {/* <td className="c0"><img src="/heart-black.svg" className="playlist-song-heart"
-       alt="album" /></td> */}
       <td className="c0"><button onClick={() => isHeart(heart)} type="button" className="button-wrapper"><img src={heart} className="playlist-song-heart" alt="heart" /></button></td>
       <td className="c1"><img src={image} className="playlist-song-image" alt="album" /></td>
       <td className="c2">
@@ -29,7 +25,6 @@ const Song = (props) => {
         <br />
         <span className="playlist-song-album"><a className="album-link" target="_blank" rel="noreferrer" href={albumLink}>{albumName}</a></span>
       </td>
-      {/* <td className="c3 playlist-song-artists">{artistNames.join(', ')}</td> */}
       <td className="c3 playlist-song-artists">{artists.map((artist) => <span className="artist-comma"><a className="artist-link" target="_blank" rel="noreferrer" href={artist.url}>{artist.name}</a></span>)}</td>
       <td className="c4"><img src="/ellipsis.svg" className="playlist-song-kebab" alt="kebab" /></td>
     </tr>
