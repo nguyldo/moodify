@@ -146,7 +146,7 @@ router.put('/recommended', async (req, res) => {
       console.log(data.recommendedSongIds);
       if (!data.recommendedSongIds.includes(user.songId)) {
         data.recommendedSongIds.push(user.songId);
-        data.numRecommendations++;
+        data.numRecommendations += 1;
         data = await saveUser(data);
         console.log(data);
         console.log('inserting new recommended song');
