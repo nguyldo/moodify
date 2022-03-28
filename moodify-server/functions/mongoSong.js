@@ -17,6 +17,8 @@ async function getSongByMood(coreMood) {
   }
 }
 
+// creates a new Song entity
+// returns new Song entity
 async function postSong(song) {
   console.log('getting to post');
   try {
@@ -45,6 +47,8 @@ async function postSong(song) {
   }
 }
 
+// inserts a new associated feels if it does not yet exist in Song entity's associatedFeels array
+// returns new/updated array
 function insertAssociatedFeels(oriArr, newArr) {
   for (let i = 0; i < newArr.length; i += 1) {
     if (!oriArr.includes(newArr[i])) {
@@ -54,6 +58,8 @@ function insertAssociatedFeels(oriArr, newArr) {
   return oriArr;
 }
 
+// checks if Song entity exists in the database, updates core mood and associated feels if exist
+// returns true/false if Song entity exists
 async function checkSong(song, mood, associatedFeelsArr) {
   try {
     return await Song.findOne(
@@ -92,6 +98,8 @@ async function checkSong(song, mood, associatedFeelsArr) {
   }
 }
 
+// checks if associated feels are not null, inserts into array if not null
+// returns associatedFeels array
 function checkAssociatedFeels(af1, af2, af3, af4, af5) {
   try {
     const arr = [];

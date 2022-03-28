@@ -28,6 +28,9 @@ function Login() {
     'playlist-read-collaborative',
     'playlist-modify-private',
     'playlist-modify-public',
+    'user-library-read',
+    'user-library-modify',
+    'ugc-image-upload',
   ];
 
   const authorizeSpotify = () => {
