@@ -1,12 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 
-const Angry = require('../models/angry');
-const Bad = require('../models/bad');
-const Content = require('../models/content');
-const Excited = require('../models/excited');
-const Happy = require('../models/happy');
-const Sad = require('../models/sad');
+const Song = require('../models/song');
 
 const router = express.Router();
 
@@ -15,29 +10,7 @@ const spotifyUrl = 'https://api.spotify.com/v1';
 router.post('/recommendations', async (req, res) => {
   const { mood, associatedFeels, token } = req.body;
 
-  let allSongs = [];
-  switch (mood) {
-    case 'angry':
-      allSongs = await Angry.find();
-      break;
-    case 'bad':
-      allSongs = await Bad.find();
-      break;
-    case 'content':
-      allSongs = await Content.find();
-      break;
-    case 'excited':
-      allSongs = await Excited.find();
-      break;
-    case 'happy':
-      allSongs = await Happy.find();
-      break;
-    case 'sad':
-      allSongs = await Sad.find();
-      break;
-    default:
-      break;
-  }
+  const allSongs = await Song.find({ moodTag: { $in: [mood] }, songId: { $exists: true } });
 
   let filteredSongs = [];
   if (associatedFeels.length > 0) {
@@ -58,7 +31,7 @@ router.post('/recommendations', async (req, res) => {
 
   if (filteredSongs.length <= 5) {
     filteredSongs.map((song) => {
-      seedTracks = `${seedTracks},${song.songID}`;
+      seedTracks = `${seedTracks},${song.songId}`;
     });
 
     seedTracks = seedTracks.slice(1);
@@ -96,7 +69,7 @@ router.post('/recommendations', async (req, res) => {
       }
 
       for (const j of randomIndices) {
-        seedTracks = `${seedTracks},${filteredSongs[j].songID}`;
+        seedTracks = `${seedTracks},${filteredSongs[j].songId}`;
       }
 
       seedTracks = seedTracks.slice(1);
@@ -135,7 +108,7 @@ router.post('/recommendations', async (req, res) => {
       }))
       .catch((err) => {
         res.json(err);
-      })
+      });
   }
 });
 
