@@ -1,21 +1,36 @@
 /* eslint-disable array-callback-return */
-import React from 'react';
+import React, { useState } from 'react';
 import '../styles/playlist.css';
 // import Cookies from 'js-cookie';
 
 const Song = (props) => {
-  const { name, artists, key } = props;
+  const { name, artists, key, albumName, albumLink, image } = props;
+
+  // const artistNames = artists.map((artist) => artist.name);
+
+  const [heart, setHeart] = useState('/heart-black.svg');
+
+  function isHeart() {
+    if (heart === '/heart-black.svg') {
+      setHeart('/heart-green.svg');
+    } else if (heart === '/heart-green.svg') {
+      setHeart('/heart-black.svg');
+    }
+  }
 
   return (
     <tr key={key} className="playlist-song">
-      <td className="c0"><img src="/heart-black.svg" className="playlist-song-heart" alt="album" /></td>
-      <td className="c1"><img src="/logo192.png" className="playlist-song-image" alt="album" /></td>
+      {/* <td className="c0"><img src="/heart-black.svg" className="playlist-song-heart"
+       alt="album" /></td> */}
+      <td className="c0"><img src={heart} className="playlist-song-heart" alt="heart" onClick={() => isHeart(heart)} /></td>
+      <td className="c1"><img src={image} className="playlist-song-image" alt="album" /></td>
       <td className="c2">
         <span className="playlist-song-name">{name}</span>
         <br />
-        <span className="playlist-song-album">Album Name</span>
+        <span className="playlist-song-album"><a className="album-link" target="_blank" rel="noreferrer" href={albumLink}>{albumName}</a></span>
       </td>
-      <td className="c3 playlist-song-artists">{artists.join(', ')}</td>
+      {/* <td className="c3 playlist-song-artists">{artistNames.join(', ')}</td> */}
+      <td className="c3 playlist-song-artists">{artists.map((artist) => <span className="artist-comma"><a className="artist-link" target="_blank" rel="noreferrer" href={artist.url}>{artist.name}</a></span>)}</td>
       <td className="c4"><img src="/ellipsis.svg" className="playlist-song-kebab" alt="kebab" /></td>
     </tr>
   );
@@ -23,6 +38,7 @@ const Song = (props) => {
 
 function Playlist(props) {
   const { songs } = props;
+  console.log(songs);
 
   return (
     <table className="playlist-table">
@@ -39,6 +55,9 @@ function Playlist(props) {
             key={song.id}
             name={song.name}
             artists={song.artists}
+            albumName={song.album}
+            albumLink={song.albumUrl}
+            image={song.image.url}
           />
         ))
       ) : (<div />)}
