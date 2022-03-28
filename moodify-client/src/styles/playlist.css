@@ -59,6 +59,11 @@
   width: 20px;
 }
 
+.button-wrapper {
+  background-color: rgba(0, 0, 0, 0);
+  border-style: none;
+}
+
 .c0 {
   width: 4%;
   vertical-align: baseline;

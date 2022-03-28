@@ -79,7 +79,16 @@ router.post('/recommendations', async (req, res) => {
         res.json(data.data.tracks.map((track) => ({
           id: track.id,
           name: track.name,
-          artists: track.artists.map((artist) => artist.name),
+          artists: track.artists.map((artist) => ({
+            name: artist.name,
+            url: artist.external_urls.spotify,
+          })),
+          image: track.album.images[0],
+          explicit: track.explicit,
+          album: track.album.name,
+          albumUrl: track.album.external_urls.spotify,
+          url: track.external_urls.spotify,
+          popularity: track.popularity
         })));
       })
       .catch((err) => {

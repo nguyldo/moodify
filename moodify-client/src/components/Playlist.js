@@ -22,7 +22,7 @@ const Song = (props) => {
     <tr key={key} className="playlist-song">
       {/* <td className="c0"><img src="/heart-black.svg" className="playlist-song-heart"
        alt="album" /></td> */}
-      <td className="c0"><img src={heart} className="playlist-song-heart" alt="heart" onClick={() => isHeart(heart)} /></td>
+      <td className="c0"><button onClick={() => isHeart(heart)} type="button" className="button-wrapper"><img src={heart} className="playlist-song-heart" alt="heart" /></button></td>
       <td className="c1"><img src={image} className="playlist-song-image" alt="album" /></td>
       <td className="c2">
         <span className="playlist-song-name">{name}</span>
