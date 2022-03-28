@@ -18,6 +18,10 @@
   width: 25px;
 }
 
+.playlist-song-heart:hover {
+  cursor: pointer;
+}
+
 .playlist-song-image {
   height: 30px;
   width: 30px;
@@ -27,13 +31,37 @@
   font-size: 14px;
 }
 
+.album-link {
+  color: green;
+  text-decoration: none;
+}
+
+.album-link:hover {
+  text-decoration: underline;
+  color: green;
+}
 
 .playlist-song-artists {
+}
+
+.artist-link {
+  color: green;
+  text-decoration: none;
+}
+
+.artist-link:hover {
+  text-decoration: underline;
+  color: green;
 }
 
 .playlist-song-kebab {
   height: 20px;
   width: 20px;
+}
+
+.button-wrapper {
+  background-color: rgba(0, 0, 0, 0);
+  border-style: none;
 }
 
 .c0 {
@@ -59,4 +87,8 @@
 .c4 {
   width: 4%;
   vertical-align: baseline;
+}
+
+.artist-comma + .artist-comma::before {
+  content: ", ";
 }
