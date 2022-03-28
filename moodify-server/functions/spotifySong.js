@@ -44,7 +44,6 @@ async function idsToTracks(combinedTracks, token) {
         songName: element.name,
         songArtist: element.artists,
         songAlbum: element.album.name,
-        moodTag: '',
       });
     });
     return toReturn;
@@ -146,6 +145,23 @@ async function searchSong(term, type, token) {
     });
 }
 
+async function saveSong(ids, token) {
+  return axios.put(`${spotifyUrl}/me/tracks?ids=${ids}`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  }).then((data) => {
+    console.log('successful save');
+    const toReturn = data;
+    return toReturn;
+  })
+    .catch((error) => {
+      console.log('unsuccessful save');
+      console.log(error.response.data);
+    });
+}
+
 module.exports = {
-  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong,
+  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong, saveSong,
 };

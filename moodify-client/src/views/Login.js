@@ -28,6 +28,8 @@ function Login() {
     'playlist-read-collaborative',
     'playlist-modify-private',
     'playlist-modify-public',
+    'user-library-modify',
+    'user-library-read',
   ];
 
   const authorizeSpotify = () => {

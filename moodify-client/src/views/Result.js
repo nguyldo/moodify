@@ -28,6 +28,13 @@ function Result() {
     color: 'white',
   };
 
+  const buttonStyle = {
+    outline: 'none',
+    'background-color': 'transparent',
+    'border-color': 'transparent',
+    'box-shadow': 'none',
+  };
+
   const toastStyle = {
     position: 'absolute',
     top: '5%',
@@ -51,6 +58,8 @@ function Result() {
   const [heartFill, setHeartFill] = useState(false);
   const [toastActive, setToastActive] = useState(false);
   const [toastContent, setToastContent] = useState(undefined);
+  // const [filtered, setFiltered] = useState(songs);
+  const [genre, setGenre] = useState(['Genre']);
 
   const andrewToast = (
     <Toast style={toastStyle}>
@@ -63,9 +72,9 @@ function Result() {
   }
 
   function isFilterGenreActive() {
-    if (!filterGenreActive) {
+    if (filterGenreText !== 'Genre') {
       setFilterGenreActive(!filterGenreActive);
-      setFilterGenreText('next');
+      setFilterGenreText(genre);
     } else {
       setFilterGenreActive(!filterGenreActive);
       setFilterGenreText('Genre');
@@ -92,8 +101,7 @@ function Result() {
   }
 
   function followPlaylist() {
-    // TODO: Check if playlist exists
-    // Create playlist if not exist
+    // TODO: Create playlist if not exist
     if (!heartFill) {
       setHeartFill(true);
       setHeartButton(<i className="bi bi-heart-fill" style={customStyle} />);
@@ -147,6 +155,18 @@ function Result() {
         })
           .then((data) => {
             setSongs(data.data);
+            console.log(data.data);
+            const genres = genre;
+            data.data.forEach((track) => {
+              if (track.genre) {
+                track.genre.forEach((dat) => {
+                  if (dat) {
+                    genres.push(dat);
+                  }
+                });
+              }
+            });
+            setGenre(genres);
           });
       })
       .catch((err) => {
@@ -228,14 +248,14 @@ function Result() {
 
       <br />
       <div style={{ textAlign: 'left' }}>
-        <CustomButton variant="outline-dark" onClick={() => followPlaylist()}>
+        <CustomButton style={buttonStyle} onClick={() => followPlaylist()}>
           {heartButton}
         </CustomButton>
         <Button color="#2C2C2C" type="pill" filterActive={filterActive} text="Explicit" onClick={() => isFilterActive()} />
         <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
         <Button color="#2C2C2C" type="pill" filterActive={filterGenreActive} text={filterGenreText} onClick={() => isFilterGenreActive(filterPopText)} />
         {suggestButton}
-        <CustomButton variant="outline-dark" onClick={() => sharePlaylist()}>
+        <CustomButton style={buttonStyle} onClick={() => sharePlaylist()}>
           <i className="bi bi-box-arrow-up" style={customStyle} />
         </CustomButton>
         {toastContent}

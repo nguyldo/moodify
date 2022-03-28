@@ -3,7 +3,7 @@ const axios = require('axios');
 
 const router = express.Router();
 const {
-  audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
+  audioFeatures, idsToTracks, spotifyRecommend, filterTracks, saveSong,
 } = require('../functions/spotifySong');
 const { userTop } = require('../functions/spotifyUser');
 const { getSongByMood } = require('../functions/mongoSong');
@@ -108,6 +108,7 @@ router.post('/recommendations', async (req, res) => {
           const result = [];
           for (const response of responses) {
             response.data.tracks.map((track) => {
+              console.log(track.artists);
               const filteredTrack = {
                 id: track.id,
                 name: track.name,
@@ -259,6 +260,17 @@ router.get('/generatetitle', async (req, res) => {
   try {
     const text = await axios.get('https://randomuser.me/api/');
     res.status(200).send(`${text.data.results[0].name.last} ${text.data.results[0].location.street.name}`);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+router.put('/save', async (req, res) => {
+  const { ids, token } = req.query;
+  try {
+    const text = await saveSong(ids, token);
+    console.log(text.data);
+    res.status(200).send(text.data);
   } catch (error) {
     res.status(400).send(error);
   }
