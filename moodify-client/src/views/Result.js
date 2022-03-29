@@ -92,9 +92,6 @@ function Result() {
       setFilterPopActive(false);
       setFilterPopText('Popularity');
     }
-
-    setFilterPopText(filterPopText);
-    setFilterPopActive(filterPopActive);
   }
 
   async function followPlaylist() {

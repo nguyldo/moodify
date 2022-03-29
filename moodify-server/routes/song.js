@@ -51,7 +51,7 @@ songRoutes.get('/:mood', async (req, res) => {
 // posts user's suggested song to Song table, updates moodTags and associatedFeels if exists already
 // { af1, af2, af3, af4, af5 } are the optional associated feels, adminRec = true/false
 // returns json message
-// http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}&af3={af3}&af4={af4}&af5={af5}&adminRec={adminRec}&songid={}
+// http://localhost:5000/song/post/?mood={mood}&af1={af1}&af2={af2}&af3={af3}&af4={af4}&af5={af5}&adminRec={adminRec}
 songRoutes.post('/post', async (req, res) => {
   const {
     mood, af1, af2, af3, af4, af5, adminRec,
@@ -100,16 +100,16 @@ songRoutes.post('/post', async (req, res) => {
 
 // delete song from Song table
 // returns status code 200 if successful, status code 404 if song does not exist
-// https://localhost:5000/song/delete?songID={songID}
+// https://localhost:5000/song/delete?songId={songId}
 songRoutes.delete('/delete', async (req, res) => {
-  const { songID } = req.query;
+  const { songId } = req.query;
   try {
-    await Song.findOne({ songID })
+    await Song.findOne({ songId })
       .then(async (data) => {
         if (data) {
           console.log('deleting this song');
           console.log(`song: ${data.songName}`);
-          await Song.findOneAndDelete({ songID });
+          await Song.findOneAndDelete({ songId });
           res.sendStatus(200);
         } else {
           res.sendStatus(404);

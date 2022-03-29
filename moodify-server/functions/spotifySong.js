@@ -112,34 +112,45 @@ async function filterTracks(toFilter, list, features) {
   return newToFilter.map((item) => item.id);
 }
 
+// formats song to be readable and displays what is only needed
+// returns "prettified" list of songs
+function prettifySong(arr) {
+  const toReturn = [];
+  arr.forEach((element) => {
+    const rawArtists = element.artists;
+    const artists = [];
+    const artistUrl = [];
+    rawArtists.forEach((artist) => {
+      artists.push(artist.name);
+      artistUrl.push(artist.external_urls.spotify);
+    });
+    console.log(artists);
+    console.log(artistUrl);
+
+    toReturn.push({
+      songId: element.id,
+      songName: element.name,
+      songArtist: artists,
+      artistUrl,
+      songAlbum: element.album.name,
+      albumUrl: element.album.external_urls.spotify,
+      imageUrl: element.album.images[0].url,
+      explicit: element.explicit,
+      popularity: element.popularity,
+    });
+  });
+  return toReturn;
+}
+
+// searches for songs
+// returns list of possible songs based on search
 async function searchSong(term, type, token) {
   return axios.get(`${spotifyUrl}/search?q=${term}&type=${type}`, {
     headers: { Authorization: `Bearer ${token}` },
   }).then((data) => {
+    // console.log(data.data.tracks.items);
+    const toReturn = prettifySong(data.data.tracks.items);
     console.log('successful search');
-    const { items } = data.data.tracks;
-    const toReturn = [];
-    items.forEach((element) => {
-      const rawArtists = element.artists;
-      const artists = [];
-      const artistUrl = [];
-      rawArtists.forEach((artist) => {
-        artists.push(artist.name);
-        artistUrl.push(artist.external_urls.spotify);
-      });
-
-      toReturn.push({
-        songId: element.id,
-        songName: element.name,
-        songArtist: artists,
-        artistUrl,
-        songAlbum: element.album.name,
-        albumUrl: element.album.external_urls.spotify,
-        imageUrl: element.album.images[0].url,
-        explicit: element.explicit,
-        popularity: element.popularity,
-      });
-    });
     return toReturn;
   })
     .catch((error) => {
@@ -166,5 +177,5 @@ async function saveSong(ids, token) {
 }
 
 module.exports = {
-  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong, saveSong,
+  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong, saveSong, prettifySong,
 };

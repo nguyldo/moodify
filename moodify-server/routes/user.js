@@ -94,7 +94,7 @@ router.post('/update/mood', async (req, res) => {
 
 // new user
 // get info from spotify api after authentication
-// http://localhost5000/user/post?id={userID}
+// http://localhost:5000/user/post?id={userId}
 router.post('/post', async (req, res) => {
   const { id } = req.query;
 
@@ -124,8 +124,8 @@ router.post('/logout', async (req, res) => {
   }
 });
 
-// route for updating user's recommendedSongIDs and numRecommendations
-// https://localhost:5000/recommended?userID={userID}&songID={songID}
+// route for updating user's recommendedSongIds and numRecommendations
+// https://localhost:5000/recommended?userId={userId}&songId={songId}
 // Puts a recommended song into user's recommended list
 // Returns status code
 router.put('/recommended', async (req, res) => {
