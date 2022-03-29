@@ -3,7 +3,7 @@ const axios = require('axios');
 
 const router = express.Router();
 const {
-  audioFeatures, idsToTracks, spotifyRecommend, filterTracks, saveSong,
+  audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
 } = require('../functions/spotifySong');
 const { userTop, getUserId } = require('../functions/spotifyUser');
 const { getSongByMood } = require('../functions/mongoSong');
@@ -219,19 +219,19 @@ router.post('/recommendations', async (req, res) => {
 
   const allSongs = await Song.find({ moodTag: { $in: [mood] }, songId: { $exists: true } });
 
-    let filteredSongs = [];
-    if (associatedFeels.length > 0) {
-      allSongs.map((song) => {
-        for (const moodTag of song.associatedFeels) {
-          if (associatedFeels.includes(moodTag)) {
-            filteredSongs.push(song);
-            break;
-          }
+  let filteredSongs = [];
+  if (associatedFeels.length > 0) {
+    allSongs.map((song) => {
+      for (const moodTag of song.associatedFeels) {
+        if (associatedFeels.includes(moodTag)) {
+          filteredSongs.push(song);
+          break;
         }
-      });
-    } else {
-      filteredSongs = allSongs;
-    }
+      }
+    });
+  } else {
+    filteredSongs = allSongs;
+  }
 
   getRecommendations(filteredSongs, token)
     .then((data) => {
@@ -437,6 +437,7 @@ router.post('/generateimg', async (req, res) => {
   }
 });
 
+/*
 router.put('/save', async (req, res) => {
   const { ids, token } = req.query;
   try {
@@ -476,6 +477,7 @@ router.put('/save', async (req, res) => {
         res.json(err);
       });
   }
+});
 
 /*
   const artists = [];
