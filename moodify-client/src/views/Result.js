@@ -54,12 +54,13 @@ function Result() {
   const [filterPopActive, setFilterPopActive] = useState(false);
   const [filterGenreText, setFilterGenreText] = useState('Genre');
   const [filterGenreActive, setFilterGenreActive] = useState(false);
+  const [genreFilterIndex, setGenreFilterIndex] = useState(0);
   const [songs, setSongs] = useState([]);
   const [heartButton, setHeartButton] = useState(<i className="bi bi-heart" style={customStyle} />);
   const [heartFill, setHeartFill] = useState(false);
   const [toastActive, setToastActive] = useState(false);
   const [toastContent, setToastContent] = useState(undefined);
-  // const [filtered, setFiltered] = useState(songs);
+  const [filter, setFilter] = useState();
   const [genre, setGenre] = useState(['Genre']);
   const [name, setName] = useState();
   const [imgLink, setImgLink] = useState();
@@ -69,13 +70,27 @@ function Result() {
   }
 
   function isFilterGenreActive() {
-    if (filterGenreText !== 'Genre') {
-      setFilterGenreActive(!filterGenreActive);
-      setFilterGenreText(genre);
+    let newIndex = genreFilterIndex + 1;
+    console.log(newIndex, genre.length);
+    console.log(genre[newIndex]);
+    if (newIndex % genre.length === 0) {
+      newIndex = 0;
+      setGenreFilterIndex(newIndex);
+      setFilterGenreActive(false);
+      setFilter(songs);
     } else {
-      setFilterGenreActive(!filterGenreActive);
-      setFilterGenreText('Genre');
+      const songsToFilter = [...songs];
+      console.log(songsToFilter);
+      setGenreFilterIndex(newIndex);
+      setFilterGenreActive(true);
+      const theGenre = genre[newIndex];
+      const filtered = songsToFilter.filter((track) => track.artists?.some(
+        (artist) => artist.genres?.includes(theGenre),
+      ));
+      console.log(filtered);
+      setFilter(filtered);
     }
+    setFilterGenreText(genre[newIndex]);
   }
 
   const upArrow = '\u{02191}';
@@ -203,66 +218,64 @@ function Result() {
     }
   }
 
-  React.useEffect(() => {
-    axios.post(`http://localhost:5000/playlist/generatetitle?coremood=${mood}`).then((data) => {
-      console.log(`Name: ${data.data}`);
-      setName(data.data.split(' ').slice(1).join(' '));
-    }).catch((err) => {
-      console.log(err);
-    });
-  }, [songs]);
+  React.useEffect(async () => {
+    try {
+      await axios.get(`http://localhost:5000/user/${accessToken}`);
 
-  React.useEffect(() => axios.post(`http://localhost:5000/playlist/generateimg?text=${name}`).then((data) => {
-    console.log(`Image Link: ${data.data}`);
-    setImgLink(data.data);
-  }).catch((err) => {
-    console.log(err);
-  }), [name]);
+      const associatedFeels = [];
+      if (submood1 && submood1 !== '') {
+        associatedFeels.push(submood1);
+      }
+      if (submood2 && submood2 !== '') {
+        associatedFeels.push(submood2);
+      }
+      if (submood3 && submood3 !== '') {
+        associatedFeels.push(submood3);
+      }
+      if (submood4 && submood4 !== '') {
+        associatedFeels.push(submood4);
+      }
+      if (submood5 && submood5 !== '') {
+        associatedFeels.push(submood5);
+      }
 
-  React.useEffect(() => {
-    axios.get(`http://localhost:5000/user/${accessToken}`)
-      .then(() => {
-        const associatedFeels = [];
-        if (submood1 && submood1 !== '') {
-          associatedFeels.push(submood1);
-        }
-        if (submood2 && submood2 !== '') {
-          associatedFeels.push(submood2);
-        }
-        if (submood3 && submood3 !== '') {
-          associatedFeels.push(submood3);
-        }
-        if (submood4 && submood4 !== '') {
-          associatedFeels.push(submood4);
-        }
-        if (submood5 && submood5 !== '') {
-          associatedFeels.push(submood5);
-        }
-
-        axios.post('http://localhost:5000/playlist/recommendations', {
-          mood,
-          associatedFeels,
-          token: accessToken,
-        })
-          .then((data) => {
-            setSongs(data.data);
-            console.log(data.data);
-            const genres = genre;
-            data.data.forEach((track) => {
-              if (track.genre) {
-                track.genre.forEach((dat) => {
-                  if (dat) {
-                    genres.push(dat);
-                  }
-                });
-              }
-            });
-            setGenre(genres);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
+      const data = await axios.post('http://localhost:5000/playlist/recommendations', {
+        mood,
+        associatedFeels,
+        token: accessToken,
       });
+
+      setSongs(data.data);
+      setFilter(data.data);
+      console.log(data.data);
+      const genres = genre;
+      data.data.forEach((track) => {
+        if (track.artists) {
+          track.artists.forEach((artist) => {
+            if (artist.genres) {
+              artist.genres.forEach((dat) => {
+                if (dat) {
+                  if (!genres.includes(dat)) { genres.push(dat); }
+                }
+              });
+            }
+          });
+        }
+      });
+      console.log(genres);
+      setGenre(genres);
+
+      let newName = await axios.post(`http://localhost:5000/playlist/generatetitle?coremood=${mood}`);
+      console.log(newName);
+      newName = newName.data.split(' ').slice(1).join(' ');
+      setName(newName);
+
+      const newImgLink = await axios.post(`http://localhost:5000/playlist/generateimg?text=${newName}`);
+      console.log(newImgLink.data);
+      setImgLink(newImgLink.data);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   let suggestButton;
@@ -372,7 +385,7 @@ function Result() {
       </div>
 
       <Card className="rec-playlist">
-        <Card.Body><Playlist songs={songs} /></Card.Body>
+        <Card.Body><Playlist songs={filter} /></Card.Body>
       </Card>
     </div>
   );

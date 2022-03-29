@@ -25,6 +25,7 @@
         "import/no-named-as-default": "off",
         "linebreak-style": "off",
         "no-console": "off",
-        "object-curly-newline": "off"
+        "object-curly-newline": "off",
+        "array-callback-return": "off"
     }
 }
