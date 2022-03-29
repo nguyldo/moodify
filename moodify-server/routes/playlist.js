@@ -5,9 +5,18 @@ const router = express.Router();
 const {
   audioFeatures, idsToTracks, spotifyRecommend, filterTracks, saveSong,
 } = require('../functions/spotifySong');
-const { userTop } = require('../functions/spotifyUser');
+const { userTop, getUserId } = require('../functions/spotifyUser');
 const { getSongByMood } = require('../functions/mongoSong');
-const { followPlaylist, unFollowPlaylist } = require('../functions/spotifyPlaylist');
+const {
+  followPlaylist,
+  unFollowPlaylist,
+  generateTitle,
+  createPlaylist,
+  addSongsToPlaylist,
+  generateImage,
+  addPhotoToPlaylist,
+  grabImage,
+} = require('../functions/spotifyPlaylist');
 
 const spotifyUrl = 'https://api.spotify.com/v1';
 
@@ -207,61 +216,53 @@ router.get('/follow', async (req, res) => {
   }
 });
 
-// http://localhost:5000/playlist/follow?token={token}&id={playlistId}&follow={true || false}
-router.get('/follow', async (req, res) => {
-  const { token, id, follow } = req.params;
-
+// http://localhost:5000/playlist/create?token={token}&name={playlistName}&ids={csv of songs to create playlist w/}
+// returns generated playlist href
+router.post('/create', async (req, res) => {
+  const { token, ids, name } = req.query;
   try {
-    let result;
-    if (follow) {
-      result = followPlaylist(token, id);
-    } else {
-      result = unFollowPlaylist(token, id);
-    }
-    res.status(200).send(result);
+    console.log(`Token: ${token}`);
+    const username = await getUserId(token);
+    console.log(`User: ${username}`);
+    console.log(`Name: ${name}`);
+    const generatedPlaylist = await createPlaylist(name, username, token);
+    // console.log(`Playlist: ${generatedPlaylist}`);
+    const arr = ids.split(',');
+    console.log(`Arr: ${arr}`);
+    const uris = (await idsToTracks(arr, token)).map((track) => track.songURI);
+    console.log(`URIs: ${uris}`);
+    const value = await addSongsToPlaylist(generatedPlaylist.id, token, uris);
+    console.log(`Value: ${value}`);
+    const img = await grabImage(name);
+    await addPhotoToPlaylist(generatedPlaylist.id, token, img);
+    if (value) res.status(200).send(generatedPlaylist.external_urls.spotify);
+    else res.status(401).send('Failed');
   } catch (error) {
-    res.status(400).send(error);
+    console.log('Failed');
+    res.status(401).send('Failed');
   }
 });
 
-// http://localhost:5000/playlist/follow?token={token}&id={playlistId}&follow={true || false}
-router.get('/create', async (req, res) => {
-  const { token, id, follow } = req.params;
-
+// http://localhost:5000/playlist/generatetitle?coremood={core mood}
+router.post('/generatetitle', async (req, res) => {
+  const { coremood } = req.query;
   try {
-    let result;
-    if (follow) {
-      result = followPlaylist(token, id);
-    } else {
-      result = unFollowPlaylist(token, id);
-    }
-    res.status(200).send(result);
+    const playlistName = await generateTitle();
+    res.status(200).send(`${coremood} ${playlistName}`);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(401).send(error);
   }
 });
 
-// http://localhost:5000/playlist/generateimage/{text}
-router.get('/generateimage/:text', async (req, res) => {
-  const { text } = req.params;
-
+// http://localhost:5000/playlist/generateimg?text={text}
+router.post('/generateimg', async (req, res) => {
+  const { text } = req.query;
   try {
-    const img = await axios.get(`https://picsum.photos/seed/${text}/500`);
-    const imgId = img.headers['picsum-id'];
-    const uri = await axios.get(`https://picsum.photos/id/${imgId}/info`);
-    res.status(200).send(uri.data.url);
+    const imgLink = await generateImage(text);
+    res.status(200).send(imgLink);
   } catch (error) {
-    res.status(400).send(error);
-  }
-});
-
-// http://localhost:5000/playlist/generatetitle/
-router.get('/generatetitle', async (req, res) => {
-  try {
-    const text = await axios.get('https://randomuser.me/api/');
-    res.status(200).send(`${text.data.results[0].name.last} ${text.data.results[0].location.street.name}`);
-  } catch (error) {
-    res.status(400).send(error);
+    console.log(error);
+    res.status(401).send(error);
   }
 });
 

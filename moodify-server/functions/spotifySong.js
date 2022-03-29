@@ -26,7 +26,9 @@ async function spotifyRecommend(combinedTracks, token) {
 }
 
 // Request to spotify for songs info
-// Returns json list of songs w/ info
+// combinedTracks are array of song ids
+// token is user's token
+// Returns array of json songs w/ info
 async function idsToTracks(combinedTracks, token) {
   console.log('running get tracks');
 
@@ -44,6 +46,7 @@ async function idsToTracks(combinedTracks, token) {
         songName: element.name,
         songArtist: element.artists,
         songAlbum: element.album.name,
+        songURI: element.uri,
       });
     });
     return toReturn;
