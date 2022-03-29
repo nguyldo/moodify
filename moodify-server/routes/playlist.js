@@ -135,7 +135,25 @@ router.post('/recommendations', async (req, res) => {
 
   getRecommendations(filteredSongs, token)
     .then((data) => {
-      res.json(data);
+      const artists = [];
+      data.map((song) => {
+        for (const artist of song.artists) {
+          if (!artists.includes(artist.id)) {
+            artists.push(artist.id);
+          }
+        }
+      });
+
+      const artistIds = artists.join(',');
+
+      getArtistGenres(artistIds, token)
+        .then((data2) => {
+          console.log(data2);
+          res.json(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })
     .catch((err) => {
       console.log(err);
