@@ -120,6 +120,91 @@ async function grabImage(text) {
   return base64;
 }
 
+function filterTrackData(track) {
+  return {
+    id: track.id,
+    name: track.name,
+    artists: track.artists.map((artist) => ({
+      name: artist.name,
+      url: artist.external_urls.spotify,
+      id: artist.id,
+    })),
+    image: track.album.images[0],
+    explicit: track.explicit,
+    album: track.album.name,
+    albumUrl: track.album.external_urls.spotify,
+    url: track.external_urls.spotify,
+    popularity: track.popularity,
+  };
+}
+
+async function getRecommendations(filteredSongs, token) {
+  let seedTracks = '';
+
+  // IF THERE ARE <5 SONG RECS
+  if (filteredSongs.length <= 5) {
+    filteredSongs.map((song) => {
+      seedTracks = `${seedTracks},${song.songId}`;
+    });
+
+    seedTracks = seedTracks.slice(1);
+
+    const params = {
+      seed_tracks: seedTracks,
+      limit: 30,
+    };
+
+    const data = await axios.get(`${spotifyUrl}/recommendations`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params,
+    });
+
+    const filteredTracks = data.data.tracks.map((track) => filterTrackData(track));
+    return filteredTracks;
+  }
+
+  // IF THERE ARE 5+ SONG RECS
+  const requests = [];
+  for (let i = 0; i < 5; i += 1) {
+    const randomIndices = [];
+    while (randomIndices.length < 5) {
+      const randomNumber = Math.floor(Math.random() * filteredSongs.length);
+      if (!randomIndices.includes(randomIndices)) randomIndices.push(randomNumber);
+    }
+
+    for (const j of randomIndices) {
+      seedTracks = `${seedTracks},${filteredSongs[j].songId}`;
+    }
+
+    seedTracks = seedTracks.slice(1);
+
+    requests.push(
+      axios.get(`${spotifyUrl}/recommendations`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          seed_tracks: seedTracks,
+          limit: 5,
+        },
+      }),
+    );
+
+    seedTracks = '';
+  }
+
+  const responses = await axios.all(requests);
+
+  const result = [];
+  for (const response of responses) {
+    response.data.tracks.map((track) => {
+      console.log(track);
+      const filteredTrack = filterTrackData(track);
+      if (!result.includes(filteredTrack)) result.push(filteredTrack);
+    });
+  }
+
+  return result;
+}
+
 module.exports = {
   checkPlaylistFollow,
   followPlaylist,
@@ -130,4 +215,5 @@ module.exports = {
   generateTitle,
   generateImage,
   grabImage,
+  getRecommendations,
 };
