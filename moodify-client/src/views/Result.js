@@ -26,9 +26,22 @@ function Result() {
   const [filterPopText, setFilterPopText] = useState('Popularity');
   const [filterPopActive, setFilterPopActive] = useState(false);
   const [songs, setSongs] = useState([]);
+  const [filter, setFilter] = useState([]);
 
-  function isFilterActive() {
-    setFilterActive(!filterActive);
+  function isMostPopular() {
+    const temp = [...filter];
+    temp.sort((a, b) => b.popularity - a.popularity);
+    setFilter(temp);
+    console.log('MOST POPULAR');
+    console.log(filter);
+  }
+
+  function isLeastPopular() {
+    const temp = [...filter];
+    temp.sort((a, b) => a.popularity - b.popularity);
+    setFilter(temp);
+    console.log('LEAST POPULAR');
+    console.log(filter);
   }
 
   const upArrow = '\u{02191}';
@@ -38,12 +51,33 @@ function Result() {
     if (filterPopText === 'Popularity') {
       setFilterPopActive(true);
       setFilterPopText(`Popularity ${upArrow}`);
+      isMostPopular();
     } else if (filterPopText === `Popularity ${upArrow}`) {
       setFilterPopActive(true);
       setFilterPopText(`Popularity ${downArrow}`);
+      isLeastPopular();
     } else if (filterPopText === `Popularity ${downArrow}`) {
       setFilterPopActive(false);
       setFilterPopText('Popularity');
+      console.log(songs);
+      setFilter(songs);
+      console.log(songs);
+      console.log('ORIGINAL');
+      console.log(filter);
+    }
+  }
+
+  function isFilterActive() {
+    setFilterActive(!filterActive);
+    if (filterActive === false) {
+      const temp = [...filter];
+      const noExplicit = temp.filter((song) => song.explicit === false);
+      setFilter(noExplicit);
+      console.log(noExplicit);
+      console.log('NO EXPLICIT');
+    } else if (filterActive === true) {
+      setFilter(songs);
+      console.log('EXPLICIT');
     }
   }
 
@@ -74,6 +108,7 @@ function Result() {
         })
           .then((data) => {
             setSongs(data.data);
+            setFilter(data.data);
           });
       })
       .catch((err) => {
@@ -161,7 +196,7 @@ function Result() {
       </div>
 
       <Card className="rec-playlist">
-        <Card.Body><Playlist songs={songs} /></Card.Body>
+        <Card.Body><Playlist songs={filter} /></Card.Body>
       </Card>
     </div>
   );

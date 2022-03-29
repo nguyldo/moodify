@@ -24,6 +24,7 @@
         "consistent-return": "off",
         "import/no-named-as-default": "off",
         "linebreak-style": "off",
-        "object-curly-newline": "off"
+        "object-curly-newline": "off",
+        "no-console": "off"
     }
 }
