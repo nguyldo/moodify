@@ -9,6 +9,7 @@ import Cookies from 'js-cookie';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
 import Playlist from '../components/Playlist';
+import Toggle from '../components/Toggle';
 
 function Result() {
   const accessToken = Cookies.get('SpotifyAccessToken');
@@ -56,6 +57,7 @@ function Result() {
   const [filterGenreActive, setFilterGenreActive] = useState(false);
   const [genreFilterIndex, setGenreFilterIndex] = useState(0);
   const [songs, setSongs] = useState([]);
+  const [personalizedSongs, setPersonalizedSongs] = useState([]);
   const [heartButton, setHeartButton] = useState(<i className="bi bi-heart" style={customStyle} />);
   const [heartFill, setHeartFill] = useState(false);
   const [toastActive, setToastActive] = useState(false);
@@ -64,6 +66,7 @@ function Result() {
   const [genre, setGenre] = useState(['Genre']);
   const [name, setName] = useState();
   const [imgLink, setImgLink] = useState();
+  const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
 
   function isFilterActive() {
     setFilterActive(!filterActive);
@@ -108,6 +111,14 @@ function Result() {
       setFilterPopText('Popularity');
     }
   }
+
+  const clickedCommunityPlaylist = () => {
+    setCommunityPlaylistActive(true);
+  };
+
+  const clickedPersonalizedPlaylist = () => {
+    setCommunityPlaylistActive(false);
+  };
 
   async function followPlaylist() {
     try {
@@ -245,6 +256,9 @@ function Result() {
         token: accessToken,
       });
 
+      const personalizedData = await axios.get(`http://localhost:5000/playlist/personal/${accessToken}?cm=${mood}`);
+      setPersonalizedSongs(personalizedData.data);
+
       setSongs(data.data);
       setFilter(data.data);
       console.log(data.data);
@@ -381,11 +395,20 @@ function Result() {
         <CustomButton style={buttonStyle} onClick={() => showWarning(shareToast)}>
           <i className="bi bi-box-arrow-up" style={customStyle} />
         </CustomButton>
+        <Toggle
+          leftText="Community"
+          rightText="Personalized"
+          leftActive={communityPlaylistActive}
+          onClickLeft={clickedCommunityPlaylist}
+          onClickRight={clickedPersonalizedPlaylist}
+        />
         {toastContent}
       </div>
 
       <Card className="rec-playlist">
-        <Card.Body><Playlist songs={filter} /></Card.Body>
+        <Card.Body>
+          <Playlist songs={communityPlaylistActive ? filter : personalizedSongs} />
+        </Card.Body>
       </Card>
     </div>
   );

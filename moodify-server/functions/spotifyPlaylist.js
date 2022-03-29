@@ -216,4 +216,5 @@ module.exports = {
   generateImage,
   grabImage,
   getRecommendations,
+  filterTrackData,
 };

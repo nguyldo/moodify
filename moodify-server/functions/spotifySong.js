@@ -2,6 +2,9 @@ const axios = require('axios');
 
 const spotifyUrl = 'https://api.spotify.com/v1';
 
+const { filterTrackData } = require('./spotifyPlaylist');
+const { getArtistGenres } = require('./spotifyArtist');
+
 // Request to spotify for new songs
 // Returns json list of songs
 async function spotifyRecommend(combinedTracks, token) {
@@ -36,19 +39,37 @@ async function idsToTracks(combinedTracks, token) {
 
   return axios.get(`${spotifyUrl}/tracks?ids=${str}`, {
     headers: { Authorization: `Bearer ${token}` },
-  }).then((data) => {
+  }).then(async (data) => {
     console.log('Got tracks!');
     const items = data.data.tracks;
-    const toReturn = [];
+    let toReturn = [];
     items.forEach((element) => {
-      toReturn.push({
-        songId: element.id,
-        songName: element.name,
-        songArtist: element.artists,
-        songAlbum: element.album.name,
-        songURI: element.uri,
-      });
+      toReturn.push(filterTrackData(element));
     });
+
+    const artists = [];
+    toReturn.map((song) => {
+      for (const artist of song.artists) {
+        if (!artists.includes(artist.id)) {
+          artists.push(artist.id);
+        }
+      }
+    });
+
+    const artistIds = artists.join(',');
+
+    const artistsData = await getArtistGenres(artistIds, token);
+
+    toReturn = toReturn.map((song) => {
+      const newArtists = [];
+      for (const artist of song.artists) {
+        newArtists.push(artistsData[artist.id]);
+      }
+      const newSong = song;
+      newSong.artists = newArtists;
+      return newSong;
+    });
+
     return toReturn;
   }).catch((err) => {
     console.log('unsuccessful get tracks');
@@ -74,13 +95,10 @@ async function audioFeatures(list, token) {
 // Uses features to filter 'toFilter' using 'list' features
 // Returns list of song ids that were filtered
 async function filterTracks(toFilter, list, features) {
-  // console.log(list)
   const newList = features.audio_features.filter((item) => {
     if (item) return list.includes(item.id);
   });
-  // console.log(newList)
 
-  // console.log(toFilter)
   let newToFilter = features.audio_features.filter((item) => {
     if (item) return toFilter.includes(item.id);
   });
@@ -101,7 +119,7 @@ async function filterTracks(toFilter, list, features) {
     const live = Math.abs(item.liveness - values.liveness) < 0.2;
     const val = Math.abs(item.valence - values.valence) < 0.2;
     const tempo = Math.abs(item.tempo - values.tempo) < 10;
-    // console.log(item.id, tempo, energy, loud, dance, val, live);
+
     return tempo && energy && loud && dance && val && live;
   });
 
