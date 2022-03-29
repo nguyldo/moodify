@@ -26,7 +26,9 @@ async function spotifyRecommend(combinedTracks, token) {
 }
 
 // Request to spotify for songs info
-// Returns json list of songs w/ info
+// combinedTracks are array of song ids
+// token is user's token
+// Returns array of json songs w/ info
 async function idsToTracks(combinedTracks, token) {
   console.log('running get tracks');
 
@@ -44,7 +46,7 @@ async function idsToTracks(combinedTracks, token) {
         songName: element.name,
         songArtist: element.artists,
         songAlbum: element.album.name,
-        moodTag: '',
+        songURI: element.uri,
       });
     });
     return toReturn;
@@ -157,6 +159,23 @@ async function searchSong(term, type, token) {
     });
 }
 
+async function saveSong(ids, token) {
+  return axios.put(`${spotifyUrl}/me/tracks?ids=${ids}`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  }).then((data) => {
+    console.log('successful save');
+    const toReturn = data;
+    return toReturn;
+  })
+    .catch((error) => {
+      console.log('unsuccessful save');
+      console.log(error.response.data);
+    });
+}
+
 module.exports = {
-  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong, prettifySong,
+  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong, saveSong, prettifySong,
 };

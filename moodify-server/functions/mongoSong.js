@@ -4,7 +4,7 @@ const Song = require('../models/song');
 // Returns list of song ids
 async function getSongByMood(coreMood) {
   coreMood.toLowerCase();
-  console.log(`getting songs from ${coreMood}`);
+  console.log(`getting songs for ${coreMood}`);
 
   try {
     const songs = await Song.find({

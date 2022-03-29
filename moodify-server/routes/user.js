@@ -13,10 +13,6 @@ const {
   getUserId, getPlaylistFollow, userTop, getUserProfile,
 } = require('../functions/spotifyUser');
 const {
-  audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
-} = require('../functions/spotifySong');
-const { getSongByMood } = require('../functions/mongoSong');
-const {
   postUser, findUser, checkUser, logout, saveUser,
 } = require('../functions/mongoUser');
 const { checkMood } = require('../functions/mongoMood');
@@ -179,65 +175,6 @@ router.get('/playlists/:token', async (req, res) => {
     const toReturn = await getPlaylistFollow(token);
     if (toReturn) res.status(200).send(toReturn);
     else res.sendStatus(400);
-  }
-});
-
-// http://localhost:5000/user/personal/{token}?cm={coremood}&am1={associatedmood}&am2={associatedmood}
-router.get('/personal/:token', async (req, res) => {
-  const { token } = req.params;
-  const { cm } = req.query;
-  try {
-    // Grab User's Top Tracks
-    const userTracks = (await userTop(token, 'tracks')).slice(0, 50).map((item) => item.songId);
-    // console.log(userTracks)
-
-    // Grab Mongo's Mood & Associated Mood
-    const mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songId);
-    // console.log(mongoTracks);
-
-    // Concat User Tracks & Mongo Tracks
-    let combinedTracks = userTracks.concat(mongoTracks);
-    // console.log(combinedTracks);
-
-    // Collect Audio Features of User's Top Tracks
-    let trackFeatures = await audioFeatures(combinedTracks, token);
-    // console.log(trackFeatures);
-
-    // Filter User's Top Moods Using Mongo Songs
-    const filteredTracks = await filterTracks(userTracks, mongoTracks, trackFeatures);
-    // console.log(filteredTracks);
-
-    // Concat Filtered Tracks w/ Mongo's Tracks Randomly
-    combinedTracks = mongoTracks.slice(0, 2).concat(filteredTracks).slice(0, 5);
-    // console.log(combinedTracks);
-
-    // Get Recommendations using User's & Mongo's
-    let recommendedTracks = await spotifyRecommend(combinedTracks, token);
-    // console.log(recommendedTracks)
-
-    // Concat the new recommended with the previously filtered
-    combinedTracks = filteredTracks.concat(recommendedTracks);
-
-    // Collect Audio Features from Spotify of the Tracks (Max 100)
-    trackFeatures = await audioFeatures(combinedTracks, token);
-    // console.log(trackFeatures)
-
-    // Filter Recommendations Using the Filtered User's Songs
-    const personalizedTracks = (await filterTracks(
-      filteredTracks,
-      recommendedTracks,
-      trackFeatures,
-    )).slice(0, 5);
-
-    // Get recommended tracks based the personalized tracks
-    recommendedTracks = await spotifyRecommend(personalizedTracks, token);
-
-    recommendedTracks = await idsToTracks(recommendedTracks, token);
-
-    res.status(200).json(recommendedTracks);
-  } catch (error) {
-    // console.log(error);
-    res.status(400);
   }
 });
 
