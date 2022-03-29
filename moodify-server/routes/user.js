@@ -13,10 +13,6 @@ const {
   getUserId, getPlaylistFollow, userTop, getUserProfile,
 } = require('../functions/spotifyUser');
 const {
-  audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
-} = require('../functions/spotifySong');
-const { getSongByMood } = require('../functions/mongoSong');
-const {
   postUser, findUser, checkUser, logout, saveUser,
 } = require('../functions/mongoUser');
 const { checkMood } = require('../functions/mongoMood');
@@ -98,7 +94,7 @@ router.post('/update/mood', async (req, res) => {
 
 // new user
 // get info from spotify api after authentication
-// http://localhost5000/user/post?id={userID}
+// http://localhost:5000/user/post?id={userId}
 router.post('/post', async (req, res) => {
   const { id } = req.query;
 
@@ -128,8 +124,8 @@ router.post('/logout', async (req, res) => {
   }
 });
 
-// route for updating user's recommendedSongIDs and numRecommendations
-// https://localhost:5000/recommended?userID={userID}&songID={songID}
+// route for updating user's recommendedSongIds and numRecommendations
+// https://localhost:5000/recommended?userId={userId}&songId={songId}
 // Puts a recommended song into user's recommended list
 // Returns status code
 router.put('/recommended', async (req, res) => {
@@ -146,7 +142,7 @@ router.put('/recommended', async (req, res) => {
       console.log(data.recommendedSongIds);
       if (!data.recommendedSongIds.includes(user.songId)) {
         data.recommendedSongIds.push(user.songId);
-        data.numRecommendations++;
+        data.numRecommendations += 1;
         data = await saveUser(data);
         console.log(data);
         console.log('inserting new recommended song');
@@ -179,65 +175,6 @@ router.get('/playlists/:token', async (req, res) => {
     const toReturn = await getPlaylistFollow(token);
     if (toReturn) res.status(200).send(toReturn);
     else res.sendStatus(400);
-  }
-});
-
-// http://localhost:5000/user/personal/{token}?cm={coremood}&am1={associatedmood}&am2={associatedmood}
-router.get('/personal/:token', async (req, res) => {
-  const { token } = req.params;
-  const { cm } = req.query;
-  try {
-    // Grab User's Top Tracks
-    const userTracks = (await userTop(token, 'tracks')).slice(0, 50).map((item) => item.songID);
-    // console.log(userTracks)
-
-    // Grab Mongo's Mood & Associated Mood
-    const mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songID);
-    // console.log(mongoTracks);
-
-    // Concat User Tracks & Mongo Tracks
-    let combinedTracks = userTracks.concat(mongoTracks);
-    // console.log(combinedTracks);
-
-    // Collect Audio Features of User's Top Tracks
-    let trackFeatures = await audioFeatures(combinedTracks, token);
-    // console.log(trackFeatures);
-
-    // Filter User's Top Moods Using Mongo Songs
-    const filteredTracks = await filterTracks(userTracks, mongoTracks, trackFeatures);
-    // console.log(filteredTracks);
-
-    // Concat Filtered Tracks w/ Mongo's Tracks Randomly
-    combinedTracks = mongoTracks.slice(0, 2).concat(filteredTracks).slice(0, 5);
-    // console.log(combinedTracks);
-
-    // Get Recommendations using User's & Mongo's
-    let recommendedTracks = await spotifyRecommend(combinedTracks, token);
-    // console.log(recommendedTracks)
-
-    // Concat the new recommended with the previously filtered
-    combinedTracks = filteredTracks.concat(recommendedTracks);
-
-    // Collect Audio Features from Spotify of the Tracks (Max 100)
-    trackFeatures = await audioFeatures(combinedTracks, token);
-    // console.log(trackFeatures)
-
-    // Filter Recommendations Using the Filtered User's Songs
-    const personalizedTracks = (await filterTracks(
-      filteredTracks,
-      recommendedTracks,
-      trackFeatures,
-    )).slice(0, 5);
-
-    // Get recommended tracks based the personalized tracks
-    recommendedTracks = await spotifyRecommend(personalizedTracks, token);
-
-    recommendedTracks = await idsToTracks(recommendedTracks, token);
-
-    res.status(200).json(recommendedTracks);
-  } catch (error) {
-    // console.log(error);
-    res.status(400);
   }
 });
 

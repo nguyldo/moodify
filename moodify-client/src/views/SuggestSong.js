@@ -35,7 +35,7 @@ function SuggestSong() {
     const items = data.data;
     items.forEach((element) => {
       results.push({
-        songID: element.songId,
+        songId: element.songId,
         songName: element.songName,
         songArtist: element.songArtist,
         artistUrl: element.artistUrl,
@@ -87,6 +87,12 @@ function SuggestSong() {
           }).catch((err) => {
             console.log(err);
             alert('Song already exists');
+          });
+        axios.post(`http://localhost:5000/user/update/mood?type=${mood}&token=${accessToken}`)
+          .then(() => {
+            console.log('user mood added or updated');
+          }).catch((err) => {
+            console.log(err);
           });
       })
       .catch((err) => {
@@ -182,8 +188,11 @@ function SuggestSong() {
                           list.songId,
                           list.songName,
                           list.songArtist,
+                          list.artistUrl,
                           list.songAlbum,
+                          list.albumUrl,
                           list.popularity,
+                          list.explicit,
                         );
                       }}
                     />

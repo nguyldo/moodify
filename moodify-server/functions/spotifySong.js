@@ -26,7 +26,9 @@ async function spotifyRecommend(combinedTracks, token) {
 }
 
 // Request to spotify for songs info
-// Returns json list of songs w/ info
+// combinedTracks are array of song ids
+// token is user's token
+// Returns array of json songs w/ info
 async function idsToTracks(combinedTracks, token) {
   console.log('running get tracks');
 
@@ -44,7 +46,7 @@ async function idsToTracks(combinedTracks, token) {
         songName: element.name,
         songArtist: element.artists,
         songAlbum: element.album.name,
-        moodTag: '',
+        songURI: element.uri,
       });
     });
     return toReturn;
@@ -110,34 +112,45 @@ async function filterTracks(toFilter, list, features) {
   return newToFilter.map((item) => item.id);
 }
 
+// formats song to be readable and displays what is only needed
+// returns "prettified" list of songs
+function prettifySong(arr) {
+  const toReturn = [];
+  arr.forEach((element) => {
+    const rawArtists = element.artists;
+    const artists = [];
+    const artistUrl = [];
+    rawArtists.forEach((artist) => {
+      artists.push(artist.name);
+      artistUrl.push(artist.external_urls.spotify);
+    });
+    console.log(artists);
+    console.log(artistUrl);
+
+    toReturn.push({
+      songId: element.id,
+      songName: element.name,
+      songArtist: artists,
+      artistUrl,
+      songAlbum: element.album.name,
+      albumUrl: element.album.external_urls.spotify,
+      imageUrl: element.album.images[0].url,
+      explicit: element.explicit,
+      popularity: element.popularity,
+    });
+  });
+  return toReturn;
+}
+
+// searches for songs
+// returns list of possible songs based on search
 async function searchSong(term, type, token) {
   return axios.get(`${spotifyUrl}/search?q=${term}&type=${type}`, {
     headers: { Authorization: `Bearer ${token}` },
   }).then((data) => {
+    // console.log(data.data.tracks.items);
+    const toReturn = prettifySong(data.data.tracks.items);
     console.log('successful search');
-    const { items } = data.data.tracks;
-    const toReturn = [];
-    items.forEach((element) => {
-      const rawArtists = element.artists;
-      const artists = [];
-      const artistUrl = [];
-      rawArtists.forEach((artist) => {
-        artists.push(artist.name);
-        artistUrl.push(artist.external_urls.spotify);
-      });
-
-      toReturn.push({
-        songId: element.id,
-        songName: element.name,
-        songArtist: artists,
-        artistUrl,
-        songAlbum: element.album.name,
-        albumUrl: element.album.external_urls.spotify,
-        imageUrl: element.album.images[0].url,
-        explicit: element.explicit,
-        popularity: element.popularity,
-      });
-    });
     return toReturn;
   })
     .catch((error) => {
@@ -146,6 +159,23 @@ async function searchSong(term, type, token) {
     });
 }
 
+async function saveSong(ids, token) {
+  return axios.put(`${spotifyUrl}/me/tracks?ids=${ids}`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  }).then((data) => {
+    console.log('successful save');
+    const toReturn = data;
+    return toReturn;
+  })
+    .catch((error) => {
+      console.log('unsuccessful save');
+      console.log(error.response.data);
+    });
+}
+
 module.exports = {
-  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong,
+  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong, saveSong, prettifySong,
 };
