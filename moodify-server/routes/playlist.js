@@ -110,6 +110,24 @@ router.delete('/remove', async (req, res) => {
   });
 });
 
+// checks to see if a list of songs is currently in user's Liked Songs playlist
+// returns an array of booleans
+// https://localhost:5000/playlist/check?ids={track1,track2,etc}&token={token}
+router.get('/check', async (req, res) => {
+  const { ids, token } = req.query;
+
+  return axios.get(`${spotifyUrl}/me/tracks/contains?ids=${ids}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((data) => {
+    console.log(data.data);
+    res.status(200).send(data.data);
+  }).catch((error) => {
+    console.log(error);
+  });
+});
+
 router.post('/recommendations', async (req, res) => {
   const { mood, associatedFeels, token } = req.body;
 
