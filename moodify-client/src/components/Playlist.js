@@ -1,5 +1,6 @@
 /* eslint-disable array-callback-return */
 import React, { useState } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import '../styles/playlist.css';
 // import Cookies from 'js-cookie';
 
@@ -26,7 +27,15 @@ const Song = (props) => {
         <span className="playlist-song-album"><a className="album-link" target="_blank" rel="noreferrer" href={albumLink}>{albumName}</a></span>
       </td>
       <td className="c3 playlist-song-artists">{artists.map((artist) => <span className="artist-comma"><a className="artist-link" target="_blank" rel="noreferrer" href={artist.url}>{artist.name}</a></span>)}</td>
-      <td className="c4"><img src="/ellipsis.svg" className="playlist-song-kebab" alt="kebab" /></td>
+      <Dropdown>
+        <Dropdown.Toggle id="dropdown-basic">
+          <img src="/ellipsis.svg" className="playlist-song-kebab" alt="kebab" />
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className="playlist-kebab-options">
+          <Dropdown.Item className="option" href="#">Song Credits</Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
     </tr>
   );
 };

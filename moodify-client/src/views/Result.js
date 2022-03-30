@@ -49,7 +49,8 @@ function Result() {
     color: 'black',
   };
 
-  const [filterActive, setFilterActive] = useState(false);
+  const [filterExplicitActive, setFilterExplicitActive] = useState(false);
+  const [filterExplicitText, setFilterExplicitText] = useState('Explict');
   const [filterPopText, setFilterPopText] = useState('Popularity');
   const [filterPopActive, setFilterPopActive] = useState(false);
   const [filterGenreText, setFilterGenreText] = useState('Genre');
@@ -65,8 +66,18 @@ function Result() {
   const [name, setName] = useState();
   const [imgLink, setImgLink] = useState();
 
-  function isFilterActive() {
-    setFilterActive(!filterActive);
+  function isMostPopular() {
+    const temp = [...filter];
+    temp.sort((a, b) => b.popularity - a.popularity);
+    setFilter(temp);
+    console.log('MOST POPULAR');
+  }
+
+  function isLeastPopular() {
+    const temp = [...filter];
+    temp.sort((a, b) => a.popularity - b.popularity);
+    setFilter(temp);
+    console.log('LEAST POPULAR');
   }
 
   function isFilterGenreActive() {
@@ -100,12 +111,31 @@ function Result() {
     if (filterPopText === 'Popularity') {
       setFilterPopActive(true);
       setFilterPopText(`Popularity ${upArrow}`);
+      isMostPopular();
     } else if (filterPopText === `Popularity ${upArrow}`) {
       setFilterPopActive(true);
       setFilterPopText(`Popularity ${downArrow}`);
+      isLeastPopular();
     } else if (filterPopText === `Popularity ${downArrow}`) {
       setFilterPopActive(false);
       setFilterPopText('Popularity');
+      setFilter(songs);
+      console.log('ORIGINAL');
+    }
+  }
+
+  function isFilterExplicitActive() {
+    setFilterExplicitActive(!filterExplicitActive);
+    if (filterExplicitActive === false) {
+      setFilterExplicitText('Non-Explicit');
+      const temp = [...filter];
+      const noExplicit = temp.filter((song) => song.explicit === false);
+      setFilter(noExplicit);
+      console.log('NO EXPLICIT');
+    } else if (filterExplicitActive === true) {
+      setFilterExplicitText('Explicit');
+      setFilter(songs);
+      console.log('EXPLICIT');
     }
   }
 
@@ -374,7 +404,7 @@ function Result() {
         <CustomButton style={buttonStyle} onClick={() => showWarning(saveToast)}>
           {heartButton}
         </CustomButton>
-        <Button color="#2C2C2C" type="pill" filterActive={filterActive} text="Explicit" onClick={() => isFilterActive()} />
+        <Button color="#2C2C2C" type="pill" filterActive={filterExplicitActive} text={filterExplicitText} onClick={() => isFilterExplicitActive()} />
         <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
         <Button color="#2C2C2C" type="pill" filterActive={filterGenreActive} text={filterGenreText} onClick={() => isFilterGenreActive(filterPopText)} />
         {suggestButton}
