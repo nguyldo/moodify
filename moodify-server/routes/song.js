@@ -1,5 +1,6 @@
 // Server Imports
 const express = require('express');
+const axios = require('axios');
 const Song = require('../models/song');
 
 const songRoutes = express.Router();
@@ -118,6 +119,50 @@ songRoutes.delete('/delete', async (req, res) => {
   } catch (err) {
     return err;
   }
+});
+
+songRoutes.get('/get/credits', async (req, res) => {
+  const { songTitle, artist } = req.query; // get song title and artist name from spotify
+  const geniusUrl = 'https://api.genius.com';
+
+  await axios.get(`${geniusUrl}/search?q=${songTitle}%20${artist}`, {
+    headers: {
+      Authorization: 'Bearer 1GEz--agEZL1sS56lJi_mTYCeViByFWjs0dxLWaXvkXYinCxO6D5kPCUaZjZdLk3',
+    },
+  }).then(async (results) => {
+    console.log('dataa');
+    const songId = results.data.response.hits[0].result.id;
+
+    await axios.get(`${geniusUrl}/songs/${songId}`, {
+      headers: {
+        Authorization: 'Bearer 1GEz--agEZL1sS56lJi_mTYCeViByFWjs0dxLWaXvkXYinCxO6D5kPCUaZjZdLk3',
+      },
+    }).then((song) => {
+      const credits = song.data.response.song;
+      const writers = credits.writer_artists;
+      const writArr = [];
+      const producers = credits.producer_artists;
+      const prodArr = [];
+
+      writers.forEach((writer) => {
+        writArr.push(writer.name);
+      });
+
+      producers.forEach((producer) => {
+        prodArr.push(producer.name);
+      });
+      const toReturn = {
+        performedBy: credits.artist_names,
+        writtenBy: writArr,
+        producedBy: prodArr,
+      };
+      res.json(toReturn);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }).catch((error) => {
+    console.log(error);
+  });
 });
 
 module.exports = songRoutes;

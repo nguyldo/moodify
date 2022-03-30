@@ -176,7 +176,7 @@ function SuggestSong() {
               <tbody>
                 <tr key={list.songId}>
                   <td>{list.songName}</td>
-                  <td>{list.songArtist}</td>
+                  <td>{list.songArtist.join(', ')}</td>
                   <td>{list.songAlbum}</td>
                   <td>
                     <Button
