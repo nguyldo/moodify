@@ -92,3 +92,16 @@
 .artist-comma + .artist-comma::before {
   content: ", ";
 }
+
+#dropdown-basic::after{
+  display: none;
+}
+
+#dropdown-basic {
+  background-color: rgba(0, 0, 0, 0);
+  border-style: none;
+}
+
+.option:active {
+  background-color: green !important
+}

@@ -194,11 +194,15 @@ async function getRecommendations(filteredSongs, token) {
   const responses = await axios.all(requests);
 
   const result = [];
+  const existingSongIds = [];
   for (const response of responses) {
     response.data.tracks.map((track) => {
       console.log(track);
       const filteredTrack = filterTrackData(track);
-      if (!result.includes(filteredTrack)) result.push(filteredTrack);
+      if (!existingSongIds.includes(filteredTrack.id)) {
+        result.push(filteredTrack);
+        existingSongIds.push(filteredTrack.id);
+      }
     });
   }
 
