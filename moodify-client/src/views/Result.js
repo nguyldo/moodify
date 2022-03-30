@@ -49,7 +49,8 @@ function Result() {
     color: 'black',
   };
 
-  const [filterActive, setFilterActive] = useState(false);
+  const [filterExplicitActive, setFilterExplicitActive] = useState(false);
+  const [filterExplicitText, setFilterExplicitText] = useState('Explict');
   const [filterPopText, setFilterPopText] = useState('Popularity');
   const [filterPopActive, setFilterPopActive] = useState(false);
   const [filterGenreText, setFilterGenreText] = useState('Genre');
@@ -70,7 +71,6 @@ function Result() {
     temp.sort((a, b) => b.popularity - a.popularity);
     setFilter(temp);
     console.log('MOST POPULAR');
-    console.log(filter);
   }
 
   function isLeastPopular() {
@@ -78,7 +78,6 @@ function Result() {
     temp.sort((a, b) => a.popularity - b.popularity);
     setFilter(temp);
     console.log('LEAST POPULAR');
-    console.log(filter);
   }
 
   function isFilterGenreActive() {
@@ -120,23 +119,21 @@ function Result() {
     } else if (filterPopText === `Popularity ${downArrow}`) {
       setFilterPopActive(false);
       setFilterPopText('Popularity');
-      console.log(songs);
       setFilter(songs);
-      console.log(songs);
       console.log('ORIGINAL');
-      console.log(filter);
     }
   }
 
-  function isFilterActive() {
-    setFilterActive(!filterActive);
-    if (filterActive === false) {
+  function isFilterExplicitActive() {
+    setFilterExplicitActive(!filterExplicitActive);
+    if (filterExplicitActive === false) {
+      setFilterExplicitText('Non-Explicit');
       const temp = [...filter];
       const noExplicit = temp.filter((song) => song.explicit === false);
       setFilter(noExplicit);
-      console.log(noExplicit);
       console.log('NO EXPLICIT');
-    } else if (filterActive === true) {
+    } else if (filterExplicitActive === true) {
+      setFilterExplicitText('Explicit');
       setFilter(songs);
       console.log('EXPLICIT');
     }
@@ -407,7 +404,7 @@ function Result() {
         <CustomButton style={buttonStyle} onClick={() => showWarning(saveToast)}>
           {heartButton}
         </CustomButton>
-        <Button color="#2C2C2C" type="pill" filterActive={filterActive} text="Explicit" onClick={() => isFilterActive()} />
+        <Button color="#2C2C2C" type="pill" filterActive={filterExplicitActive} text={filterExplicitText} onClick={() => isFilterExplicitActive()} />
         <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
         <Button color="#2C2C2C" type="pill" filterActive={filterGenreActive} text={filterGenreText} onClick={() => isFilterGenreActive(filterPopText)} />
         {suggestButton}
