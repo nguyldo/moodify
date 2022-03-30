@@ -1,5 +1,6 @@
 // Server Imports
 const express = require('express');
+const axios = require('axios');
 const Song = require('../models/song');
 
 const songRoutes = express.Router();
@@ -118,6 +119,81 @@ songRoutes.delete('/delete', async (req, res) => {
   } catch (err) {
     return err;
   }
+});
+
+songRoutes.get('/get/credits', async (req, res) => {
+  const { songTitle, artist } = req.query; // get song title and artist name from spotify
+  const geniusUrl = 'https://api.genius.com';
+
+  // await axios.post('https://api.genius.com/oauth/token', {
+  //   code: 'http://localhost:3000?code=1201',
+  //   client_id: process.env.client_id,
+  //   client_secret: process.env.client_secret,
+  //   response_type: 'code',
+  //   grant_type: 'authorization_code',
+  // }).then(async (token) => {
+  //   console.log('GENIUS token:');
+  //   console.log(token);
+  //   // get access token here
+  //   await axios.get(`${geniusUrl}/get?q=${songTitle}%20${artist}`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     }, //
+  //   }).then(async (result) => {
+  //     console.log(result);
+  //     const { id } = result.response.hits[0].result.id;
+  //     console.log(token);
+  //   }).catch((error) => {
+  //     console.log(error);
+  //   });
+
+  //   res.status(200).send(token);
+  // }).catch((error) => {
+  //   console.log(error);
+  // });
+
+  await axios.get(`${geniusUrl}/search?q=${songTitle}%20${artist}`, {
+    headers: {
+      Authorization: 'Bearer wCvqqUNm8Ijsle5jCnyxMAzrZ2EFw0artqDwx50V0b665gniQCUd_0b_jbFf1xai',
+    },
+  }).then(async (results) => {
+    console.log('dataa');
+    const songId = results.data.response.hits[0].result.id;
+    // res.json(data.data.response.hits[0].result.id);
+
+    await axios.get(`${geniusUrl}/songs/${songId}`, {
+      headers: {
+        Authorization: 'Bearer wCvqqUNm8Ijsle5jCnyxMAzrZ2EFw0artqDwx50V0b665gniQCUd_0b_jbFf1xai',
+      },
+    }).then((song) => {
+      const credits = song.data.response.song;
+      const writers = credits.writer_artists;
+      const writArr = [];
+      const producers = credits.producer_artists;
+      const prodArr = [];
+
+      writers.forEach((writer) => {
+        writArr.push(writer.name);
+      });
+
+      producers.forEach((producer) => {
+        prodArr.push(producer.name);
+      });
+      const toReturn = {
+        performedBy: credits.artist_names,
+        writtenBy: writArr,
+        producedBy: prodArr,
+      };
+      res.json(toReturn);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }).catch((error) => {
+    console.log(error);
+  });
+
+  // use genius api search -> get songID
+  // use genius song api and get song credits
 });
 
 module.exports = songRoutes;
