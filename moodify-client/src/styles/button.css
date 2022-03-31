@@ -44,3 +44,21 @@
 .pill-button:hover {
     box-shadow: 2px 2px 20px grey;
 }
+
+.toggle-half {
+    color: white;
+    font-size: 14pt;
+    padding: 8px 15px 8px 15px;
+    margin: 0px;
+    border-style: solid;
+    border-width: 3px;
+    border-color: green;
+}
+
+.toggle-left {
+    border-radius: 10px 0px 0px 10px;
+}
+
+.toggle-right {
+    border-radius: 0px 10px 10px 0px;
+}
