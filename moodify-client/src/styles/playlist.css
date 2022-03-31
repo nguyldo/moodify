@@ -105,3 +105,13 @@
 .option:active {
   background-color: green !important
 }
+
+.alert {
+  /* align-items: center;/ */
+  text-align: center;
+}
+
+.alert-text {
+  font-size: large;
+  text-align: center;
+}

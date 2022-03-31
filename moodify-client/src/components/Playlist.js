@@ -1,19 +1,56 @@
 /* eslint-disable array-callback-return */
 import React, { useState } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import { Toast, Dropdown } from 'react-bootstrap';
 import '../styles/playlist.css';
+import Button from './Button';
 // import Cookies from 'js-cookie';
 
 const Song = (props) => {
   const { name, artists, key, albumName, albumLink, image } = props;
 
   const [heart, setHeart] = useState('/heart-black.svg');
+  const [showLikeAlert, setShowLikeAlert] = useState(false);
+  const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
+
+  const likeAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setShowLikeAlert(false)}
+      show={showLikeAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Song has been added to &quot;Liked Songs&quot;</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setShowLikeAlert(false)} />
+    </Toast>
+  );
+
+  const unlikeAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setShowUnlikeAlert(false)}
+      show={showUnlikeAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Song has been removed from &quot;Liked Songs&quot;</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setShowUnlikeAlert(false)} />
+    </Toast>
+  );
 
   function isHeart() {
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
+      setShowLikeAlert(true);
     } else if (heart === '/heart-green.svg') {
       setHeart('/heart-black.svg');
+      setShowUnlikeAlert(true);
     }
   }
 
@@ -36,6 +73,8 @@ const Song = (props) => {
           <Dropdown.Item className="option" href="#">Song Credits</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
+      {likeAlert}
+      {unlikeAlert}
     </tr>
   );
 };
