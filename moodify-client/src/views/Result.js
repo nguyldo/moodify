@@ -9,6 +9,7 @@ import Cookies from 'js-cookie';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
 import Playlist from '../components/Playlist';
+import Toggle from '../components/Toggle';
 
 function Result() {
   const accessToken = Cookies.get('SpotifyAccessToken');
@@ -57,6 +58,7 @@ function Result() {
   const [filterGenreActive, setFilterGenreActive] = useState(false);
   const [genreFilterIndex, setGenreFilterIndex] = useState(0);
   const [songs, setSongs] = useState([]);
+  const [personalizedSongs, setPersonalizedSongs] = useState([]);
   const [heartButton, setHeartButton] = useState('/heart-white.png');
   const [heartFill, setHeartFill] = useState(false);
   const [toastActive, setToastActive] = useState(false);
@@ -65,6 +67,7 @@ function Result() {
   const [genre, setGenre] = useState(['Genre']);
   const [name, setName] = useState();
   const [imgLink, setImgLink] = useState();
+  const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
 
   function isMostPopular() {
     const temp = [...filter];
@@ -81,6 +84,7 @@ function Result() {
   }
 
   function isFilterGenreActive() {
+    const currentSongs = communityPlaylistActive ? songs : personalizedSongs;
     let newIndex = genreFilterIndex + 1;
     console.log(newIndex, genre.length);
     console.log(genre[newIndex]);
@@ -88,9 +92,9 @@ function Result() {
       newIndex = 0;
       setGenreFilterIndex(newIndex);
       setFilterGenreActive(false);
-      setFilter(songs);
+      setFilter(currentSongs);
     } else {
-      const songsToFilter = [...songs];
+      const songsToFilter = [...currentSongs];
       console.log(songsToFilter);
       setGenreFilterIndex(newIndex);
       setFilterGenreActive(true);
@@ -108,6 +112,7 @@ function Result() {
   const downArrow = '\u{02193}';
 
   function isFilterPopActive() {
+    const currentSongs = communityPlaylistActive ? songs : personalizedSongs;
     if (filterPopText === 'Popularity') {
       setFilterPopActive(true);
       setFilterPopText(`Popularity ${upArrow}`);
@@ -119,12 +124,13 @@ function Result() {
     } else if (filterPopText === `Popularity ${downArrow}`) {
       setFilterPopActive(false);
       setFilterPopText('Popularity');
-      setFilter(songs);
+      setFilter(currentSongs);
       console.log('ORIGINAL');
     }
   }
 
   function isFilterExplicitActive() {
+    const currentSongs = communityPlaylistActive ? songs : personalizedSongs;
     setFilterExplicitActive(!filterExplicitActive);
     if (filterExplicitActive === false) {
       setFilterExplicitText('Non-Explicit');
@@ -134,10 +140,39 @@ function Result() {
       console.log('NO EXPLICIT');
     } else if (filterExplicitActive === true) {
       setFilterExplicitText('Explicit');
-      setFilter(songs);
+      setFilter(currentSongs);
       console.log('EXPLICIT');
     }
   }
+
+  const clearFilters = () => {
+    if (filterExplicitActive) {
+      setFilterExplicitActive(false);
+      setFilterExplicitText('Explicit');
+    }
+    if (filterPopText === `Popularity ${downArrow}` || filterPopText === `Popularity ${upArrow}`) {
+      setFilterPopActive(false);
+      setFilterPopText('Popularity');
+    }
+
+    setGenreFilterIndex(0);
+    setFilterGenreActive(false);
+    setFilterGenreText('Genre');
+  };
+
+  const clickedCommunityPlaylist = () => {
+    clearFilters();
+
+    setFilter(songs);
+    setCommunityPlaylistActive(true);
+  };
+
+  const clickedPersonalizedPlaylist = () => {
+    clearFilters();
+
+    setFilter(personalizedSongs);
+    setCommunityPlaylistActive(false);
+  };
 
   async function followPlaylist() {
     try {
@@ -275,6 +310,9 @@ function Result() {
         token: accessToken,
       });
 
+      const personalizedData = await axios.get(`http://localhost:5000/playlist/personal/${accessToken}?cm=${mood}`);
+      setPersonalizedSongs(personalizedData.data);
+
       setSongs(data.data);
       setFilter(data.data);
       console.log(data.data);
@@ -409,11 +447,20 @@ function Result() {
         <CustomButton style={buttonStyle} onClick={() => showWarning(shareToast)}>
           <i className="bi bi-box-arrow-up" style={customStyle} />
         </CustomButton>
+        <Toggle
+          leftText="Community"
+          rightText="Personalized"
+          leftActive={communityPlaylistActive}
+          onClickLeft={clickedCommunityPlaylist}
+          onClickRight={clickedPersonalizedPlaylist}
+        />
         {toastContent}
       </div>
 
       <Card className="rec-playlist">
-        <Card.Body><Playlist songs={filter} /></Card.Body>
+        <Card.Body>
+          <Playlist songs={filter} />
+        </Card.Body>
       </Card>
     </div>
   );

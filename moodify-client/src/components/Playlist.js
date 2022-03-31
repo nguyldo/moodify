@@ -1,9 +1,10 @@
 /* eslint-disable array-callback-return */
 import React, { useState } from 'react';
-import { Dropdown, Modal, Button } from 'react-bootstrap';
+import { Toast, Dropdown, Modal } from 'react-bootstrap';
 import '../styles/playlist.css';
 
 import Cookies from 'js-cookie';
+import Button from './Button';
 
 const axios = require('axios');
 
@@ -17,12 +18,47 @@ const Song = (props) => {
   const [heart, setHeart] = useState(saved ? '/heart-green.svg' : '/heart-black.svg');
   const [modalShow, setModalShow] = useState(false);
   console.log(modalShow);
+  const [showLikeAlert, setShowLikeAlert] = useState(false);
+  const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
+
+  const likeAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setShowLikeAlert(false)}
+      show={showLikeAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Song has been added to &quot;Liked Songs&quot;</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setShowLikeAlert(false)} />
+    </Toast>
+  );
+
+  const unlikeAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setShowUnlikeAlert(false)}
+      show={showUnlikeAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Song has been removed from &quot;Liked Songs&quot;</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setShowUnlikeAlert(false)} />
+    </Toast>
+  );
 
   async function isHeart(songId) {
     console.log('songId');
     console.log(songId);
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
+      setShowLikeAlert(true);
       await axios.put(`${spotifyUrl}/me/tracks?ids=${songId}`, {}, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -30,6 +66,7 @@ const Song = (props) => {
       });
     } else if (heart === '/heart-green.svg') {
       setHeart('/heart-black.svg');
+      setShowUnlikeAlert(true);
       axios.delete(`${spotifyUrl}/me/tracks?ids=${songId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -112,6 +149,8 @@ const Song = (props) => {
           /> */}
         </Dropdown.Menu>
       </Dropdown>
+      {likeAlert}
+      {unlikeAlert}
     </tr>
   );
 };

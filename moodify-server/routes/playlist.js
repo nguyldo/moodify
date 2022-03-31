@@ -193,11 +193,11 @@ router.get('/personal/:token', async (req, res) => {
   const { cm } = req.query;
   try {
     // Grab User's Top Tracks
-    const userTracks = (await userTop(token, 'tracks')).slice(0, 50).map((item) => item.songID);
+    const userTracks = (await userTop(token, 'tracks')).slice(0, 50).map((item) => item.songId);
     // console.log(userTracks)
 
     // Grab Mongo's Mood & Associated Mood
-    const mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songID);
+    const mongoTracks = (await getSongByMood(cm)).slice(0, 50).map((item) => item.songId);
     // console.log(mongoTracks);
 
     // Concat User Tracks & Mongo Tracks
@@ -239,6 +239,7 @@ router.get('/personal/:token', async (req, res) => {
 
     recommendedTracks = await idsToTracks(recommendedTracks, token);
 
+    console.log('final log');
     res.status(200).json(recommendedTracks);
   } catch (error) {
     // console.log(error);
@@ -276,7 +277,7 @@ router.post('/create', async (req, res) => {
     // console.log(`Playlist: ${generatedPlaylist}`);
     const arr = ids.split(',');
     console.log(`Arr: ${arr}`);
-    const uris = (await idsToTracks(arr, token)).map((track) => track.songURI);
+    const uris = (await idsToTracks(arr, token)).map((track) => track.uri);
     console.log(`URIs: ${uris}`);
     const value = await addSongsToPlaylist(generatedPlaylist.id, token, uris);
     console.log(`Value: ${value}`);
@@ -286,6 +287,7 @@ router.post('/create', async (req, res) => {
     else res.status(401).send('Failed');
   } catch (error) {
     console.log('Failed');
+    console.log(error);
     res.status(401).send('Failed');
   }
 });

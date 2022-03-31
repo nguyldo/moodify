@@ -134,6 +134,7 @@ function filterTrackData(track) {
     album: track.album.name,
     albumUrl: track.album.external_urls.spotify,
     url: track.external_urls.spotify,
+    uri: track.uri,
     popularity: track.popularity,
   };
 }
@@ -235,4 +236,5 @@ module.exports = {
   generateImage,
   grabImage,
   getRecommendations,
+  filterTrackData,
 };
