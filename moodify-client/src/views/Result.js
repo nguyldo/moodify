@@ -84,6 +84,7 @@ function Result() {
   }
 
   function isFilterGenreActive() {
+    const currentSongs = communityPlaylistActive ? songs : personalizedSongs;
     let newIndex = genreFilterIndex + 1;
     console.log(newIndex, genre.length);
     console.log(genre[newIndex]);
@@ -91,9 +92,9 @@ function Result() {
       newIndex = 0;
       setGenreFilterIndex(newIndex);
       setFilterGenreActive(false);
-      setFilter(songs);
+      setFilter(currentSongs);
     } else {
-      const songsToFilter = [...songs];
+      const songsToFilter = [...currentSongs];
       console.log(songsToFilter);
       setGenreFilterIndex(newIndex);
       setFilterGenreActive(true);
@@ -111,6 +112,7 @@ function Result() {
   const downArrow = '\u{02193}';
 
   function isFilterPopActive() {
+    const currentSongs = communityPlaylistActive ? songs : personalizedSongs;
     if (filterPopText === 'Popularity') {
       setFilterPopActive(true);
       setFilterPopText(`Popularity ${upArrow}`);
@@ -122,12 +124,13 @@ function Result() {
     } else if (filterPopText === `Popularity ${downArrow}`) {
       setFilterPopActive(false);
       setFilterPopText('Popularity');
-      setFilter(songs);
+      setFilter(currentSongs);
       console.log('ORIGINAL');
     }
   }
 
   function isFilterExplicitActive() {
+    const currentSongs = communityPlaylistActive ? songs : personalizedSongs;
     setFilterExplicitActive(!filterExplicitActive);
     if (filterExplicitActive === false) {
       setFilterExplicitText('Non-Explicit');
@@ -137,16 +140,37 @@ function Result() {
       console.log('NO EXPLICIT');
     } else if (filterExplicitActive === true) {
       setFilterExplicitText('Explicit');
-      setFilter(songs);
+      setFilter(currentSongs);
       console.log('EXPLICIT');
     }
   }
 
+  const clearFilters = () => {
+    if (filterExplicitActive) {
+      setFilterExplicitActive(false);
+      setFilterExplicitText('Explicit');
+    }
+    if (filterPopText === `Popularity ${downArrow}` || filterPopText === `Popularity ${upArrow}`) {
+      setFilterPopActive(false);
+      setFilterPopText('Popularity');
+    }
+
+    setGenreFilterIndex(0);
+    setFilterGenreActive(false);
+    setFilterGenreText('Genre');
+  };
+
   const clickedCommunityPlaylist = () => {
+    clearFilters();
+
+    setFilter(songs);
     setCommunityPlaylistActive(true);
   };
 
   const clickedPersonalizedPlaylist = () => {
+    clearFilters();
+
+    setFilter(personalizedSongs);
     setCommunityPlaylistActive(false);
   };
 
@@ -437,7 +461,7 @@ function Result() {
 
       <Card className="rec-playlist">
         <Card.Body>
-          <Playlist songs={communityPlaylistActive ? filter : personalizedSongs} />
+          <Playlist songs={filter} />
         </Card.Body>
       </Card>
     </div>
