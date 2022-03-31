@@ -1,14 +1,23 @@
 /* eslint-disable array-callback-return */
 import React, { useState } from 'react';
-import { Toast, Dropdown } from 'react-bootstrap';
+import { Toast, Dropdown, Modal } from 'react-bootstrap';
 import '../styles/playlist.css';
+
+import Cookies from 'js-cookie';
 import Button from './Button';
-// import Cookies from 'js-cookie';
+
+const axios = require('axios');
+
+const accessToken = Cookies.get('SpotifyAccessToken');
+const spotifyUrl = 'https://api.spotify.com/v1';
 
 const Song = (props) => {
-  const { name, artists, key, albumName, albumLink, image } = props;
+  const { name, artists, id, albumName, albumLink, image, saved } = props;
+  console.log(props);
 
-  const [heart, setHeart] = useState('/heart-black.svg');
+  const [heart, setHeart] = useState(saved ? '/heart-green.svg' : '/heart-black.svg');
+  const [modalShow, setModalShow] = useState(false);
+  console.log(modalShow);
   const [showLikeAlert, setShowLikeAlert] = useState(false);
   const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
 
@@ -44,19 +53,80 @@ const Song = (props) => {
     </Toast>
   );
 
-  function isHeart() {
+  async function isHeart(songId) {
+    console.log('songId');
+    console.log(songId);
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
       setShowLikeAlert(true);
+      await axios.put(`${spotifyUrl}/me/tracks?ids=${songId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
     } else if (heart === '/heart-green.svg') {
       setHeart('/heart-black.svg');
       setShowUnlikeAlert(true);
+      axios.delete(`${spotifyUrl}/me/tracks?ids=${songId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
     }
   }
 
+  async function SongCreditsModal(songTitle, artist) {
+    const data = await axios.get(`http://localhost:5000/song/get/credits?songTitle=${songTitle}&artist=${artist}`);
+
+    console.log('performed');
+    console.log(data.data.performedBy);
+    console.log('written');
+    console.log(data.data.writtenBy);
+    console.log('produced');
+    console.log(data.data.producedBy);
+
+    console.log('going in here');
+    // alert(data.data.performedBy);
+
+    return (
+      <Modal
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        show={setModalShow(true)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Song Credits
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Performed by:</h4>
+          <p>
+            {data.data.performedBy}
+            test
+          </p>
+          <h4>Written by:</h4>
+          <p>
+            {data.data.writtenBy.toString()}
+            test
+          </p>
+          <h4>Produced by:</h4>
+          <p>
+            {data.data.producedBy.toString()}
+            test
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={setModalShow(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
   return (
-    <tr key={key} className="playlist-song">
-      <td className="c0"><button onClick={() => isHeart(heart)} type="button" className="button-wrapper"><img src={heart} className="playlist-song-heart" alt="heart" /></button></td>
+    <tr key={id} className="playlist-song">
+      <td className="c0"><button onClick={() => isHeart(id)} type="button" className="button-wrapper"><img src={heart} className="playlist-song-heart" alt="heart" /></button></td>
       <td className="c1"><img src={image} className="playlist-song-image" alt="album" /></td>
       <td className="c2">
         <span className="playlist-song-name">{name}</span>
@@ -70,7 +140,13 @@ const Song = (props) => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu className="playlist-kebab-options">
-          <Dropdown.Item className="option" href="#">Song Credits</Dropdown.Item>
+          <Dropdown.Item className="option" href="#" onClick={() => SongCreditsModal(name, artists[0].name)}>Song Credits</Dropdown.Item>
+          {/* <SongCreditsModal
+            songTitle={name}
+            artist={artists[0].name}
+            show={modalShow}
+            onHide={() => setModalShow(false)}
+          /> */}
         </Dropdown.Menu>
       </Dropdown>
       {likeAlert}
@@ -81,6 +157,7 @@ const Song = (props) => {
 
 function Playlist(props) {
   const { songs } = props;
+  console.log('songs');
   console.log(songs);
 
   return (
@@ -96,11 +173,13 @@ function Playlist(props) {
         songs.map((song) => (
           <Song
             key={song.id}
+            id={song.id}
             name={song.name}
             artists={song.artists}
             albumName={song.album}
             albumLink={song.albumUrl}
             image={song.image.url}
+            saved={song.existsInSavedTracks}
           />
         ))
       ) : (<div />)}

@@ -139,6 +139,21 @@ function filterTrackData(track) {
   };
 }
 
+async function checkSavedTracks(tracks, token) {
+  tracks.forEach(async (element) => {
+    await axios.get(`${spotifyUrl}/me/tracks/contains?ids=${element.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((data) => {
+      // console.log(data.data);
+      element.existsInSavedTracks = data.data[0];
+    });
+  });
+  console.log(tracks);
+  return tracks;
+}
+
 async function getRecommendations(filteredSongs, token) {
   let seedTracks = '';
 
@@ -161,7 +176,7 @@ async function getRecommendations(filteredSongs, token) {
     });
 
     const filteredTracks = data.data.tracks.map((track) => filterTrackData(track));
-    return filteredTracks;
+    return checkSavedTracks(filteredTracks, token);
   }
 
   // IF THERE ARE 5+ SONG RECS
@@ -207,7 +222,7 @@ async function getRecommendations(filteredSongs, token) {
     });
   }
 
-  return result;
+  return checkSavedTracks(result, token);
 }
 
 module.exports = {

@@ -121,8 +121,8 @@ router.get('/check', async (req, res) => {
       Authorization: `Bearer ${token}`,
     },
   }).then((data) => {
-    console.log(data.data);
     res.status(200).send(data.data);
+    // res.status(200).send(toReturn);
   }).catch((error) => {
     console.log(error);
   });
@@ -149,6 +149,8 @@ router.post('/recommendations', async (req, res) => {
 
   getRecommendations(filteredSongs, token)
     .then((data) => {
+      // console.log('HELLLO');
+      // console.log(data);
       const artists = [];
       data.map((song) => {
         for (const artist of song.artists) {
@@ -159,11 +161,11 @@ router.post('/recommendations', async (req, res) => {
       });
 
       const artistIds = artists.join(',');
-      console.log(artistIds);
+      // console.log(artistIds);
 
       getArtistGenres(artistIds, token)
         .then((artistsData) => {
-          console.log(artistsData);
+          // console.log(artistsData);
           data = data.map((song) => {
             const newArtists = [];
             for (const artist of song.artists) {
