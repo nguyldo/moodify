@@ -156,6 +156,7 @@ songRoutes.get('/get/credits', async (req, res) => {
         writtenBy: writArr,
         producedBy: prodArr,
       };
+      console.log(toReturn);
       res.json(toReturn);
     }).catch((error) => {
       console.log(error);
