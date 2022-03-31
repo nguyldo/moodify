@@ -281,11 +281,8 @@ router.post('/create', async (req, res) => {
     console.log(`URIs: ${uris}`);
     const value = await addSongsToPlaylist(generatedPlaylist.id, token, uris);
     console.log(`Value: ${value}`);
-    console.log('GOT TO HERE22222');
     const img = await grabImage(name);
-    console.log('GOT TO HERE');
     await addPhotoToPlaylist(generatedPlaylist.id, token, img);
-    console.log('GOT TO HERE111');
     if (value) res.status(200).send(generatedPlaylist.external_urls.spotify);
     else res.status(401).send('Failed');
   } catch (error) {
