@@ -59,7 +59,7 @@ function Result() {
   const [genreFilterIndex, setGenreFilterIndex] = useState(0);
   const [songs, setSongs] = useState([]);
   const [personalizedSongs, setPersonalizedSongs] = useState([]);
-  const [heartButton, setHeartButton] = useState(<i className="bi bi-heart" style={customStyle} />);
+  const [heartButton, setHeartButton] = useState('/heart-white.png');
   const [heartFill, setHeartFill] = useState(false);
   const [toastActive, setToastActive] = useState(false);
   const [toastContent, setToastContent] = useState(undefined);
@@ -188,11 +188,11 @@ function Result() {
 
         if (link) {
           setHeartFill(true);
-          setHeartButton(<i className="bi bi-heart-fill" style={customStyle} />);
+          setHeartButton('/heart-green.svg');
         }
       } else {
         setHeartFill(false);
-        setHeartButton(<i className="bi bi-heart" style={customStyle} />);
+        setHeartButton('/heart-white.png');
       }
     } catch (err) {
       // Failed to save playlist
@@ -216,7 +216,7 @@ function Result() {
 
         if (link) {
           setHeartFill(true);
-          setHeartButton(<i className="bi bi-heart-fill" style={customStyle} />);
+          setHeartButton('/heart-green.svg');
           navigator.clipboard.writeText(link);
           // Put up success toast w/ "Link Copied To Clipboard!"
         } else {
@@ -439,9 +439,7 @@ function Result() {
 
       <br />
       <div style={{ textAlign: 'left' }}>
-        <CustomButton style={buttonStyle} onClick={() => showWarning(saveToast)}>
-          {heartButton}
-        </CustomButton>
+        <button className="button-wrapper" type="button" onClick={() => showWarning(saveToast)}><img style={{ width: '30px' }} alt="heart" src={heartButton} /></button>
         <Button color="#2C2C2C" type="pill" filterActive={filterExplicitActive} text={filterExplicitText} onClick={() => isFilterExplicitActive()} />
         <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
         <Button color="#2C2C2C" type="pill" filterActive={filterGenreActive} text={filterGenreText} onClick={() => isFilterGenreActive(filterPopText)} />

@@ -70,6 +70,8 @@ async function idsToTracks(combinedTracks, token) {
       return newSong;
     });
 
+    console.log(toReturn);
+
     return toReturn;
   }).catch((err) => {
     console.log('unsuccessful get tracks');

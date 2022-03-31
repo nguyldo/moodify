@@ -275,7 +275,7 @@ router.post('/create', async (req, res) => {
     // console.log(`Playlist: ${generatedPlaylist}`);
     const arr = ids.split(',');
     console.log(`Arr: ${arr}`);
-    const uris = (await idsToTracks(arr, token)).map((track) => track.songURI);
+    const uris = (await idsToTracks(arr, token)).map((track) => track.uri);
     console.log(`URIs: ${uris}`);
     const value = await addSongsToPlaylist(generatedPlaylist.id, token, uris);
     console.log(`Value: ${value}`);
@@ -285,6 +285,7 @@ router.post('/create', async (req, res) => {
     else res.status(401).send('Failed');
   } catch (error) {
     console.log('Failed');
+    console.log(error);
     res.status(401).send('Failed');
   }
 });
