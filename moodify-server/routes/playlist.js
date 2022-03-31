@@ -115,23 +115,12 @@ router.delete('/remove', async (req, res) => {
 // https://localhost:5000/playlist/check?ids={track1,track2,etc}&token={token}
 router.get('/check', async (req, res) => {
   const { ids, token } = req.query;
-  // const songIds = ids.split(',');
 
   return axios.get(`${spotifyUrl}/me/tracks/contains?ids=${ids}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   }).then((data) => {
-    // console.log(data.data);
-    // const toReturn = [];
-    // // create array of objects
-    // for (let i = 0; i < songIds.length; i += 1) {
-    //   const obj = {
-    //     id: songIds[i],
-    //     exists: data.data[i],
-    //   };
-    //   toReturn.push(obj);
-    // }
     res.status(200).send(data.data);
     // res.status(200).send(toReturn);
   }).catch((error) => {
@@ -160,7 +149,7 @@ router.post('/recommendations', async (req, res) => {
 
   getRecommendations(filteredSongs, token)
     .then((data) => {
-      console.log('HELLLO');
+      // console.log('HELLLO');
       // console.log(data);
       const artists = [];
       data.map((song) => {
