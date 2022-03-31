@@ -17,7 +17,13 @@ const Song = (props) => {
 
   const [heart, setHeart] = useState(saved ? '/heart-green.svg' : '/heart-black.svg');
   const [modalShow, setModalShow] = useState(false);
+  const [performed, setPerformed] = useState('');
+  const [written, setWritten] = useState([]);
+  const [produced, setProduced] = useState([]);
   console.log(modalShow);
+  console.log(performed);
+  console.log(written);
+  console.log(produced);
   const [showLikeAlert, setShowLikeAlert] = useState(false);
   const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
 
@@ -51,6 +57,32 @@ const Song = (props) => {
       <Toast.Body className="alert-text">Song has been removed from &quot;Liked Songs&quot;</Toast.Body>
       <Button color="green" type="wide" text="OK" onClick={() => setShowUnlikeAlert(false)} />
     </Toast>
+  );
+
+  const creditModal = (
+    <Modal
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      show={modalShow}
+    >
+      <Modal.Body className="modal-text">
+        <h3 style={{ color: 'green' }}>Song Credits</h3>
+        <b>Performed by:</b>
+        <p>
+          {performed}
+        </p>
+        <b>Written by:</b>
+        <p>
+          {written.toString()}
+        </p>
+        <b>Produced by:</b>
+        <p>
+          {produced.toString()}
+        </p>
+        <Button style={{ textAlign: 'right' }} onClick={() => setModalShow(false)} color="green" type="wide" text="Close" />
+      </Modal.Body>
+    </Modal>
   );
 
   async function isHeart(songId) {
@@ -87,41 +119,46 @@ const Song = (props) => {
 
     console.log('going in here');
     // alert(data.data.performedBy);
+    setPerformed(data.data.performedBy);
+    setWritten(data.data.writtenBy);
+    setProduced(data.data.producedBy);
 
-    return (
-      <Modal
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-        show={setModalShow(true)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Song Credits
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <h4>Performed by:</h4>
-          <p>
-            {data.data.performedBy}
-            test
-          </p>
-          <h4>Written by:</h4>
-          <p>
-            {data.data.writtenBy.toString()}
-            test
-          </p>
-          <h4>Produced by:</h4>
-          <p>
-            {data.data.producedBy.toString()}
-            test
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={setModalShow(false)}>Close</Button>
-        </Modal.Footer>
-      </Modal>
-    );
+    setModalShow(true);
+
+    // return (
+    //   <Modal
+    //     size="lg"
+    //     aria-labelledby="contained-modal-title-vcenter"
+    //     centered
+    //     show={setModalShow(true)}
+    //   >
+    //     <Modal.Header closeButton>
+    //       <Modal.Title id="contained-modal-title-vcenter">
+    //         Song Credits
+    //       </Modal.Title>
+    //     </Modal.Header>
+    //     <Modal.Body>
+    //       <h4>Performed by:</h4>
+    //       <p>
+    //         {data.data.performedBy}
+    //         test
+    //       </p>
+    //       <h4>Written by:</h4>
+    //       <p>
+    //         {data.data.writtenBy.toString()}
+    //         test
+    //       </p>
+    //       <h4>Produced by:</h4>
+    //       <p>
+    //         {data.data.producedBy.toString()}
+    //         test
+    //       </p>
+    //     </Modal.Body>
+    //     <Modal.Footer>
+    //       <Button onClick={setModalShow(false)}>Close</Button>
+    //     </Modal.Footer>
+    //   </Modal>
+    // );
   }
 
   return (
@@ -141,16 +178,11 @@ const Song = (props) => {
 
         <Dropdown.Menu className="playlist-kebab-options">
           <Dropdown.Item className="option" href="#" onClick={() => SongCreditsModal(name, artists[0].name)}>Song Credits</Dropdown.Item>
-          {/* <SongCreditsModal
-            songTitle={name}
-            artist={artists[0].name}
-            show={modalShow}
-            onHide={() => setModalShow(false)}
-          /> */}
         </Dropdown.Menu>
       </Dropdown>
       {likeAlert}
       {unlikeAlert}
+      {creditModal}
     </tr>
   );
 };
