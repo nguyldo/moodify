@@ -13,7 +13,7 @@ const spotifyUrl = 'https://api.spotify.com/v1';
 
 const Song = (props) => {
   const { name, artists, id, albumName, albumLink, image, saved } = props;
-  console.log(props);
+  // console.log(props);
 
   const [heart, setHeart] = useState(saved ? '/heart-green.svg' : '/heart-black.svg');
   const [modalShow, setModalShow] = useState(false);
@@ -54,8 +54,8 @@ const Song = (props) => {
   );
 
   async function isHeart(songId) {
-    console.log('songId');
-    console.log(songId);
+    // console.log('songId');
+    // console.log(songId);
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
       setShowLikeAlert(true);
@@ -78,14 +78,14 @@ const Song = (props) => {
   async function SongCreditsModal(songTitle, artist) {
     const data = await axios.get(`http://localhost:5000/song/get/credits?songTitle=${songTitle}&artist=${artist}`);
 
-    console.log('performed');
-    console.log(data.data.performedBy);
-    console.log('written');
-    console.log(data.data.writtenBy);
-    console.log('produced');
-    console.log(data.data.producedBy);
+    // console.log('performed');
+    // console.log(data.data.performedBy);
+    // console.log('written');
+    // console.log(data.data.writtenBy);
+    // console.log('produced');
+    // console.log(data.data.producedBy);
 
-    console.log('going in here');
+    // console.log('going in here');
     // alert(data.data.performedBy);
 
     return (
@@ -157,8 +157,8 @@ const Song = (props) => {
 
 function Playlist(props) {
   const { songs } = props;
-  console.log('songs');
-  console.log(songs);
+  // console.log('songs');
+  // console.log(songs);
 
   return (
     <table className="playlist-table">
