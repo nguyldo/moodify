@@ -160,9 +160,11 @@ songRoutes.get('/get/credits', async (req, res) => {
       res.json(toReturn);
     }).catch((error) => {
       console.log(error);
+      res.json('Failed');
     });
   }).catch((error) => {
     console.log(error);
+    res.json('Failed');
   });
 });
 

@@ -111,7 +111,8 @@ router.delete('/remove', async (req, res) => {
   const tracks = [];
   const ids = songIds.split(','); // ["abc", "efg", "hij"]
   ids.forEach((element) => {
-    const uri = { uri: 'spotify:track:'.concat(element) };
+    console.log(element);
+    const uri = { uri: `spotify:track:${element}` };
     tracks.push(uri);
   });
 
@@ -123,7 +124,7 @@ router.delete('/remove', async (req, res) => {
   }).then(() => {
     res.sendStatus(200);
   }).catch((error) => {
-    console.log(error.message);
+    console.log(error.response.data);
   });
 });
 
