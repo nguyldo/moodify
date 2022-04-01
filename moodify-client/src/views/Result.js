@@ -73,6 +73,7 @@ function Result() {
   const [commImgLink, setCommImgLink] = useState();
   const [persImgLink, setPersImgLink] = useState();
   const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
+  const [songIds, setSongIds] = useState('');
 
   function isMostPopular() {
     const temp = [...filter];
@@ -197,8 +198,13 @@ function Result() {
           csvSong = personalizedSongs.map((song) => song.id).join();
         }
 
+        setSongIds(csvSong);
+
+        console.log(`csvSong: ${csvSong}`);
+
         link = await axios.post(`http://localhost:5000/playlist/create?token=${accessToken}&name=${name}&ids=${csvSong}`, { imgLink }).then((data) => {
           if (data.data !== 'Failed') return data.data;
+          console.log('failed');
           return undefined;
         });
 
@@ -211,6 +217,8 @@ function Result() {
         }
       } else {
         setHeartFill(false);
+        const playlistId = link.substring(34);
+        axios.delete(`http://localhost:5000/playlist/remove?playlistId=${playlistId}&songsIds=${songIds}&token=${accessToken}`);
         setHeartButton('/heart-white.png');
       }
     } catch (err) {
@@ -300,6 +308,23 @@ function Result() {
           }}
         >
           Deny
+        </CustomButton>
+      </Toast.Body>
+    </Toast>
+  );
+
+  const playlistCreatedToast = (
+    <Toast style={toastStyle}>
+      <Toast.Body style={toastBodyStyle}>
+        Playlist Added to your Spotify Library!
+        <CustomButton
+          style={buttonStyle}
+          onClick={() => {
+            setToastActive(false);
+            setToastContent(undefined);
+          }}
+        >
+          OK
         </CustomButton>
       </Toast.Body>
     </Toast>
@@ -489,6 +514,7 @@ function Result() {
               showWarning(saveToast);
             } else {
               followPlaylist(undefined);
+              showWarning(playlistCreatedToast);
             }
           }}
         >
