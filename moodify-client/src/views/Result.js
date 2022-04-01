@@ -265,6 +265,47 @@ function Result() {
     }
   }
 
+  function showWarning(type) {
+    setToastContent(type);
+    if (!toastActive) {
+      setToastActive(true);
+    }
+  }
+
+  const playlistCreatedToast = (
+    <Toast style={toastStyle}>
+      <Toast.Body style={toastBodyStyle}>
+        Playlist Added to your Spotify Library!
+        <CustomButton
+          style={buttonStyle}
+          onClick={() => {
+            setToastActive(false);
+            setToastContent(undefined);
+          }}
+        >
+          OK
+        </CustomButton>
+      </Toast.Body>
+    </Toast>
+  );
+
+  const playlistDeletedToast = (
+    <Toast style={toastStyle}>
+      <Toast.Body style={toastBodyStyle}>
+        Playlist Removed from your Spotify Library!
+        <CustomButton
+          style={buttonStyle}
+          onClick={() => {
+            setToastActive(false);
+            setToastContent(undefined);
+          }}
+        >
+          OK
+        </CustomButton>
+      </Toast.Body>
+    </Toast>
+  );
+
   const shareToast = (
     <Toast style={toastStyle}>
       <Toast.Body style={toastBodyStyle}>
@@ -296,7 +337,10 @@ function Result() {
         added to your account!
         <CustomButton
           style={buttonStyle}
-          onClick={() => followPlaylist()}
+          onClick={() => {
+            followPlaylist();
+            showWarning(playlistCreatedToast);
+          }}
         >
           Confirm
         </CustomButton>
@@ -312,30 +356,6 @@ function Result() {
       </Toast.Body>
     </Toast>
   );
-
-  const playlistCreatedToast = (
-    <Toast style={toastStyle}>
-      <Toast.Body style={toastBodyStyle}>
-        Playlist Added to your Spotify Library!
-        <CustomButton
-          style={buttonStyle}
-          onClick={() => {
-            setToastActive(false);
-            setToastContent(undefined);
-          }}
-        >
-          OK
-        </CustomButton>
-      </Toast.Body>
-    </Toast>
-  );
-
-  function showWarning(type) {
-    setToastContent(type);
-    if (!toastActive) {
-      setToastActive(true);
-    }
-  }
 
   React.useEffect(async () => {
     try {
@@ -514,7 +534,7 @@ function Result() {
               showWarning(saveToast);
             } else {
               followPlaylist(undefined);
-              showWarning(playlistCreatedToast);
+              showWarning(playlistDeletedToast);
             }
           }}
         >
