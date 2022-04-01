@@ -85,6 +85,23 @@ router.delete('/delete', async (req, res) => {
   });
 });
 
+// removes a song or multiple songs from user's Liked Songs playlist
+// returns 200 if successful, prints out error if unsuccessful
+// https://localhost:5000/playlist/delete?ids={track1,track2,etc}&token={token}
+router.get('/get', async (req, res) => {
+  const { ids, token } = req.query;
+
+  return axios.get(`${spotifyUrl}/playlists/${ids}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((data) => {
+    res.status(200).send(data.data);
+  }).catch((error) => {
+    console.log(error.message);
+  });
+});
+
 // deletes tracks from a playlist
 // returns 200 if successful, prints out error if unsuccessful
 // https://localhost:5000/playlist/remove?playlistId={playlistId}&songIds={track1,track2,etc}&token={token}
