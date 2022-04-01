@@ -8,7 +8,7 @@ async function checkPlaylistFollow(playlist, id, token) {
     headers: { Authorization: `Bearer ${token}` },
   }).then((data) => {
     const toReturn = data.data;
-    console.log(toReturn);
+    // console.log(toReturn);
     return toReturn;
   }).catch((err) => {
     console.log('unsuccessful user playlist follow');
@@ -90,7 +90,7 @@ async function addPhotoToPlaylist(playlist, token, imgFile) {
     },
   ).then((data) => {
     const toReturn = data.data;
-    console.log(toReturn);
+    // console.log(toReturn);
     return toReturn;
   }).catch((err) => {
     console.log(err.response.data);

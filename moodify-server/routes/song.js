@@ -63,7 +63,7 @@ songRoutes.post('/post', async (req, res) => {
   }
 
   const associatedFeelsArr = checkAssociatedFeels(af1, af2, af3, af4, af5);
-  console.log(`associatedFeelsArr: ${associatedFeelsArr}`);
+  // console.log(`associatedFeelsArr: ${associatedFeelsArr}`);
 
   const song = {
     songId: req.body.songId,
@@ -83,7 +83,7 @@ songRoutes.post('/post', async (req, res) => {
     adminRec: rec,
   };
 
-  console.log(`song: ${song.songName}`);
+  // console.log(`song: ${song.songName}`);
 
   if (await checkSong(song, mood, associatedFeelsArr)) {
     console.log('posting song');
@@ -108,8 +108,8 @@ songRoutes.delete('/delete', async (req, res) => {
     await Song.findOne({ songId })
       .then(async (data) => {
         if (data) {
-          console.log('deleting this song');
-          console.log(`song: ${data.songName}`);
+          // console.log('deleting this song');
+          // console.log(`song: ${data.songName}`);
           await Song.findOneAndDelete({ songId });
           res.sendStatus(200);
         } else {
@@ -156,7 +156,7 @@ songRoutes.get('/get/credits', async (req, res) => {
         writtenBy: writArr,
         producedBy: prodArr,
       };
-      console.log(toReturn);
+      // console.log(toReturn);
       res.json(toReturn);
     }).catch((error) => {
       console.log(error);

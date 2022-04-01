@@ -111,7 +111,7 @@ router.delete('/remove', async (req, res) => {
   const tracks = [];
   const ids = songIds.split(','); // ["abc", "efg", "hij"]
   ids.forEach((element) => {
-    console.log(element);
+    // console.log(element;
     const uri = { uri: `spotify:track:${element}` };
     tracks.push(uri);
   });
@@ -257,7 +257,7 @@ router.get('/personal/:token', async (req, res) => {
 
     recommendedTracks = await idsToTracks(recommendedTracks, token);
 
-    console.log('final log');
+    // console.log('final log');
     res.status(200).json(recommendedTracks);
   } catch (error) {
     // console.log(error);
@@ -287,18 +287,18 @@ router.get('/follow', async (req, res) => {
 router.post('/create', async (req, res) => {
   const { token, ids, name } = req.query;
   try {
-    console.log(`Token: ${token}`);
+    // console.log(`Token: ${token}`);
     const username = await getUserId(token);
-    console.log(`User: ${username}`);
-    console.log(`Name: ${name}`);
+    // console.log(`User: ${username}`);
+    // console.log(`Name: ${name}`);
     const generatedPlaylist = await createPlaylist(name, username, token);
     // console.log(`Playlist: ${generatedPlaylist}`);
     const arr = ids.split(',');
-    console.log(`Arr: ${arr}`);
+    // console.log(`Arr: ${arr}`);
     const uris = (await idsToTracks(arr, token)).map((track) => track.uri);
-    console.log(`URIs: ${uris}`);
+    // console.log(`URIs: ${uris}`);
     const value = await addSongsToPlaylist(generatedPlaylist.id, token, uris);
-    console.log(`Value: ${value}`);
+    // console.log(`Value: ${value}`);
     const img = await grabImage(name);
     await addPhotoToPlaylist(generatedPlaylist.id, token, img);
     if (value) res.status(200).send(generatedPlaylist.external_urls.spotify);
