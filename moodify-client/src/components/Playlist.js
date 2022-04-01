@@ -13,7 +13,7 @@ const spotifyUrl = 'https://api.spotify.com/v1';
 
 const Song = (props) => {
   const { name, artists, id, albumName, albumLink, image, saved } = props;
-  console.log(props);
+  // console.log(props);
 
   const [heart, setHeart] = useState(saved ? '/heart-green.svg' : '/heart-black.svg');
   const [modalShow, setModalShow] = useState(false);
@@ -86,8 +86,8 @@ const Song = (props) => {
   );
 
   async function isHeart(songId) {
-    console.log('songId');
-    console.log(songId);
+    // console.log('songId');
+    // console.log(songId);
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
       setShowLikeAlert(true);
@@ -148,8 +148,8 @@ const Song = (props) => {
 
 function Playlist(props) {
   const { songs } = props;
-  console.log('songs');
-  console.log(songs);
+  // console.log('songs');
+  // console.log(songs);
 
   return (
     <table className="playlist-table">

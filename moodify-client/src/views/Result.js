@@ -66,7 +66,12 @@ function Result() {
   const [filter, setFilter] = useState();
   const [genre, setGenre] = useState(['Genre']);
   const [name, setName] = useState();
+  const [commName, setCommName] = useState();
+  const [persName, setPersName] = useState();
+  const [playlistLink, setPlaylistLink] = useState();
   const [imgLink, setImgLink] = useState();
+  const [commImgLink, setCommImgLink] = useState();
+  const [persImgLink, setPersImgLink] = useState();
   const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
 
   function isMostPopular() {
@@ -165,6 +170,8 @@ function Result() {
 
     setFilter(songs);
     setCommunityPlaylistActive(true);
+    setImgLink(persImgLink);
+    setName(persName);
   };
 
   const clickedPersonalizedPlaylist = () => {
@@ -172,6 +179,8 @@ function Result() {
 
     setFilter(personalizedSongs);
     setCommunityPlaylistActive(false);
+    setImgLink(commImgLink);
+    setName(commName);
   };
 
   async function followPlaylist() {
@@ -181,14 +190,24 @@ function Result() {
         setToastActive(false);
         setToastContent(undefined);
 
-        const csvSong = songs.map((song) => song.id).join();
-        link = await axios.post(`http://localhost:5000/playlist/create?token=${accessToken}&name=${name}&ids=${csvSong}`, { imgLink });
+        let csvSong;
+        if (communityPlaylistActive) {
+          csvSong = songs.map((song) => song.id).join();
+        } else {
+          csvSong = personalizedSongs.map((song) => song.id).join();
+        }
+
+        link = await axios.post(`http://localhost:5000/playlist/create?token=${accessToken}&name=${name}&ids=${csvSong}`, { imgLink }).then((data) => {
+          if (data.data !== 'Failed') return data.data;
+          return undefined;
+        });
 
         console.log(link);
 
         if (link) {
           setHeartFill(true);
           setHeartButton('/heart-green.svg');
+          setPlaylistLink(link);
         }
       } else {
         setHeartFill(false);
@@ -206,7 +225,13 @@ function Result() {
         setToastActive(false);
         setToastContent(undefined);
 
-        const csvSong = songs.map((song) => song.id).join();
+        let csvSong;
+        if (communityPlaylistActive) {
+          csvSong = songs.map((song) => song.id).join();
+        } else {
+          csvSong = personalizedSongs.map((song) => song.id).join();
+        }
+
         link = await axios.post(`http://localhost:5000/playlist/create?token=${accessToken}&name=${name}&ids=${csvSong}&`).then((data) => {
           if (data.data !== 'Failed') return data.data;
           return undefined;
@@ -217,11 +242,15 @@ function Result() {
         if (link) {
           setHeartFill(true);
           setHeartButton('/heart-green.svg');
+          setPlaylistLink(link);
           navigator.clipboard.writeText(link);
           // Put up success toast w/ "Link Copied To Clipboard!"
         } else {
           // Put up failure toast
         }
+      } else {
+        navigator.clipboard.writeText(playlistLink);
+        // Put up success toast w/ "Link Copied To Clipboard!"
       }
     } catch (err) {
       // Put up failure toast
@@ -336,11 +365,24 @@ function Result() {
       let newName = await axios.post(`http://localhost:5000/playlist/generatetitle?coremood=${mood}`);
       console.log(newName);
       newName = newName.data.split(' ').slice(1).join(' ');
-      setName(newName);
 
-      const newImgLink = await axios.post(`http://localhost:5000/playlist/generateimg?text=${newName}`);
+      setName(newName);
+      setPersName(newName);
+
+      let newImgLink = await axios.post(`http://localhost:5000/playlist/generateimg?text=${newName}`);
       console.log(newImgLink.data);
+
       setImgLink(newImgLink.data);
+      setPersImgLink(newImgLink.data);
+
+      newName = await axios.post(`http://localhost:5000/playlist/generatetitle?coremood=${mood}`);
+      console.log(newName);
+      newName = newName.data.split(' ').slice(1).join(' ');
+      setCommName(newName);
+
+      newImgLink = await axios.post(`http://localhost:5000/playlist/generateimg?text=${newName}`);
+      console.log(newImgLink.data);
+      setCommImgLink(newImgLink.data);
     } catch (error) {
       console.log(error);
     }
@@ -439,12 +481,33 @@ function Result() {
 
       <br />
       <div style={{ textAlign: 'left' }}>
-        <button className="button-wrapper" type="button" onClick={() => showWarning(saveToast)}><img style={{ width: '30px' }} alt="heart" src={heartButton} /></button>
+        <button
+          className="button-wrapper"
+          type="button"
+          onClick={() => {
+            if (!heartFill) {
+              showWarning(saveToast);
+            } else {
+              followPlaylist(undefined);
+            }
+          }}
+        >
+          <img style={{ width: '30px' }} alt="heart" src={heartButton} />
+        </button>
         <Button color="#2C2C2C" type="pill" filterActive={filterExplicitActive} text={filterExplicitText} onClick={() => isFilterExplicitActive()} />
         <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
         <Button color="#2C2C2C" type="pill" filterActive={filterGenreActive} text={filterGenreText} onClick={() => isFilterGenreActive(filterPopText)} />
         {suggestButton}
-        <CustomButton style={buttonStyle} onClick={() => showWarning(shareToast)}>
+        <CustomButton
+          style={buttonStyle}
+          onClick={() => {
+            if (heartFill) {
+              sharePlaylist();
+            } else {
+              showWarning(shareToast);
+            }
+          }}
+        >
           <i className="bi bi-box-arrow-up" style={customStyle} />
         </CustomButton>
         <Toggle
