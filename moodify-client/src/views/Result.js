@@ -73,6 +73,7 @@ function Result() {
   const [commImgLink, setCommImgLink] = useState();
   const [persImgLink, setPersImgLink] = useState();
   const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
+  const [songIds, setSongIds] = useState('');
 
   function isMostPopular() {
     const temp = [...filter];
@@ -183,6 +184,64 @@ function Result() {
     setName(commName);
   };
 
+  const playlistCreatedToast = (
+    <Toast style={toastStyle}>
+      <Toast.Body style={toastBodyStyle}>
+        Playlist Added to your Spotify Library!
+        <CustomButton
+          style={buttonStyle}
+          onClick={() => {
+            setToastActive(false);
+            setToastContent(undefined);
+          }}
+        >
+          OK
+        </CustomButton>
+      </Toast.Body>
+    </Toast>
+  );
+
+  const failedToast = (
+    <Toast style={toastStyle}>
+      <Toast.Body style={toastBodyStyle}>
+        Action failed, try again!
+        <CustomButton
+          style={buttonStyle}
+          onClick={() => {
+            setToastActive(false);
+            setToastContent(undefined);
+          }}
+        >
+          OK
+        </CustomButton>
+      </Toast.Body>
+    </Toast>
+  );
+
+  const playlistSharedToast = (
+    <Toast style={toastStyle}>
+      <Toast.Body style={toastBodyStyle}>
+        Playlist link copied to clipboard!
+        <CustomButton
+          style={buttonStyle}
+          onClick={() => {
+            setToastActive(false);
+            setToastContent(undefined);
+          }}
+        >
+          OK
+        </CustomButton>
+      </Toast.Body>
+    </Toast>
+  );
+
+  function showWarning(type) {
+    setToastContent(type);
+    if (!toastActive) {
+      setToastActive(true);
+    }
+  }
+
   async function followPlaylist() {
     try {
       let link;
@@ -197,8 +256,13 @@ function Result() {
           csvSong = personalizedSongs.map((song) => song.id).join();
         }
 
+        setSongIds(csvSong);
+
+        console.log(`csvSong: ${csvSong}`);
+
         link = await axios.post(`http://localhost:5000/playlist/create?token=${accessToken}&name=${name}&ids=${csvSong}`, { imgLink }).then((data) => {
           if (data.data !== 'Failed') return data.data;
+          console.log('failed');
           return undefined;
         });
 
@@ -208,13 +272,28 @@ function Result() {
           setHeartFill(true);
           setHeartButton('/heart-green.svg');
           setPlaylistLink(link);
+          showWarning(playlistCreatedToast);
+          setTimeout(() => {
+            setToastActive(false); setToastContent(undefined);
+          }, 3000);
         }
       } else {
+        console.log('here');
+        const playlistId = playlistLink.substring(34);
+        console.log(playlistId);
+        console.log(songIds);
+        const item = await axios.delete(`http://localhost:5000/playlist/remove?playlistId=${playlistId}&songIds=${songIds}&token=${accessToken}`);
+        console.log(item.data);
         setHeartFill(false);
         setHeartButton('/heart-white.png');
       }
     } catch (err) {
       // Failed to save playlist
+      console.log(err);
+      showWarning(failedToast);
+      setTimeout(() => {
+        setToastActive(false); setToastContent(undefined);
+      }, 3000);
     }
   }
 
@@ -232,6 +311,8 @@ function Result() {
           csvSong = personalizedSongs.map((song) => song.id).join();
         }
 
+        setSongIds(csvSong);
+
         link = await axios.post(`http://localhost:5000/playlist/create?token=${accessToken}&name=${name}&ids=${csvSong}&`).then((data) => {
           if (data.data !== 'Failed') return data.data;
           return undefined;
@@ -244,18 +325,55 @@ function Result() {
           setHeartButton('/heart-green.svg');
           setPlaylistLink(link);
           navigator.clipboard.writeText(link);
+          showWarning(playlistCreatedToast);
+          setTimeout(() => {
+            setToastActive(false); setToastContent(undefined);
+          }, 3000);
           // Put up success toast w/ "Link Copied To Clipboard!"
+          showWarning(playlistSharedToast);
+          setTimeout(() => {
+            setToastActive(false); setToastContent(undefined);
+          }, 3000);
         } else {
           // Put up failure toast
+          showWarning(failedToast);
+          setTimeout(() => {
+            setToastActive(false); setToastContent(undefined);
+          }, 3000);
         }
       } else {
         navigator.clipboard.writeText(playlistLink);
         // Put up success toast w/ "Link Copied To Clipboard!"
+        showWarning(playlistSharedToast);
+        setTimeout(() => {
+          setToastActive(false); setToastContent(undefined);
+        }, 3000);
       }
     } catch (err) {
       // Put up failure toast
+      showWarning(failedToast);
+      setTimeout(() => {
+        setToastActive(false); setToastContent(undefined);
+      }, 3000);
     }
   }
+
+  const playlistDeletedToast = (
+    <Toast style={toastStyle}>
+      <Toast.Body style={toastBodyStyle}>
+        Playlist Removed from your Spotify Library!
+        <CustomButton
+          style={buttonStyle}
+          onClick={() => {
+            setToastActive(false);
+            setToastContent(undefined);
+          }}
+        >
+          OK
+        </CustomButton>
+      </Toast.Body>
+    </Toast>
+  );
 
   const shareToast = (
     <Toast style={toastStyle}>
@@ -288,7 +406,9 @@ function Result() {
         added to your account!
         <CustomButton
           style={buttonStyle}
-          onClick={() => followPlaylist()}
+          onClick={() => {
+            followPlaylist();
+          }}
         >
           Confirm
         </CustomButton>
@@ -304,13 +424,6 @@ function Result() {
       </Toast.Body>
     </Toast>
   );
-
-  function showWarning(type) {
-    setToastContent(type);
-    if (!toastActive) {
-      setToastActive(true);
-    }
-  }
 
   React.useEffect(async () => {
     try {
@@ -489,6 +602,7 @@ function Result() {
               showWarning(saveToast);
             } else {
               followPlaylist(undefined);
+              showWarning(playlistDeletedToast);
             }
           }}
         >
