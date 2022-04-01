@@ -74,13 +74,13 @@ const Song = (props) => {
         </p>
         <b>Written by:</b>
         <p>
-          {written.toString()}
+          {written}
         </p>
         <b>Produced by:</b>
         <p>
-          {produced.toString()}
+          {produced}
         </p>
-        <Button style={{ textAlign: 'right' }} onClick={() => setModalShow(false)} color="green" type="wide" text="Close" />
+        <Button style={{ textAlign: 'center' }} onClick={() => setModalShow(false)} color="green" type="wide" text="Close" />
       </Modal.Body>
     </Modal>
   );
@@ -110,55 +110,14 @@ const Song = (props) => {
   async function SongCreditsModal(songTitle, artist) {
     const data = await axios.get(`http://localhost:5000/song/get/credits?songTitle=${songTitle}&artist=${artist}`);
 
-    console.log('performed');
-    console.log(data.data.performedBy);
-    console.log('written');
-    console.log(data.data.writtenBy);
-    console.log('produced');
-    console.log(data.data.producedBy);
+    const writtenBy = data.data.writtenBy.join(', ');
+    const producedBy = data.data.producedBy.join(', ');
 
-    console.log('going in here');
-    // alert(data.data.performedBy);
     setPerformed(data.data.performedBy);
-    setWritten(data.data.writtenBy);
-    setProduced(data.data.producedBy);
+    setWritten(writtenBy);
+    setProduced(producedBy);
 
     setModalShow(true);
-
-    // return (
-    //   <Modal
-    //     size="lg"
-    //     aria-labelledby="contained-modal-title-vcenter"
-    //     centered
-    //     show={setModalShow(true)}
-    //   >
-    //     <Modal.Header closeButton>
-    //       <Modal.Title id="contained-modal-title-vcenter">
-    //         Song Credits
-    //       </Modal.Title>
-    //     </Modal.Header>
-    //     <Modal.Body>
-    //       <h4>Performed by:</h4>
-    //       <p>
-    //         {data.data.performedBy}
-    //         test
-    //       </p>
-    //       <h4>Written by:</h4>
-    //       <p>
-    //         {data.data.writtenBy.toString()}
-    //         test
-    //       </p>
-    //       <h4>Produced by:</h4>
-    //       <p>
-    //         {data.data.producedBy.toString()}
-    //         test
-    //       </p>
-    //     </Modal.Body>
-    //     <Modal.Footer>
-    //       <Button onClick={setModalShow(false)}>Close</Button>
-    //     </Modal.Footer>
-    //   </Modal>
-    // );
   }
 
   return (
