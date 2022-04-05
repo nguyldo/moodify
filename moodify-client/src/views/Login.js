@@ -31,6 +31,7 @@ function Login() {
     'user-library-modify',
     'user-library-read',
     'ugc-image-upload',
+    'user-follow-modify',
   ];
 
   const authorizeSpotify = () => {
