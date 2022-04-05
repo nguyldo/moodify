@@ -1,12 +1,12 @@
+// Server Imports
 const express = require('express');
 const axios = require('axios');
 
 const router = express.Router();
-const {
-  audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
-} = require('../functions/spotifySong');
-const { userTop, getUserId } = require('../functions/spotifyUser');
+
+// Function Imports
 const { getSongByMood } = require('../functions/mongoSong');
+const { getArtistGenres } = require('../functions/spotifyArtist');
 const {
   followPlaylist,
   unFollowPlaylist,
@@ -18,13 +18,12 @@ const {
   grabImage,
   getRecommendations,
 } = require('../functions/spotifyPlaylist');
-
-// Function Imports
-const { prettifySong } = require('../functions/spotifySong');
+const {
+  audioFeatures, idsToTracks, spotifyRecommend, filterTracks, prettifySong,
+} = require('../functions/spotifySong');
+const { userTop, getUserId } = require('../functions/spotifyUser');
 
 const Song = require('../models/song');
-
-const { getArtistGenres } = require('../functions/spotifyArtist');
 
 const spotifyUrl = 'https://api.spotify.com/v1';
 
