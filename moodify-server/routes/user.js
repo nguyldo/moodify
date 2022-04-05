@@ -8,14 +8,13 @@ const express = require('express');
 const router = express.Router();
 
 // Function Imports
-const axios = require('axios'); // DELETE later
 const {
   postUser, findUser, checkUser, logout, saveUser,
 } = require('../functions/mongoUser');
 const { checkMood } = require('../functions/mongoMood');
 const { checkPlaylistFollow } = require('../functions/spotifyPlaylist');
 const {
-  getUserId, getPlaylistFollow, userTop, getUserProfile,
+  getUserId, getPlaylistFollow, userTop, getUserProfile, followArtist,
 } = require('../functions/spotifyUser');
 
 // Get User Profile from Spotify
@@ -177,29 +176,20 @@ router.get('/playlists/:token', async (req, res) => {
     else res.sendStatus(400);
   }
 });
-const spotifyUrl = 'https://api.spotify.com/v1'; // DELETE LATER
+
+// adds user as a follower of an artist on their Spotify account
+// returns 200 if successul, 400 if unsuccessfull
+// http://localhost:5000/user/follow/artist?id={id}&token={token}
 router.put('/follow/artist', async (req, res) => {
-  const { artistId, token } = req.query;
+  const { id, token } = req.query;
 
-  // const data = {
-  //   ids: artistId,
-  // };
-
-  return axios.put(`${spotifyUrl}/me/following?ids=${artistId}&type=artist`, {}, {
-    headers: { Authorization: `Bearer ${token}` },
-    // data,
-  }).then(() => {
-    console.log('artist successfully followed');
+  try {
+    await followArtist(id, token);
     res.sendStatus(200);
-  }).catch((error) => {
-    console.log(error.message);
-  });
-
-//   try {
-//     res.send(await )
-//   } catch (error) {
-//     console.log(error);
-//   }
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
 });
 
 module.exports = router;
