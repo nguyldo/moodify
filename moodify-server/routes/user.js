@@ -8,18 +8,19 @@ const express = require('express');
 const router = express.Router();
 
 // Function Imports
-const { checkPlaylistFollow } = require('../functions/spotifyPlaylist');
-const {
-  getUserId, getPlaylistFollow, userTop, getUserProfile,
-} = require('../functions/spotifyUser');
+const axios = require('axios'); // DELETE later
 const {
   postUser, findUser, checkUser, logout, saveUser,
 } = require('../functions/mongoUser');
 const { checkMood } = require('../functions/mongoMood');
+const { checkPlaylistFollow } = require('../functions/spotifyPlaylist');
+const {
+  getUserId, getPlaylistFollow, userTop, getUserProfile,
+} = require('../functions/spotifyUser');
 
-// http://localhost:5000/user/{token}
 // Get User Profile from Spotify
 // Return Raw User Profile from Spotify
+// http://localhost:5000/user/{token}
 router.get('/:token', async (req, res) => {
   console.log('running user profile api');
   const { token } = req.params;
@@ -31,9 +32,9 @@ router.get('/:token', async (req, res) => {
   }
 });
 
-// https://localhost:5000/user/tracks/:token
 // Get User's Top Tracks From Spotify
 // Returns User's Top Tracks in form of DB Song
+// https://localhost:5000/user/tracks/:token
 router.get('/tracks/:token', async (req, res) => {
   console.log('running user top tracks');
   const { token } = req.params;
@@ -46,9 +47,9 @@ router.get('/tracks/:token', async (req, res) => {
   }
 });
 
-// https://localhost:5000/user/artists/:token
 // Get User's Top Artists From Spotify
 // Returns User's Top Artists by Name
+// https://localhost:5000/user/artists/:token
 router.get('/artists/:token', async (req, res) => {
   console.log('running user top artists');
   const { token } = req.params;
@@ -60,9 +61,9 @@ router.get('/artists/:token', async (req, res) => {
   }
 });
 
-// http://localhost:5000/user/dbprofile/{token}
 // Gets User's Profile from mongo using Spotify API to get UserID
 // Returns user's info from mongo
+// http://localhost:5000/user/dbprofile/{token}
 router.get('/dbprofile/:token', async (req, res) => {
   console.log('running user info database retrieval');
   const { token } = req.params;
@@ -76,9 +77,9 @@ router.get('/dbprofile/:token', async (req, res) => {
   }
 });
 
-// http://localhost:5000/user/update/mood?type={core emotion}&token={token}
-// Posts user's mood to mongo, updates the time and click count
+// Posts user's mood to mongo, updates the time, and click count
 // Returns status code
+// http://localhost:5000/user/update/mood?type={core emotion}&token={token}
 router.post('/update/mood', async (req, res) => {
   console.log('running user update mood info');
   const { type, token } = req.query;
@@ -94,7 +95,7 @@ router.post('/update/mood', async (req, res) => {
 
 // new user
 // get info from spotify api after authentication
-// http://localhost:5000/user/post?id={userId}
+// http://localhost:5000/user/post?id={id}
 router.post('/post', async (req, res) => {
   const { id } = req.query;
 
@@ -124,10 +125,9 @@ router.post('/logout', async (req, res) => {
   }
 });
 
-// route for updating user's recommendedSongIds and numRecommendations
-// https://localhost:5000/recommended?userId={userId}&songId={songId}
-// Puts a recommended song into user's recommended list
-// Returns status code
+// updates user's recommendedSongIds and numRecommendations
+// Returns status code 200 if successful, status code 400 if unsuccessful
+// https://localhost:5000/user/recommended?userId={userId}&songId={songId}
 router.put('/recommended', async (req, res) => {
   const { userId, songId } = req.query;
 
@@ -176,6 +176,30 @@ router.get('/playlists/:token', async (req, res) => {
     if (toReturn) res.status(200).send(toReturn);
     else res.sendStatus(400);
   }
+});
+const spotifyUrl = 'https://api.spotify.com/v1'; // DELETE LATER
+router.put('/follow/artist', async (req, res) => {
+  const { artistId, token } = req.query;
+
+  // const data = {
+  //   ids: artistId,
+  // };
+
+  return axios.put(`${spotifyUrl}/me/following?ids=${artistId}&type=artist`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+    // data,
+  }).then(() => {
+    console.log('artist successfully followed');
+    res.sendStatus(200);
+  }).catch((error) => {
+    console.log(error.message);
+  });
+
+//   try {
+//     res.send(await )
+//   } catch (error) {
+//     console.log(error);
+//   }
 });
 
 module.exports = router;
