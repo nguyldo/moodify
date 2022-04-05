@@ -70,7 +70,7 @@ async function idsToTracks(combinedTracks, token) {
       return newSong;
     });
 
-    console.log(toReturn);
+    // console.log(toReturn);
 
     return toReturn;
   }).catch((err) => {
@@ -144,8 +144,8 @@ function prettifySong(arr) {
       artists.push(artist.name);
       artistUrl.push(artist.external_urls.spotify);
     });
-    console.log(artists);
-    console.log(artistUrl);
+    // console.log(artists);
+    // console.log(artistUrl);
 
     toReturn.push({
       songId: element.id,

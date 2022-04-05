@@ -51,7 +51,7 @@ function Result() {
   };
 
   const [filterExplicitActive, setFilterExplicitActive] = useState(false);
-  const [filterExplicitText, setFilterExplicitText] = useState('Explict');
+  const [filterExplicitText, setFilterExplicitText] = useState('Explicit');
   const [filterPopText, setFilterPopText] = useState('Popularity');
   const [filterPopActive, setFilterPopActive] = useState(false);
   const [filterGenreText, setFilterGenreText] = useState('Genre');
