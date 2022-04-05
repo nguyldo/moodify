@@ -107,6 +107,18 @@ async function followArtist(id, token) {
   });
 }
 
+async function followAlbum(id, token) {
+  return axios.put(`${spotifyUrl}/me/albums?ids=${id}`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then(() => {
+    console.log('album successfully saved');
+    return;
+  }).catch((error) => {
+    console.log('album unsuccessfully saved');
+    console.log(error.message);
+  });
+}
+
 module.exports = {
-  getUserId, getUserProfile, getPlaylistFollow, userTop, followArtist,
+  getUserId, getUserProfile, getPlaylistFollow, userTop, followArtist, followAlbum,
 };

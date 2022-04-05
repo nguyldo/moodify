@@ -14,7 +14,7 @@ const {
 const { checkMood } = require('../functions/mongoMood');
 const { checkPlaylistFollow } = require('../functions/spotifyPlaylist');
 const {
-  getUserId, getPlaylistFollow, userTop, getUserProfile, followArtist,
+  getUserId, getPlaylistFollow, userTop, getUserProfile, followArtist, followAlbum,
 } = require('../functions/spotifyUser');
 
 // Get User Profile from Spotify
@@ -185,6 +185,21 @@ router.put('/follow/artist', async (req, res) => {
 
   try {
     await followArtist(id, token);
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+});
+
+// saves an album to user's albums in their Spotify Account
+// returns 200 if successul, 400 if unsuccessfull
+// http://localhost:5000/user/follow/artist?id={id}&token={token}
+router.put('/follow/album', async (req, res) => {
+  const { id, token } = req.query;
+
+  try {
+    await followAlbum(id, token);
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
