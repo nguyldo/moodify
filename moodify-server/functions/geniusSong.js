@@ -4,6 +4,7 @@ const geniusUrl = 'https://api.genius.com';
 
 const geniusAuth = '7yU_tuuwkHFlqOxVRF5AQkmt241kutabsGi7wh88sx_kv-5HW0hcdxqojHUdwllM';
 
+// format song credits to be "prettier"
 function formatCredits(song) {
   const credits = song.data.response.song;
   const writers = credits.writer_artists;
@@ -28,6 +29,7 @@ function formatCredits(song) {
   return toReturn;
 }
 
+// gets a song's credits by using Genius API
 async function getSongCredits(songTitle, artist) {
   return axios.get(`${geniusUrl}/search?q=${songTitle}%20${artist}`, {
     headers: {
@@ -45,7 +47,16 @@ async function getSongCredits(songTitle, artist) {
       headers: {
         Authorization: `Bearer ${geniusAuth}`,
       },
-    }).then((song) => formatCredits(song)).catch((error) => {
+    }).then((song) => {
+      const ret = formatCredits(song);
+      if (ret.writtenBy.length === 0) {
+        ret.writtenBy.push(artist);
+      }
+      if (ret.producedBy.length === 0) {
+        ret.producedBy.push(artist);
+      }
+      return ret;
+    }).catch((error) => {
       console.log(error);
       return 'Failed';
     });
