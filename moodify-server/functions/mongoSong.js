@@ -68,8 +68,8 @@ async function checkSong(song, mood, associatedFeelsArr) {
       if (data) { // song exists
         console.log(`dataaaaaa: ${data.songId}`);
         if (!data.moodTag.includes(mood)) { // if moodTag doesn't include mood
-          console.log(`moodTag before: ${data.moodTag}`);
-          console.log(`assFeels before: ${data.associatedFeels}`);
+          // console.log(`moodTag before: ${data.moodTag}`);
+          // console.log(`assFeels before: ${data.associatedFeels}`);
 
           data.moodTag.push(mood);
 
@@ -78,15 +78,15 @@ async function checkSong(song, mood, associatedFeelsArr) {
 
           data.save();
 
-          console.log(`moodTag after: ${data.moodTag}`);
-          console.log(`assFeels after: ${data.associatedFeels}`);
+          // console.log(`moodTag after: ${data.moodTag}`);
+          // console.log(`assFeels after: ${data.associatedFeels}`);
         } else { // exist already but still wanna check assTag
           // check associatedFeelsTag
           data.associatedFeels = insertAssociatedFeels(data.associatedFeels, associatedFeelsArr);
 
           data.save();
-          console.log(`moodTag after: ${data.moodTag}`);
-          console.log(`assFeels after: ${data.associatedFeels}`);
+          // console.log(`moodTag after: ${data.moodTag}`);
+          // console.log(`assFeels after: ${data.associatedFeels}`);
         }
         return false;
       } // song don't exist yet
