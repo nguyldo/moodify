@@ -110,14 +110,6 @@ const Song = (props) => {
   async function SongCreditsModal(songTitle, artist) {
     const data = await axios.get(`http://localhost:5000/song/get/credits?songTitle=${songTitle}&artist=${artist}`);
 
-    console.log(data.data);
-    if (data.data === 'Failed') {
-      setPerformed(artist);
-      setWritten(artist);
-      setProduced(artist);
-      setModalShow(true);
-    }
-
     const writtenBy = data.data.writtenBy.join(', ');
     const producedBy = data.data.producedBy.join(', ');
 
