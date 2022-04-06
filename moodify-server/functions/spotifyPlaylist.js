@@ -1,6 +1,8 @@
 const axios = require('axios');
 const imageToBase64 = require('image-to-base64');
 
+const { prettifySong } = require('./spotifySong');
+
 const spotifyUrl = 'https://api.spotify.com/v1';
 
 async function checkPlaylistFollow(playlist, id, token) {
@@ -225,6 +227,25 @@ async function getRecommendations(filteredSongs, token) {
   return checkSavedTracks(result, token);
 }
 
+async function getLikedSongs(token) {
+  return axios.get(`${spotifyUrl}/me/tracks?offset=0&limit=50`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((data) => {
+      const songs = data.data.items;
+      const arr = [];
+      for (let i = 0; i < songs.length; i += 1) {
+        // console.log(songs[i].track.name);
+        arr.push(songs[i].track);
+      } // end for
+
+      return prettifySong(arr);
+    })
+    .catch((error) => {
+      console.log(error.message);
+    });
+}
+
 module.exports = {
   checkPlaylistFollow,
   followPlaylist,
@@ -237,4 +258,5 @@ module.exports = {
   grabImage,
   getRecommendations,
   filterTrackData,
+  getLikedSongs,
 };

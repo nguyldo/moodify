@@ -17,9 +17,10 @@ const {
   addPhotoToPlaylist,
   grabImage,
   getRecommendations,
+  getLikedSongs,
 } = require('../functions/spotifyPlaylist');
 const {
-  audioFeatures, idsToTracks, spotifyRecommend, filterTracks, prettifySong,
+  audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
 } = require('../functions/spotifySong');
 const { userTop, getUserId } = require('../functions/spotifyUser');
 
@@ -32,22 +33,14 @@ const spotifyUrl = 'https://api.spotify.com/v1';
 // https://localhost:5000/playlist/liked?token={token}
 router.get('/liked', async (req, res) => {
   const { token } = req.query;
-  return axios.get(`${spotifyUrl}/me/tracks?offset=0&limit=50`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then((data) => {
-      const songs = data.data.items;
-      const arr = [];
-      for (let i = 0; i < songs.length; i += 1) {
-        // console.log(songs[i].track.name);
-        arr.push(songs[i].track);
-      } // end for
 
-      res.status(200).send(prettifySong(arr));
-    })
-    .catch((error) => {
-      console.log(error.message);
-    });
+  try {
+    const savedTracks = await getLikedSongs(token);
+    res.status(200).send(savedTracks);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
 });
 
 // saves a song or multiple songs to user's Liked Songs playlist
