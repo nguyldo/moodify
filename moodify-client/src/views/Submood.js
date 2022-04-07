@@ -23,7 +23,7 @@ function Submood() {
     happy: ['confident', 'powerful', 'hopeful', 'energetic', 'playful'],
     bad: ['tired', 'apathetic', 'overwhelmed', 'distracted', 'chaotic'],
     sad: ['lonely', 'depressed', 'pained', 'ashamed', 'remorse'],
-    angry: ['irritated', 'enraged', 'frustrated', 'resentful', 'jealous'],
+    angry: ['irritated', 'enraged', 'frustated', 'resentful', 'jealous'],
   };
 
   // top, left middle, right middle, left bottom, right bottom
