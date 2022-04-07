@@ -9,7 +9,7 @@ import Button from './Button';
 const axios = require('axios');
 
 const accessToken = Cookies.get('SpotifyAccessToken');
-const spotifyUrl = 'https://api.spotify.com/v1';
+// const spotifyUrl = 'https://api.spotify.com/v1';
 
 const Song = (props) => {
   const { name, artists, id, albumName, albumLink, image, saved } = props;
@@ -91,19 +91,11 @@ const Song = (props) => {
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
       setShowLikeAlert(true);
-      await axios.put(`${spotifyUrl}/me/tracks?ids=${songId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      await axios.put(`http://localhost:5000/playlist/save?ids=${songId}&token=${accessToken}`);
     } else if (heart === '/heart-green.svg') {
       setHeart('/heart-black.svg');
       setShowUnlikeAlert(true);
-      axios.delete(`${spotifyUrl}/me/tracks?ids=${songId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      axios.delete(`http://localhost:5000/playlist/remove?ids=${songId}&token=${accessToken}`);
     }
   }
 
