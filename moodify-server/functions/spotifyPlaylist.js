@@ -227,6 +227,8 @@ async function getRecommendations(filteredSongs, token) {
   return checkSavedTracks(result, token);
 }
 
+// gets user's songs from Liked Songs playlist
+// returns list of songs
 async function getLikedSongs(token) {
   return axios.get(`${spotifyUrl}/me/tracks?offset=0&limit=50`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -246,6 +248,80 @@ async function getLikedSongs(token) {
     });
 }
 
+// saves track to user's Liked Songs playlist
+// returns
+async function saveSong(ids, token) {
+  return axios.put(`${spotifyUrl}/me/tracks?ids=${ids}`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(() => {
+    console.log('successful save');
+    return;
+  })
+    .catch((error) => {
+      console.log('unsuccessful save');
+      console.log(error.response.data);
+    });
+}
+
+// removes track from user's Liked Songs playlist
+// returns
+async function removeSong(ids, token) {
+  return axios.delete(`${spotifyUrl}/me/tracks?ids=${ids}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(() => {
+    console.log('successful removal');
+    return;
+  }).catch((error) => {
+    console.log('unsuccessful removal');
+    console.log(error.message);
+  });
+}
+
+// removes all songs from a playlist
+// return
+async function deletePlaylist(playlistId, songIds, token) {
+  const tracks = [];
+  const ids = songIds.split(',');
+  ids.forEach((element) => {
+    const uri = { uri: `spotify:track:${element}` };
+    tracks.push(uri);
+  });
+
+  return axios.delete(`${spotifyUrl}/playlists/${playlistId}/tracks`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: { tracks },
+  }).then(() => {
+    console.log('successfully cleared playlist');
+    return;
+  }).catch((error) => {
+    console.log('unsuccessfully cleared playlist');
+    console.log(error.response.data);
+  });
+}
+
+// checks if song exists in Liked Songs playlist
+// returns an array of booleans
+async function checkSong(ids, token) {
+  return axios.get(`${spotifyUrl}/me/tracks/contains?ids=${ids}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((data) => {
+    const toReturn = data.data;
+    console.log('successfully checked songs');
+    return toReturn;
+  }).catch((error) => {
+    console.log('unsuccessfully checked songs');
+    console.log(error);
+  });
+}
+
 module.exports = {
   checkPlaylistFollow,
   followPlaylist,
@@ -259,4 +335,8 @@ module.exports = {
   getRecommendations,
   filterTrackData,
   getLikedSongs,
+  saveSong,
+  removeSong,
+  deletePlaylist,
+  checkSong,
 };
