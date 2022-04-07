@@ -1,12 +1,12 @@
+// Server Imports
 const express = require('express');
 const axios = require('axios');
 
 const router = express.Router();
-const {
-  audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
-} = require('../functions/spotifySong');
-const { userTop, getUserId } = require('../functions/spotifyUser');
+
+// Function Imports
 const { getSongByMood } = require('../functions/mongoSong');
+const { getArtistGenres } = require('../functions/spotifyArtist');
 const {
   followPlaylist,
   unFollowPlaylist,
@@ -17,14 +17,18 @@ const {
   addPhotoToPlaylist,
   grabImage,
   getRecommendations,
+  getLikedSongs,
+  saveSong,
+  removeSong,
+  deletePlaylist,
+  checkSong,
 } = require('../functions/spotifyPlaylist');
-
-// Function Imports
-const { prettifySong } = require('../functions/spotifySong');
+const {
+  audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
+} = require('../functions/spotifySong');
+const { userTop, getUserId } = require('../functions/spotifyUser');
 
 const Song = require('../models/song');
-
-const { getArtistGenres } = require('../functions/spotifyArtist');
 
 const spotifyUrl = 'https://api.spotify.com/v1';
 
@@ -33,61 +37,78 @@ const spotifyUrl = 'https://api.spotify.com/v1';
 // https://localhost:5000/playlist/liked?token={token}
 router.get('/liked', async (req, res) => {
   const { token } = req.query;
-  return axios.get(`${spotifyUrl}/me/tracks?offset=0&limit=50`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then((data) => {
-      const songs = data.data.items;
-      const arr = [];
-      for (let i = 0; i < songs.length; i += 1) {
-        // console.log(songs[i].track.name);
-        arr.push(songs[i].track);
-      } // end for
 
-      res.status(200).send(prettifySong(arr));
-    })
-    .catch((error) => {
-      console.log(error.message);
-    });
+  try {
+    const savedTracks = await getLikedSongs(token);
+    res.status(200).send(savedTracks);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
 });
 
 // saves a song or multiple songs to user's Liked Songs playlist
 // returns 200 if successful, prints out error if unsuccessful
-// https://localhost:5000/playlist/save?ids={track1,track2,etc}&token={token}
+// http://localhost:5000/playlist/save?ids={track1,track2,etc}&token={token}
 router.put('/save', async (req, res) => {
   const { ids, token } = req.query;
 
-  return axios.put(`${spotifyUrl}/me/tracks?ids=${ids}`, {}, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }).then(() => {
+  try {
+    await saveSong(ids, token);
     res.sendStatus(200);
-  }).catch((error) => {
+  } catch (error) {
     console.log(error);
-  });
+    res.sendStatus(400);
+  }
 });
 
 // removes a song or multiple songs from user's Liked Songs playlist
 // returns 200 if successful, prints out error if unsuccessful
-// https://localhost:5000/playlist/delete?ids={track1,track2,etc}&token={token}
-router.delete('/delete', async (req, res) => {
+// https://localhost:5000/playlist/remove?ids={track1,track2,etc}&token={token}
+router.delete('/remove', async (req, res) => {
   const { ids, token } = req.query;
 
-  return axios.delete(`${spotifyUrl}/me/tracks?ids=${ids}`, {
+  try {
+    await removeSong(ids, token);
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+});
+
+// WE GO BACK TO THIS LATER
+router.get('/all', async (req, res) => {
+  const { token } = req.query;
+  const userId = await getUserId(token);
+  console.log(`userid from getUserId: ${userId}`);
+  return axios.get(`${spotifyUrl}/me/playlists/`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  }).then(() => {
-    res.sendStatus(200);
+  }).then((data) => {
+    const playlistItems = data.data.items;
+    const arr = [];
+    playlistItems.forEach((element) => {
+      console.log('owner.id:');
+      // console.log(element);
+      const owner = element.owner;
+      console.log(owner.id);
+      if (owner.id === userId) {
+        console.log('getting to here');
+        arr.push(element);
+      }
+    });
+    res.status(200).send(arr);
   }).catch((error) => {
     console.log(error.message);
   });
 });
 
+// PROBS DON'T NEED THIS
 // removes a song or multiple songs from user's Liked Songs playlist
 // returns 200 if successful, prints out error if unsuccessful
-// https://localhost:5000/playlist/delete?ids={track1,track2,etc}&token={token}
+// https://localhost:5000/playlist/get?ids={track1,track2,etc}&token={token}
 router.get('/get', async (req, res) => {
   const { ids, token } = req.query;
 
@@ -104,28 +125,17 @@ router.get('/get', async (req, res) => {
 
 // deletes tracks from a playlist
 // returns 200 if successful, prints out error if unsuccessful
-// https://localhost:5000/playlist/remove?playlistId={playlistId}&songIds={track1,track2,etc}&token={token}
-router.delete('/remove', async (req, res) => {
+// https://localhost:5000/playlist/delete?playlistId={playlistId}&songIds={track1,track2,etc}&token={token}
+router.delete('/delete', async (req, res) => {
   const { playlistId, songIds, token } = req.query;
 
-  const tracks = [];
-  const ids = songIds.split(','); // ["abc", "efg", "hij"]
-  ids.forEach((element) => {
-    console.log(element);
-    const uri = { uri: `spotify:track:${element}` };
-    tracks.push(uri);
-  });
-
-  return axios.delete(`${spotifyUrl}/playlists/${playlistId}/tracks`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    data: { tracks },
-  }).then(() => {
+  try {
+    await deletePlaylist(playlistId, songIds, token);
     res.sendStatus(200);
-  }).catch((error) => {
-    console.log(error.response.data);
-  });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
 });
 
 // checks to see if a list of songs is currently in user's Liked Songs playlist
@@ -134,16 +144,13 @@ router.delete('/remove', async (req, res) => {
 router.get('/check', async (req, res) => {
   const { ids, token } = req.query;
 
-  return axios.get(`${spotifyUrl}/me/tracks/contains?ids=${ids}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }).then((data) => {
-    res.status(200).send(data.data);
-    // res.status(200).send(toReturn);
-  }).catch((error) => {
+  try {
+    const songs = await checkSong(ids, token);
+    res.status(200).send(songs);
+  } catch (error) {
     console.log(error);
-  });
+    res.sendStatus(400);
+  }
 });
 
 router.post('/recommendations', async (req, res) => {
@@ -257,7 +264,7 @@ router.get('/personal/:token', async (req, res) => {
 
     recommendedTracks = await idsToTracks(recommendedTracks, token);
 
-    console.log('final log');
+    // console.log('final log');
     res.status(200).json(recommendedTracks);
   } catch (error) {
     // console.log(error);
@@ -287,18 +294,18 @@ router.get('/follow', async (req, res) => {
 router.post('/create', async (req, res) => {
   const { token, ids, name } = req.query;
   try {
-    console.log(`Token: ${token}`);
+    // console.log(`Token: ${token}`);
     const username = await getUserId(token);
-    console.log(`User: ${username}`);
-    console.log(`Name: ${name}`);
+    // console.log(`User: ${username}`);
+    // console.log(`Name: ${name}`);
     const generatedPlaylist = await createPlaylist(name, username, token);
     // console.log(`Playlist: ${generatedPlaylist}`);
     const arr = ids.split(',');
-    console.log(`Arr: ${arr}`);
+    // console.log(`Arr: ${arr}`);
     const uris = (await idsToTracks(arr, token)).map((track) => track.uri);
-    console.log(`URIs: ${uris}`);
+    // console.log(`URIs: ${uris}`);
     const value = await addSongsToPlaylist(generatedPlaylist.id, token, uris);
-    console.log(`Value: ${value}`);
+    // console.log(`Value: ${value}`);
     const img = await grabImage(name);
     await addPhotoToPlaylist(generatedPlaylist.id, token, img);
     if (value) res.status(200).send(generatedPlaylist.external_urls.spotify);

@@ -95,6 +95,30 @@ async function userTop(token, type) {
   });
 }
 
+async function followArtist(id, token) {
+  return axios.put(`${spotifyUrl}/me/following?ids=${id}&type=artist`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then(() => {
+    console.log('artist successfully followed');
+    return;
+  }).catch((error) => {
+    console.log('artist unsuccessfully followed');
+    console.log(error.message);
+  });
+}
+
+async function followAlbum(id, token) {
+  return axios.put(`${spotifyUrl}/me/albums?ids=${id}`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then(() => {
+    console.log('album successfully saved');
+    return;
+  }).catch((error) => {
+    console.log('album unsuccessfully saved');
+    console.log(error.message);
+  });
+}
+
 module.exports = {
-  getUserId, getUserProfile, getPlaylistFollow, userTop,
+  getUserId, getUserProfile, getPlaylistFollow, userTop, followArtist, followAlbum,
 };

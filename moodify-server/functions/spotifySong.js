@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const spotifyUrl = 'https://api.spotify.com/v1';
 
-const { filterTrackData } = require('./spotifyPlaylist');
+// const { filterTrackData } = require('./spotifyPlaylist');
 const { getArtistGenres } = require('./spotifyArtist');
 
 // Request to spotify for new songs
@@ -26,6 +26,25 @@ async function spotifyRecommend(combinedTracks, token) {
     console.log('unsuccessful recommendations');
     console.log(err);
   });
+}
+
+function filterTrackData(track) {
+  return {
+    id: track.id,
+    name: track.name,
+    artists: track.artists.map((artist) => ({
+      name: artist.name,
+      url: artist.external_urls.spotify,
+      id: artist.id,
+    })),
+    image: track.album.images[0],
+    explicit: track.explicit,
+    album: track.album.name,
+    albumUrl: track.album.external_urls.spotify,
+    url: track.external_urls.spotify,
+    uri: track.uri,
+    popularity: track.popularity,
+  };
 }
 
 // Request to spotify for songs info
@@ -70,7 +89,7 @@ async function idsToTracks(combinedTracks, token) {
       return newSong;
     });
 
-    console.log(toReturn);
+    // console.log(toReturn);
 
     return toReturn;
   }).catch((err) => {
@@ -144,8 +163,8 @@ function prettifySong(arr) {
       artists.push(artist.name);
       artistUrl.push(artist.external_urls.spotify);
     });
-    console.log(artists);
-    console.log(artistUrl);
+    // console.log(artists);
+    // console.log(artistUrl);
 
     toReturn.push({
       songId: element.id,
@@ -179,23 +198,6 @@ async function searchSong(term, type, token) {
     });
 }
 
-async function saveSong(ids, token) {
-  return axios.put(`${spotifyUrl}/me/tracks?ids=${ids}`, {}, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  }).then((data) => {
-    console.log('successful save');
-    const toReturn = data;
-    return toReturn;
-  })
-    .catch((error) => {
-      console.log('unsuccessful save');
-      console.log(error.response.data);
-    });
-}
-
 module.exports = {
-  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong, saveSong, prettifySong,
+  spotifyRecommend, idsToTracks, audioFeatures, filterTracks, searchSong, prettifySong,
 };

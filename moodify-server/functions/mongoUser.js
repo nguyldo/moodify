@@ -5,7 +5,7 @@ async function findUser(userId) {
     const promiseObj = await User.findOne(
       { userId },
     );
-    console.log(promiseObj);
+    // console.log(promiseObj);
     return {
       userId: promiseObj.userId,
       logins: promiseObj.logins,

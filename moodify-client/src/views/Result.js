@@ -51,7 +51,7 @@ function Result() {
   };
 
   const [filterExplicitActive, setFilterExplicitActive] = useState(false);
-  const [filterExplicitText, setFilterExplicitText] = useState('Explict');
+  const [filterExplicitText, setFilterExplicitText] = useState('Explicit');
   const [filterPopText, setFilterPopText] = useState('Popularity');
   const [filterPopActive, setFilterPopActive] = useState(false);
   const [filterGenreText, setFilterGenreText] = useState('Genre');
@@ -282,7 +282,7 @@ function Result() {
         const playlistId = playlistLink.substring(34);
         console.log(playlistId);
         console.log(songIds);
-        const item = await axios.delete(`http://localhost:5000/playlist/remove?playlistId=${playlistId}&songIds=${songIds}&token=${accessToken}`);
+        const item = await axios.delete(`http://localhost:5000/playlist/delete?playlistId=${playlistId}&songIds=${songIds}&token=${accessToken}`);
         console.log(item.data);
         setHeartFill(false);
         setHeartButton('/heart-white.png');

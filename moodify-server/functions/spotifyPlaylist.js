@@ -1,6 +1,8 @@
 const axios = require('axios');
 const imageToBase64 = require('image-to-base64');
 
+const { prettifySong } = require('./spotifySong');
+
 const spotifyUrl = 'https://api.spotify.com/v1';
 
 async function checkPlaylistFollow(playlist, id, token) {
@@ -8,7 +10,7 @@ async function checkPlaylistFollow(playlist, id, token) {
     headers: { Authorization: `Bearer ${token}` },
   }).then((data) => {
     const toReturn = data.data;
-    console.log(toReturn);
+    // console.log(toReturn);
     return toReturn;
   }).catch((err) => {
     console.log('unsuccessful user playlist follow');
@@ -90,7 +92,7 @@ async function addPhotoToPlaylist(playlist, token, imgFile) {
     },
   ).then((data) => {
     const toReturn = data.data;
-    console.log(toReturn);
+    // console.log(toReturn);
     return toReturn;
   }).catch((err) => {
     console.log(err.response.data);
@@ -225,6 +227,101 @@ async function getRecommendations(filteredSongs, token) {
   return checkSavedTracks(result, token);
 }
 
+// gets user's songs from Liked Songs playlist
+// returns list of songs
+async function getLikedSongs(token) {
+  return axios.get(`${spotifyUrl}/me/tracks?offset=0&limit=50`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((data) => {
+      const songs = data.data.items;
+      const arr = [];
+      for (let i = 0; i < songs.length; i += 1) {
+        // console.log(songs[i].track.name);
+        arr.push(songs[i].track);
+      } // end for
+
+      return prettifySong(arr);
+    })
+    .catch((error) => {
+      console.log(error.message);
+    });
+}
+
+// saves track to user's Liked Songs playlist
+// returns
+async function saveSong(ids, token) {
+  return axios.put(`${spotifyUrl}/me/tracks?ids=${ids}`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(() => {
+    console.log('successful save');
+    return;
+  })
+    .catch((error) => {
+      console.log('unsuccessful save');
+      console.log(error.response.data);
+    });
+}
+
+// removes track from user's Liked Songs playlist
+// returns
+async function removeSong(ids, token) {
+  return axios.delete(`${spotifyUrl}/me/tracks?ids=${ids}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(() => {
+    console.log('successful removal');
+    return;
+  }).catch((error) => {
+    console.log('unsuccessful removal');
+    console.log(error.message);
+  });
+}
+
+// removes all songs from a playlist
+// return
+async function deletePlaylist(playlistId, songIds, token) {
+  const tracks = [];
+  const ids = songIds.split(',');
+  ids.forEach((element) => {
+    const uri = { uri: `spotify:track:${element}` };
+    tracks.push(uri);
+  });
+
+  return axios.delete(`${spotifyUrl}/playlists/${playlistId}/tracks`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: { tracks },
+  }).then(() => {
+    console.log('successfully cleared playlist');
+    return;
+  }).catch((error) => {
+    console.log('unsuccessfully cleared playlist');
+    console.log(error.response.data);
+  });
+}
+
+// checks if song exists in Liked Songs playlist
+// returns an array of booleans
+async function checkSong(ids, token) {
+  return axios.get(`${spotifyUrl}/me/tracks/contains?ids=${ids}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((data) => {
+    const toReturn = data.data;
+    console.log('successfully checked songs');
+    return toReturn;
+  }).catch((error) => {
+    console.log('unsuccessfully checked songs');
+    console.log(error);
+  });
+}
+
 module.exports = {
   checkPlaylistFollow,
   followPlaylist,
@@ -237,4 +334,9 @@ module.exports = {
   grabImage,
   getRecommendations,
   filterTrackData,
+  getLikedSongs,
+  saveSong,
+  removeSong,
+  deletePlaylist,
+  checkSong,
 };
