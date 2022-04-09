@@ -6,6 +6,7 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import CustomButton from 'react-bootstrap/Button';
 import Cookies from 'js-cookie';
+import SpotifyPlayer from 'react-spotify-web-playback';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
 import Playlist from '../components/Playlist';
@@ -74,6 +75,7 @@ function Result() {
   const [persImgLink, setPersImgLink] = useState();
   const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
   const [songIds, setSongIds] = useState('');
+  const [songUris, setSongUris] = useState();
 
   function isMostPopular() {
     const temp = [...filter];
@@ -170,6 +172,7 @@ function Result() {
     clearFilters();
 
     setFilter(songs);
+    setSongUris(songs.map((item) => item.uri));
     setCommunityPlaylistActive(true);
     setImgLink(persImgLink);
     setName(persName);
@@ -179,10 +182,20 @@ function Result() {
     clearFilters();
 
     setFilter(personalizedSongs);
+    setSongUris(personalizedSongs.map((item) => item.uri));
     setCommunityPlaylistActive(false);
     setImgLink(commImgLink);
     setName(commName);
   };
+
+  const playback = (
+    <SpotifyPlayer
+      name="Moodify Web Player"
+      token={accessToken}
+      uris={songUris}
+      showSaveIcon
+    />
+  );
 
   const playlistCreatedToast = (
     <Toast style={toastStyle}>
@@ -455,6 +468,9 @@ function Result() {
       const personalizedData = await axios.get(`http://localhost:5000/playlist/personal/${accessToken}?cm=${mood}`);
       setPersonalizedSongs(personalizedData.data);
 
+      const uris = data.data.map((item) => item.uri);
+
+      setSongUris(uris);
       setSongs(data.data);
       setFilter(data.data);
       console.log(data.data);
@@ -631,6 +647,8 @@ function Result() {
           onClickLeft={clickedCommunityPlaylist}
           onClickRight={clickedPersonalizedPlaylist}
         />
+        <br />
+        {playback}
         {toastContent}
       </div>
 
@@ -639,6 +657,7 @@ function Result() {
           <Playlist songs={filter} />
         </Card.Body>
       </Card>
+
     </div>
   );
 }

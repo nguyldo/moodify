@@ -21,8 +21,9 @@ function Login() {
   } = process.env;
 
   const scopes = [
-    'user-read-currently-playing',
+    'user-modify-playback-state',
     'user-read-playback-state',
+    'user-read-currently-playing',
     'user-top-read',
     'playlist-read-private',
     'playlist-read-collaborative',
@@ -32,6 +33,9 @@ function Login() {
     'user-library-read',
     'ugc-image-upload',
     'user-follow-modify',
+    'streaming',
+    'user-read-private',
+    'user-read-email',
   ];
 
   const authorizeSpotify = () => {
