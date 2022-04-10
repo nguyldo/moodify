@@ -143,16 +143,13 @@ function filterTrackData(track) {
 
 async function checkSavedTracks(tracks, token) {
   tracks.forEach(async (element) => {
-    await axios.get(`${spotifyUrl}/me/tracks/contains?ids=${element.id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((data) => {
-      // console.log(data.data);
-      element.existsInSavedTracks = data.data[0];
-    });
+    await axios.get(`http://localhost:5000/playlist/check?ids=${element.id}&token=${token}`)
+      .then((data) => {
+        element.existsInSavedTracks = data.data[0];
+      }).catch((error) => {
+        console.log(error);
+      });
   });
-  console.log(tracks);
   return tracks;
 }
 
@@ -215,7 +212,7 @@ async function getRecommendations(filteredSongs, token) {
   const existingSongIds = [];
   for (const response of responses) {
     response.data.tracks.map((track) => {
-      console.log(track);
+      // console.log(track);
       const filteredTrack = filterTrackData(track);
       if (!existingSongIds.includes(filteredTrack.id)) {
         result.push(filteredTrack);
@@ -266,7 +263,7 @@ async function saveSong(ids, token) {
 }
 
 // removes track from user's Liked Songs playlist
-// returns
+// return
 async function removeSong(ids, token) {
   return axios.delete(`${spotifyUrl}/me/tracks?ids=${ids}`, {
     headers: {
@@ -314,7 +311,7 @@ async function checkSong(ids, token) {
     },
   }).then((data) => {
     const toReturn = data.data;
-    console.log('successfully checked songs');
+    // console.log('successfully checked songs');
     return toReturn;
   }).catch((error) => {
     console.log('unsuccessfully checked songs');
