@@ -1,6 +1,7 @@
 const axios = require('axios');
 const imageToBase64 = require('image-to-base64');
 
+const { getUserId } = require('./spotifyUser');
 const { prettifySong } = require('./spotifySong');
 
 const spotifyUrl = 'https://api.spotify.com/v1';
@@ -75,8 +76,8 @@ async function addSongsToPlaylist(playlist, token, uris) {
     const toReturn = data.data;
     // console.log(toReturn);
     return toReturn;
-  }).catch((err) => {
-    console.log(err.data.error);
+  }).catch((error) => {
+    console.log(error);
   });
 }
 
@@ -319,6 +320,34 @@ async function checkSong(ids, token) {
   });
 }
 
+// gets user's own and non-collaborative playlists
+// returns list of playlists
+async function getUserPlaylists(token) {
+  const userId = await getUserId(token);
+  console.log(`userid from getUserId: ${userId}`);
+  return axios.get(`${spotifyUrl}/me/playlists?limit=50`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((data) => {
+    const playlistItems = data.data.items;
+    const arr = [];
+    playlistItems.forEach((element) => {
+      const owner = element.owner;
+      if (owner.id === userId) {
+        const playlist = {
+          id: element.id,
+          name: element.name,
+        };
+        arr.push(playlist);
+      }
+    });
+    return arr;
+  }).catch((error) => {
+    console.log(error.message);
+  });
+}
+
 module.exports = {
   checkPlaylistFollow,
   followPlaylist,
@@ -336,4 +365,5 @@ module.exports = {
   removeSong,
   deletePlaylist,
   checkSong,
+  getUserPlaylists,
 };
