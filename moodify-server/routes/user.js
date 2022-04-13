@@ -194,7 +194,7 @@ router.put('/follow/artist', async (req, res) => {
 
 // saves an album to user's albums in their Spotify Account
 // returns 200 if successul, 400 if unsuccessfull
-// http://localhost:5000/user/follow/artist?id={id}&token={token}
+// http://localhost:5000/user/follow/album?id={id}&token={token}
 router.put('/follow/album', async (req, res) => {
   const { id, token } = req.query;
 
