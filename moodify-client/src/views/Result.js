@@ -76,6 +76,7 @@ function Result() {
   const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
   const [songIds, setSongIds] = useState('');
   const [songUris, setSongUris] = useState();
+  const [curSong, setCurSong] = useState();
 
   function isMostPopular() {
     const temp = [...filter];
@@ -188,12 +189,18 @@ function Result() {
     setName(commName);
   };
 
+  function playerCallback(state) {
+    setCurSong(state.track.id);
+    console.log(state.track.id);
+  }
+
   const playback = (
     <SpotifyPlayer
       name="Moodify Web Player"
       token={accessToken}
       uris={songUris}
       showSaveIcon
+      callback={(state) => { playerCallback(state); }}
     />
   );
 
@@ -654,7 +661,7 @@ function Result() {
 
       <Card className="rec-playlist">
         <Card.Body>
-          <Playlist songs={filter} />
+          <Playlist songs={filter} curSong={curSong} />
         </Card.Body>
       </Card>
 
