@@ -9,7 +9,6 @@ import Button from './Button';
 const axios = require('axios');
 
 const accessToken = Cookies.get('SpotifyAccessToken');
-// const spotifyUrl = 'https://api.spotify.com/v1';
 
 const Song = (props) => {
   const { name, artists, id, albumName, albumLink, image, saved } = props;
@@ -20,7 +19,6 @@ const Song = (props) => {
   const [performed, setPerformed] = useState('');
   const [written, setWritten] = useState([]);
   const [userPlaylist, setUserPlaylist] = useState([]);
-  const [song, setSong] = useState('');
   const [produced, setProduced] = useState([]);
   const [showLikeAlert, setShowLikeAlert] = useState(false);
   const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
@@ -120,7 +118,7 @@ const Song = (props) => {
   );
 
   async function AddSongToPlaylist(playlistId) {
-    const data = await axios.post(`http://localhost:5000/playlist/add?playlist=${playlistId}&song=${song}&token=${accessToken}`);
+    const data = await axios.post(`http://localhost:5000/playlist/add?playlist=${playlistId}&song=${id}&token=${accessToken}`);
     console.log(data);
     if (data) {
       setShowAddSongAlert(true);
@@ -208,9 +206,8 @@ const Song = (props) => {
     setCreditModalShow(true);
   }
 
-  async function GetUserPlaylists(songSelected) {
+  async function GetUserPlaylists() {
     const playlists = await axios.get(`http://localhost:5000/playlist/all?token=${accessToken}`);
-    setSong(songSelected);
     setUserPlaylist(playlists.data);
     console.log('user playlists');
     console.log(userPlaylist);
@@ -264,7 +261,7 @@ const Song = (props) => {
             Follow&nbsp;
             {albumName}
           </Dropdown.Item>
-          <Dropdown.Item className="option" href="#" onClick={() => GetUserPlaylists(id)}>Add to playlist</Dropdown.Item>
+          <Dropdown.Item className="option" href="#" onClick={() => GetUserPlaylists()}>Add to playlist</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       {likeAlert}
