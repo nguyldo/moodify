@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 import React, { useState } from 'react';
-import { Toast, Dropdown, Modal, Table } from 'react-bootstrap';
+import { Toast, Dropdown, Modal } from 'react-bootstrap';
 import '../styles/playlist.css';
 
 import Cookies from 'js-cookie';
@@ -64,7 +64,7 @@ const Song = (props) => {
     <Toast
       className="alert"
       style={{
-        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '999999', backgroundColor: 'white',
       }}
       onClose={() => setShowAddSongAlert(false)}
       show={showAddSongAlert}
@@ -80,7 +80,7 @@ const Song = (props) => {
     <Toast
       className="alert"
       style={{
-        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '999999',
       }}
       onClose={() => setShowAddSongFailAlert(false)}
       show={showAddSongFailAlert}
@@ -139,21 +139,30 @@ const Song = (props) => {
     >
       <Modal.Body className="modal-text">
         <h3 style={{ color: 'green' }}>Your Playlists</h3>
-        {/* <tbody>
+        <tbody>
           {userPlaylist.map((playlist) => (
             <tr key={playlist.id}>
-              <td>{playlist.name}</td>
               <td>
-                <Button
-                  color="green"
-                  type="wide"
-                  text="Add"
-                />
+                <div style={{ marginBottom: '10px' }}>{playlist.name}</div>
+              </td>
+              <td>
+                <div style={{ marginBottom: '10px', marginLeft: '130px' }}>
+                  <Button
+                    color="green"
+                    type="wide"
+                    text="Add"
+                    onClick={() => {
+                      AddSongToPlaylist(
+                        playlist.id,
+                      );
+                    }}
+                  />
+                </div>
               </td>
             </tr>
           ))}
-        </tbody> */}
-        <Table>
+        </tbody>
+        {/* <Table>
           {userPlaylist.map((playlist) => (
             <tr key={playlist.id}>
               <td>{playlist.name}</td>
@@ -171,7 +180,7 @@ const Song = (props) => {
               </td>
             </tr>
           ))}
-        </Table>
+        </Table> */}
         <Button style={{ textAlign: 'center' }} onClick={() => setPlaylistModalShow(false)} color="green" type="wide" text="Close" />
       </Modal.Body>
     </Modal>
