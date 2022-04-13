@@ -15,13 +15,19 @@ const Song = (props) => {
   const { name, artists, id, albumName, albumLink, image, saved } = props;
 
   const [heart, setHeart] = useState(saved ? '/heart-green.svg' : '/heart-black.svg');
-  const [modalShow, setModalShow] = useState(false);
+  const [creditModalShow, setCreditModalShow] = useState(false);
+  const [playlistModalShow, setPlaylistModalShow] = useState(false);
   const [performed, setPerformed] = useState('');
   const [written, setWritten] = useState([]);
+  const [userPlaylist, setUserPlaylist] = useState([]);
+  const [song, setSong] = useState('');
+  // const [playlist, setPlaylist] = useState('');
   const [produced, setProduced] = useState([]);
   const [showLikeAlert, setShowLikeAlert] = useState(false);
   const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
   const [showLyricsModal, setShowLyricsModal] = useState(false);
+  const [showAddSongAlert, setShowAddSongAlert] = useState(false);
+  const [showAddSongFailAlert, setShowAddSongFailAlert] = useState(false);
 
   const likeAlert = (
     <Toast
@@ -55,12 +61,44 @@ const Song = (props) => {
     </Toast>
   );
 
+  const addSongAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '999999', backgroundColor: 'white',
+      }}
+      onClose={() => setShowAddSongAlert(false)}
+      show={showAddSongAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Song has been added to your playlist!</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setShowAddSongAlert(false)} />
+    </Toast>
+  );
+
+  const addSongFailAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '999999',
+      }}
+      onClose={() => setShowAddSongFailAlert(false)}
+      show={showAddSongFailAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Song cannot be added to your playlist!;</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setShowAddSongFailAlert(false)} />
+    </Toast>
+  );
+
   const creditModal = (
     <Modal
       size="md"
       aria-labelledby="contained-modal-title-vcenter"
       centered
-      show={modalShow}
+      show={creditModalShow}
     >
       <Modal.Body className="modal-text">
         <h3 style={{ color: 'green' }}>Song Credits</h3>
@@ -76,7 +114,75 @@ const Song = (props) => {
         <p>
           {produced}
         </p>
-        <Button style={{ textAlign: 'center' }} onClick={() => setModalShow(false)} color="green" type="wide" text="Close" />
+        <Button style={{ textAlign: 'center' }} onClick={() => setCreditModalShow(false)} color="green" type="wide" text="Close" />
+      </Modal.Body>
+    </Modal>
+  );
+
+  // LEFT HERE: NEED TO FIGURE OUT HOW TO GET/PASS IN SONG ID
+  async function AddSongToPlaylist(playlistId) {
+    // setPlaylist(playlistId);
+    const data = await axios.post(`http://localhost:5000/playlist/add?playlist=${playlistId}&song=${song}&token=${accessToken}`);
+    console.log(data);
+    if (data) {
+      setShowAddSongAlert(true);
+    } else {
+      setShowAddSongFailAlert(true);
+    }
+  }
+
+  const addToPlaylistModal = (
+    <Modal
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      show={playlistModalShow}
+    >
+      <Modal.Body className="modal-text">
+        <h3 style={{ color: 'green' }}>Your Playlists</h3>
+        <tbody>
+          {userPlaylist.map((playlist) => (
+            <tr key={playlist.id}>
+              <td>
+                <div style={{ marginBottom: '10px' }}>{playlist.name}</div>
+              </td>
+              <td>
+                <div style={{ marginBottom: '10px', marginLeft: '130px' }}>
+                  <Button
+                    color="green"
+                    type="wide"
+                    text="Add"
+                    onClick={() => {
+                      AddSongToPlaylist(
+                        playlist.id,
+                      );
+                    }}
+                  />
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        {/* <Table>
+          {userPlaylist.map((playlist) => (
+            <tr key={playlist.id}>
+              <td>{playlist.name}</td>
+              <td>
+                <Button
+                  color="green"
+                  type="wide"
+                  text="Add"
+                  onClick={() => {
+                    AddSongToPlaylist(
+                      playlist.id,
+                    );
+                  }}
+                />
+              </td>
+            </tr>
+          ))}
+        </Table> */}
+        <Button style={{ textAlign: 'center' }} onClick={() => setPlaylistModalShow(false)} color="green" type="wide" text="Close" />
       </Modal.Body>
     </Modal>
   );
@@ -110,7 +216,7 @@ const Song = (props) => {
     }
   }
 
-  async function SongCreditsModal(songTitle, artist) {
+  async function SongCreditsClick(songTitle, artist) {
     const data = await axios.get(`http://localhost:5000/song/get/credits?songTitle=${songTitle}&artist=${artist}`);
 
     const writtenBy = data.data.writtenBy.join(', ');
@@ -120,7 +226,17 @@ const Song = (props) => {
     setWritten(writtenBy);
     setProduced(producedBy);
 
-    setModalShow(true);
+    setCreditModalShow(true);
+  }
+
+  async function GetUserPlaylists(songSelected) {
+    const playlists = await axios.get(`http://localhost:5000/playlist/all?token=${accessToken}`);
+    // console.log(playlists.data[0]);
+    setSong(songSelected);
+    setUserPlaylist(playlists.data);
+    console.log('user playlists');
+    console.log(userPlaylist);
+    setPlaylistModalShow(true);
   }
 
   async function showSongLyrics() {
@@ -153,7 +269,7 @@ const Song = (props) => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu className="playlist-kebab-options">
-          <Dropdown.Item className="option" onClick={() => SongCreditsModal(name, artists[0].name)}>Song Credits</Dropdown.Item>
+          <Dropdown.Item className="option" href="#" onClick={() => SongCreditsClick(name, artists[0].name)}>Song Credits</Dropdown.Item>
           <Dropdown.Item className="option" onClick={() => showSongLyrics()}>Song Lyrics</Dropdown.Item>
           {artists.map((artist) => (
             <Dropdown.Item className="option" onClick={() => followArtist(artist.id)}>
@@ -165,12 +281,16 @@ const Song = (props) => {
             Follow&nbsp;
             {albumName}
           </Dropdown.Item>
+          <Dropdown.Item className="option" href="#" onClick={() => GetUserPlaylists(id)}>Add to playlist</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       {likeAlert}
       {unlikeAlert}
       {creditModal}
       {lyricsModal}
+      {addToPlaylistModal}
+      {addSongAlert}
+      {addSongFailAlert}
     </tr>
   );
 };

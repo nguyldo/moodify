@@ -22,6 +22,7 @@ const {
   removeSong,
   deletePlaylist,
   checkSong,
+  getUserPlaylists,
 } = require('../functions/spotifyPlaylist');
 const {
   audioFeatures, idsToTracks, spotifyRecommend, filterTracks,
@@ -77,36 +78,40 @@ router.delete('/remove', async (req, res) => {
   }
 });
 
-// WE GO BACK TO THIS LATER
+// gets user's own and non-collaborative playlists
+// returns list of playlists
+// http://localhost:5000/playlist/all?token={token}
 router.get('/all', async (req, res) => {
   const { token } = req.query;
-  const userId = await getUserId(token);
-  console.log(`userid from getUserId: ${userId}`);
-  return axios.get(`${spotifyUrl}/me/playlists/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }).then((data) => {
-    const playlistItems = data.data.items;
-    const arr = [];
-    playlistItems.forEach((element) => {
-      console.log('owner.id:');
-      // console.log(element);
-      const owner = element.owner;
-      console.log(owner.id);
-      if (owner.id === userId) {
-        console.log('getting to here');
-        arr.push(element);
-      }
-    });
-    res.status(200).send(arr);
-  }).catch((error) => {
-    console.log(error.message);
-  });
+
+  try {
+    const playlists = await getUserPlaylists(token);
+    res.status(200).send(playlists);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
 });
 
-// PROBS DON'T NEED THIS
-// removes a song or multiple songs from user's Liked Songs playlist
+// adds a song to a playlist
+// returns status 200 and snapshot if successful, status code 400 if unsuccessful
+// http://localhost:5000/playlist/add?playlist={playlist}&song={song}&token={token}
+router.post('/add', async (req, res) => {
+  const { playlist, song, token } = req.query;
+
+  const uri = [`spotify:track:${song}`];
+  console.log(uri);
+
+  try {
+    const toReturn = await addSongsToPlaylist(playlist, token, uri);
+    res.status(200).send(toReturn);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+});
+
+// gets a certain playlist -> for testing purposes
 // returns 200 if successful, prints out error if unsuccessful
 // https://localhost:5000/playlist/get?ids={track1,track2,etc}&token={token}
 router.get('/get', async (req, res) => {
