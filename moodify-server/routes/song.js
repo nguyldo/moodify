@@ -149,6 +149,7 @@ songRoutes.get('/get/credits', async (req, res) => {
   }
 });
 
+// http://localhost:5000/song/lyrics/${artist}/${title}
 songRoutes.get('/lyrics/:artist/:title', async (req, res) => {
   const { artist, title } = req.params;
 

@@ -21,10 +21,10 @@ const Song = (props) => {
   const [written, setWritten] = useState([]);
   const [userPlaylist, setUserPlaylist] = useState([]);
   const [song, setSong] = useState('');
-  // const [playlist, setPlaylist] = useState('');
   const [produced, setProduced] = useState([]);
   const [showLikeAlert, setShowLikeAlert] = useState(false);
   const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
+  const [lyrics, setLyrics] = useState('');
   const [showLyricsModal, setShowLyricsModal] = useState(false);
   const [showAddSongAlert, setShowAddSongAlert] = useState(false);
   const [showAddSongFailAlert, setShowAddSongFailAlert] = useState(false);
@@ -119,9 +119,7 @@ const Song = (props) => {
     </Modal>
   );
 
-  // LEFT HERE: NEED TO FIGURE OUT HOW TO GET/PASS IN SONG ID
   async function AddSongToPlaylist(playlistId) {
-    // setPlaylist(playlistId);
     const data = await axios.post(`http://localhost:5000/playlist/add?playlist=${playlistId}&song=${song}&token=${accessToken}`);
     console.log(data);
     if (data) {
@@ -163,25 +161,6 @@ const Song = (props) => {
             </tr>
           ))}
         </tbody>
-        {/* <Table>
-          {userPlaylist.map((playlist) => (
-            <tr key={playlist.id}>
-              <td>{playlist.name}</td>
-              <td>
-                <Button
-                  color="green"
-                  type="wide"
-                  text="Add"
-                  onClick={() => {
-                    AddSongToPlaylist(
-                      playlist.id,
-                    );
-                  }}
-                />
-              </td>
-            </tr>
-          ))}
-        </Table> */}
         <Button style={{ textAlign: 'center' }} onClick={() => setPlaylistModalShow(false)} color="green" type="wide" text="Close" />
       </Modal.Body>
     </Modal>
@@ -197,7 +176,7 @@ const Song = (props) => {
       <Modal.Body className="modal-text">
         <h3 style={{ color: 'green' }}>Song Lyrics</h3>
         <p>
-          Lyrics
+          {lyrics}
         </p>
         <Button style={{ textAlign: 'center' }} onClick={() => setShowLyricsModal(false)} color="green" type="wide" text="Close" />
       </Modal.Body>
@@ -231,7 +210,6 @@ const Song = (props) => {
 
   async function GetUserPlaylists(songSelected) {
     const playlists = await axios.get(`http://localhost:5000/playlist/all?token=${accessToken}`);
-    // console.log(playlists.data[0]);
     setSong(songSelected);
     setUserPlaylist(playlists.data);
     console.log('user playlists');
@@ -240,6 +218,11 @@ const Song = (props) => {
   }
 
   async function showSongLyrics() {
+    const data = await axios.get(`http://localhost:5000/song/lyrics/${artists[0].name}/${name}`);
+    console.log(data);
+    console.log(data.data);
+    const lyrical = data.data.replace(/(\n)/g, '<br />');
+    setLyrics(lyrical);
     setShowLyricsModal(true);
   }
 
