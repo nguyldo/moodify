@@ -9,7 +9,6 @@ import Button from './Button';
 const axios = require('axios');
 
 const accessToken = Cookies.get('SpotifyAccessToken');
-// const spotifyUrl = 'https://api.spotify.com/v1';
 
 const Song = (props) => {
   const { name, artists, id, albumName, albumLink, image, saved } = props;
@@ -20,8 +19,6 @@ const Song = (props) => {
   const [performed, setPerformed] = useState('');
   const [written, setWritten] = useState([]);
   const [userPlaylist, setUserPlaylist] = useState([]);
-  const [song, setSong] = useState('');
-  // const [playlist, setPlaylist] = useState('');
   const [produced, setProduced] = useState([]);
   const [showLikeAlert, setShowLikeAlert] = useState(false);
   const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
@@ -118,10 +115,8 @@ const Song = (props) => {
     </Modal>
   );
 
-  // LEFT HERE: NEED TO FIGURE OUT HOW TO GET/PASS IN SONG ID
   async function AddSongToPlaylist(playlistId) {
-    // setPlaylist(playlistId);
-    const data = await axios.post(`http://localhost:5000/playlist/add?playlist=${playlistId}&song=${song}&token=${accessToken}`);
+    const data = await axios.post(`http://localhost:5000/playlist/add?playlist=${playlistId}&song=${id}&token=${accessToken}`);
     console.log(data);
     if (data) {
       setShowAddSongAlert(true);
@@ -162,25 +157,6 @@ const Song = (props) => {
             </tr>
           ))}
         </tbody>
-        {/* <Table>
-          {userPlaylist.map((playlist) => (
-            <tr key={playlist.id}>
-              <td>{playlist.name}</td>
-              <td>
-                <Button
-                  color="green"
-                  type="wide"
-                  text="Add"
-                  onClick={() => {
-                    AddSongToPlaylist(
-                      playlist.id,
-                    );
-                  }}
-                />
-              </td>
-            </tr>
-          ))}
-        </Table> */}
         <Button style={{ textAlign: 'center' }} onClick={() => setPlaylistModalShow(false)} color="green" type="wide" text="Close" />
       </Modal.Body>
     </Modal>
@@ -213,10 +189,9 @@ const Song = (props) => {
     setCreditModalShow(true);
   }
 
-  async function GetUserPlaylists(songSelected) {
+  async function GetUserPlaylists() {
     const playlists = await axios.get(`http://localhost:5000/playlist/all?token=${accessToken}`);
     // console.log(playlists.data[0]);
-    setSong(songSelected);
     setUserPlaylist(playlists.data);
     console.log('user playlists');
     console.log(userPlaylist);
@@ -240,7 +215,7 @@ const Song = (props) => {
 
         <Dropdown.Menu className="playlist-kebab-options">
           <Dropdown.Item className="option" href="#" onClick={() => SongCreditsClick(name, artists[0].name)}>Song Credits</Dropdown.Item>
-          <Dropdown.Item className="option" href="#" onClick={() => GetUserPlaylists(id)}>Add to playlist</Dropdown.Item>
+          <Dropdown.Item className="option" href="#" onClick={() => GetUserPlaylists()}>Add to playlist</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       {likeAlert}
