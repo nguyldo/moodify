@@ -13,19 +13,15 @@ const accessToken = Cookies.get('SpotifyAccessToken');
 
 const Song = (props) => {
   const { name, artists, id, albumName, albumLink, image, saved } = props;
-  // console.log(props);
 
   const [heart, setHeart] = useState(saved ? '/heart-green.svg' : '/heart-black.svg');
   const [modalShow, setModalShow] = useState(false);
   const [performed, setPerformed] = useState('');
   const [written, setWritten] = useState([]);
   const [produced, setProduced] = useState([]);
-  // console.log(modalShow);
-  // console.log(performed);
-  // console.log(written);
-  // console.log(produced);
   const [showLikeAlert, setShowLikeAlert] = useState(false);
   const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
+  const [showLyricsModal, setShowLyricsModal] = useState(false);
 
   const likeAlert = (
     <Toast
@@ -85,9 +81,24 @@ const Song = (props) => {
     </Modal>
   );
 
+  const lyricsModal = (
+    <Modal
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      show={showLyricsModal}
+    >
+      <Modal.Body className="modal-text">
+        <h3 style={{ color: 'green' }}>Song Lyrics</h3>
+        <p>
+          Lyrics
+        </p>
+        <Button style={{ textAlign: 'center' }} onClick={() => setShowLyricsModal(false)} color="green" type="wide" text="Close" />
+      </Modal.Body>
+    </Modal>
+  );
+
   async function isHeart(songId) {
-    // console.log('songId');
-    // console.log(songId);
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
       setShowLikeAlert(true);
@@ -112,6 +123,20 @@ const Song = (props) => {
     setModalShow(true);
   }
 
+  async function showSongLyrics() {
+    setShowLyricsModal(true);
+  }
+
+  async function followArtist(artistId) {
+    await axios.put(`http://localhost:5000/user/follow/artist?id=${artistId}&token=${accessToken}`);
+  }
+
+  async function followAlbum() {
+    const albumSplit = albumLink.split('/');
+    const albumId = albumSplit[4];
+    await axios.put(`http://localhost:5000/user/follow/album?id=${albumId}&token=${accessToken}`);
+  }
+
   return (
     <tr key={id} className="playlist-song">
       <td className="c0"><button onClick={() => isHeart(id)} type="button" className="button-wrapper"><img src={heart} className="playlist-song-heart" alt="heart" /></button></td>
@@ -128,20 +153,30 @@ const Song = (props) => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu className="playlist-kebab-options">
-          <Dropdown.Item className="option" href="#" onClick={() => SongCreditsModal(name, artists[0].name)}>Song Credits</Dropdown.Item>
+          <Dropdown.Item className="option" onClick={() => SongCreditsModal(name, artists[0].name)}>Song Credits</Dropdown.Item>
+          <Dropdown.Item className="option" onClick={() => showSongLyrics()}>Song Lyrics</Dropdown.Item>
+          {artists.map((artist) => (
+            <Dropdown.Item className="option" onClick={() => followArtist(artist.id)}>
+              Follow&nbsp;
+              {artist.name}
+            </Dropdown.Item>
+          ))}
+          <Dropdown.Item className="option" onClick={() => followAlbum()}>
+            Follow&nbsp;
+            {albumName}
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       {likeAlert}
       {unlikeAlert}
       {creditModal}
+      {lyricsModal}
     </tr>
   );
 };
 
 function Playlist(props) {
   const { songs } = props;
-  // console.log('songs');
-  // console.log(songs);
 
   return (
     <table className="playlist-table">
