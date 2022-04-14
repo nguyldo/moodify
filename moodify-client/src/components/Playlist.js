@@ -22,6 +22,8 @@ const Song = (props) => {
   const [produced, setProduced] = useState([]);
   const [showLikeAlert, setShowLikeAlert] = useState(false);
   const [showUnlikeAlert, setShowUnlikeAlert] = useState(false);
+  const [lyrics, setLyrics] = useState('');
+  const [showLyricsModal, setShowLyricsModal] = useState(false);
   const [showAddSongAlert, setShowAddSongAlert] = useState(false);
   const [showAddSongFailAlert, setShowAddSongFailAlert] = useState(false);
 
@@ -162,9 +164,24 @@ const Song = (props) => {
     </Modal>
   );
 
+  const lyricsModal = (
+    <Modal
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      show={showLyricsModal}
+    >
+      <Modal.Body className="modal-text">
+        <h3 style={{ color: 'green' }}>Song Lyrics</h3>
+        <p>
+          {lyrics}
+        </p>
+        <Button style={{ textAlign: 'center' }} onClick={() => setShowLyricsModal(false)} color="green" type="wide" text="Close" />
+      </Modal.Body>
+    </Modal>
+  );
+
   async function isHeart(songId) {
-    // console.log('songId');
-    // console.log(songId);
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
       setShowLikeAlert(true);
@@ -191,11 +208,30 @@ const Song = (props) => {
 
   async function GetUserPlaylists() {
     const playlists = await axios.get(`http://localhost:5000/playlist/all?token=${accessToken}`);
-    // console.log(playlists.data[0]);
     setUserPlaylist(playlists.data);
     console.log('user playlists');
     console.log(userPlaylist);
     setPlaylistModalShow(true);
+  }
+
+  async function showSongLyrics() {
+    const data = await axios.get(`http://localhost:5000/song/lyrics/${artists[0].name}/${name}`);
+    console.log(data);
+    console.log(data.data);
+    const lineByLine = data.data.split('\n');
+    const lyrical = lineByLine.map((line) => <p key={line}>{line}</p>);
+    setLyrics(lyrical);
+    setShowLyricsModal(true);
+  }
+
+  async function followArtist(artistId) {
+    await axios.put(`http://localhost:5000/user/follow/artist?id=${artistId}&token=${accessToken}`);
+  }
+
+  async function followAlbum() {
+    const albumSplit = albumLink.split('/');
+    const albumId = albumSplit[4];
+    await axios.put(`http://localhost:5000/user/follow/album?id=${albumId}&token=${accessToken}`);
   }
 
   return (
@@ -215,12 +251,24 @@ const Song = (props) => {
 
         <Dropdown.Menu className="playlist-kebab-options">
           <Dropdown.Item className="option" href="#" onClick={() => SongCreditsClick(name, artists[0].name)}>Song Credits</Dropdown.Item>
+          <Dropdown.Item className="option" onClick={() => showSongLyrics()}>Song Lyrics</Dropdown.Item>
+          {artists.map((artist) => (
+            <Dropdown.Item className="option" onClick={() => followArtist(artist.id)}>
+              Follow&nbsp;
+              {artist.name}
+            </Dropdown.Item>
+          ))}
+          <Dropdown.Item className="option" onClick={() => followAlbum()}>
+            Follow&nbsp;
+            {albumName}
+          </Dropdown.Item>
           <Dropdown.Item className="option" href="#" onClick={() => GetUserPlaylists()}>Add to playlist</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       {likeAlert}
       {unlikeAlert}
       {creditModal}
+      {lyricsModal}
       {addToPlaylistModal}
       {addSongAlert}
       {addSongFailAlert}
@@ -230,8 +278,6 @@ const Song = (props) => {
 
 function Playlist(props) {
   const { songs } = props;
-  // console.log('songs');
-  // console.log(songs);
 
   return (
     <table className="playlist-table">
