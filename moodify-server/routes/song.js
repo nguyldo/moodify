@@ -156,9 +156,7 @@ songRoutes.get('/lyrics/:artist/:title', async (req, res) => {
   const { artist, title } = req.params;
 
   try {
-    const data = await lyricsFinder(artist, title) || 'There are no available lyrics!';
-    const lyrics = data.replace(/(\n)/g, '<br/>');
-    // console.log(lyrics);
+    const lyrics = await lyricsFinder(artist, title) || 'There are no available lyrics!';
     res.status(200).send(lyrics);
   } catch (error) {
     console.log(error);

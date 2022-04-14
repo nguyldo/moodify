@@ -218,7 +218,8 @@ const Song = (props) => {
     const data = await axios.get(`http://localhost:5000/song/lyrics/${artists[0].name}/${name}`);
     console.log(data);
     console.log(data.data);
-    const lyrical = data.data.replace(/(\n)/g, '<br />');
+    const lineByLine = data.data.split('\n');
+    const lyrical = lineByLine.map((line) => <p key={line}>{line}</p>);
     setLyrics(lyrical);
     setShowLyricsModal(true);
   }
