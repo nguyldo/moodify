@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import {
-  Col, Row, Container, Card, Toast,
+  Col, Row, Container, Card, Toast, Modal,
 } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import CustomButton from 'react-bootstrap/Button';
@@ -74,6 +74,7 @@ function Result() {
   const [persImgLink, setPersImgLink] = useState();
   const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
   const [songIds, setSongIds] = useState('');
+  const [showMoodStatsModal, setShowMoodStatsModal] = useState(false);
 
   function isMostPopular() {
     const temp = [...filter];
@@ -425,6 +426,23 @@ function Result() {
     </Toast>
   );
 
+  const moodStatsModal = (
+    <Modal
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      show={showMoodStatsModal}
+    >
+      <Modal.Body className="modal-text">
+        <h3 style={{ color: 'green' }}>Mood Statistics</h3>
+        <p>
+          MOOD
+        </p>
+        <Button style={{ textAlign: 'center' }} onClick={() => setShowMoodStatsModal(false)} color="green" type="wide" text="Close" />
+      </Modal.Body>
+    </Modal>
+  );
+
   React.useEffect(async () => {
     try {
       await axios.get(`http://localhost:5000/user/${accessToken}`);
@@ -500,6 +518,10 @@ function Result() {
       console.log(error);
     }
   }, []);
+
+  async function showMoodStats() {
+    setShowMoodStatsModal(true);
+  }
 
   let suggestButton;
   if (submood1 == null) {
@@ -593,7 +615,7 @@ function Result() {
       </Container>
 
       <br />
-      <div style={{ textAlign: 'left' }}>
+      <div style={{ position: 'absolute', left: '5%' }}>
         <button
           className="button-wrapper"
           type="button"
@@ -611,7 +633,11 @@ function Result() {
         <Button color="#2C2C2C" type="pill" filterActive={filterExplicitActive} text={filterExplicitText} onClick={() => isFilterExplicitActive()} />
         <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
         <Button color="#2C2C2C" type="pill" filterActive={filterGenreActive} text={filterGenreText} onClick={() => isFilterGenreActive(filterPopText)} />
+      </div>
+
+      <div style={{ position: 'absolute', right: '5%', marginTop: '5px' }}>
         {suggestButton}
+        <Button color="green" type="wide" text="Mood Statistics" onClick={() => showMoodStats()} />
         <CustomButton
           style={buttonStyle}
           onClick={() => {
@@ -624,6 +650,9 @@ function Result() {
         >
           <i className="bi bi-box-arrow-up" style={customStyle} />
         </CustomButton>
+      </div>
+
+      <div style={{ marginTop: '10px' }}>
         <Toggle
           leftText="Community"
           rightText="Personalized"
@@ -631,8 +660,9 @@ function Result() {
           onClickLeft={clickedCommunityPlaylist}
           onClickRight={clickedPersonalizedPlaylist}
         />
-        {toastContent}
       </div>
+      {toastContent}
+      {moodStatsModal}
 
       <Card className="rec-playlist">
         <Card.Body>
