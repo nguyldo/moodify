@@ -593,7 +593,7 @@ function Result() {
       </Container>
 
       <br />
-      <div style={{ textAlign: 'left' }}>
+      <div style={{ position: 'absolute', left: '5%' }}>
         <button
           className="button-wrapper"
           type="button"
@@ -611,7 +611,11 @@ function Result() {
         <Button color="#2C2C2C" type="pill" filterActive={filterExplicitActive} text={filterExplicitText} onClick={() => isFilterExplicitActive()} />
         <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
         <Button color="#2C2C2C" type="pill" filterActive={filterGenreActive} text={filterGenreText} onClick={() => isFilterGenreActive(filterPopText)} />
+      </div>
+
+      <div style={{ position: 'absolute', right: '4%', marginTop: '5px' }}>
         {suggestButton}
+        <Button color="green" type="wide" text="Mood Statistics" />
         <CustomButton
           style={buttonStyle}
           onClick={() => {
@@ -624,6 +628,9 @@ function Result() {
         >
           <i className="bi bi-box-arrow-up" style={customStyle} />
         </CustomButton>
+      </div>
+
+      <div style={{ marginTop: '10px' }}>
         <Toggle
           leftText="Community"
           rightText="Personalized"
@@ -631,8 +638,8 @@ function Result() {
           onClickLeft={clickedCommunityPlaylist}
           onClickRight={clickedPersonalizedPlaylist}
         />
-        {toastContent}
       </div>
+      {toastContent}
 
       <Card className="rec-playlist">
         <Card.Body>
