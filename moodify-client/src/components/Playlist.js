@@ -26,6 +26,10 @@ const Song = (props) => {
   const [showLyricsModal, setShowLyricsModal] = useState(false);
   const [showAddSongAlert, setShowAddSongAlert] = useState(false);
   const [showAddSongFailAlert, setShowAddSongFailAlert] = useState(false);
+  const [showFollowArtistAlert, setFollowArtistAlert] = useState(false);
+  const [showFollowArtistFailAlert, setFollowArtistFailAlert] = useState(false);
+  const [showFollowAlbumAlert, setFollowAlbumAlert] = useState(false);
+  const [showFollowAlbumFailAlert, setFollowAlbumFailAlert] = useState(false);
 
   const likeAlert = (
     <Toast
@@ -86,7 +90,7 @@ const Song = (props) => {
       delay={3000}
       autohide
     >
-      <Toast.Body className="alert-text">Song cannot be added to your playlist!;</Toast.Body>
+      <Toast.Body className="alert-text">Song cannot be added to your playlist!</Toast.Body>
       <Button color="green" type="wide" text="OK" onClick={() => setShowAddSongFailAlert(false)} />
     </Toast>
   );
@@ -181,6 +185,70 @@ const Song = (props) => {
     </Modal>
   );
 
+  const followArtistAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setFollowArtistAlert(false)}
+      show={showFollowArtistAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Successfully followed artist!</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setFollowArtistAlert(false)} />
+    </Toast>
+  );
+
+  const followArtistFailAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setFollowArtistFailAlert(false)}
+      show={showFollowArtistFailAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Failure to follow artist</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setFollowArtistFailAlert(false)} />
+    </Toast>
+  );
+
+  const followAlbumAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setFollowAlbumAlert(false)}
+      show={showFollowAlbumAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Successfully followed album!</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setFollowAlbumAlert(false)} />
+    </Toast>
+  );
+
+  const followAlbumFailAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setFollowAlbumFailAlert(false)}
+      show={showFollowAlbumFailAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text">Failure to follow album</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setFollowAlbumFailAlert(false)} />
+    </Toast>
+  );
+
   async function isHeart(songId) {
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
@@ -225,13 +293,29 @@ const Song = (props) => {
   }
 
   async function followArtist(artistId) {
-    await axios.put(`http://localhost:5000/user/follow/artist?id=${artistId}&token=${accessToken}`);
+    await axios.put(`http://localhost:5000/user/follow/artist?id=${artistId}&token=${accessToken}`)
+      .then((data) => {
+        console.log(data);
+        setFollowArtistAlert(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        setFollowArtistFailAlert(true);
+      });
   }
 
   async function followAlbum() {
     const albumSplit = albumLink.split('/');
     const albumId = albumSplit[4];
-    await axios.put(`http://localhost:5000/user/follow/album?id=${albumId}&token=${accessToken}`);
+    await axios.put(`http://localhost:5000/user/follow/album?id=${albumId}&token=${accessToken}`)
+      .then((data) => {
+        console.log(data);
+        setFollowAlbumAlert(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        setFollowAlbumFailAlert(true);
+      });
   }
 
   return (
@@ -272,6 +356,10 @@ const Song = (props) => {
       {addToPlaylistModal}
       {addSongAlert}
       {addSongFailAlert}
+      {followArtistAlert}
+      {followArtistFailAlert}
+      {followAlbumAlert}
+      {followAlbumFailAlert}
     </tr>
   );
 };
