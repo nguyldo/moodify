@@ -8,8 +8,6 @@ import Button from './Button';
 
 const axios = require('axios');
 
-const accessToken = Cookies.get('SpotifyAccessToken');
-
 const Song = (props) => {
   const { name, artists, id, albumName, albumLink, image, saved } = props;
 
@@ -30,6 +28,8 @@ const Song = (props) => {
   const [showFollowArtistFailAlert, setFollowArtistFailAlert] = useState(false);
   const [showFollowAlbumAlert, setFollowAlbumAlert] = useState(false);
   const [showFollowAlbumFailAlert, setFollowAlbumFailAlert] = useState(false);
+
+  const accessToken = Cookies.get('SpotifyAccessToken');
 
   const likeAlert = (
     <Toast
@@ -253,6 +253,8 @@ const Song = (props) => {
     if (heart === '/heart-black.svg') {
       setHeart('/heart-green.svg');
       setShowLikeAlert(true);
+      console.log('accessToken in hearting');
+      console.log(accessToken);
       await axios.put(`http://localhost:5000/playlist/save?ids=${songId}&token=${accessToken}`);
     } else if (heart === '/heart-green.svg') {
       setHeart('/heart-black.svg');
@@ -275,6 +277,8 @@ const Song = (props) => {
   }
 
   async function GetUserPlaylists() {
+    console.log('accessToken from GetUserPlaylists');
+    console.log(accessToken);
     const playlists = await axios.get(`http://localhost:5000/playlist/all?token=${accessToken}`);
     setUserPlaylist(playlists.data);
     console.log('user playlists');
