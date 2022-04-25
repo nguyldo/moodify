@@ -10,6 +10,7 @@ import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
 import Playlist from '../components/Playlist';
 import Toggle from '../components/Toggle';
+import MoodStatistics from '../components/MoodStatistics';
 
 function Result() {
   const accessToken = Cookies.get('SpotifyAccessToken');
@@ -75,6 +76,7 @@ function Result() {
   const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
   const [songIds, setSongIds] = useState('');
   const [showMoodStatsModal, setShowMoodStatsModal] = useState(false);
+  const [moodStatisticsData, setMoodStatisticsData] = useState({});
 
   function isMostPopular() {
     const temp = [...filter];
@@ -434,10 +436,7 @@ function Result() {
       show={showMoodStatsModal}
     >
       <Modal.Body className="modal-text">
-        <h3 style={{ color: 'green' }}>Mood Statistics</h3>
-        <p>
-          MOOD
-        </p>
+        <MoodStatistics data={moodStatisticsData} />
         <Button style={{ textAlign: 'center' }} onClick={() => setShowMoodStatsModal(false)} color="green" type="wide" text="Close" />
       </Modal.Body>
     </Modal>
@@ -445,7 +444,7 @@ function Result() {
 
   React.useEffect(async () => {
     try {
-      await axios.get(`http://localhost:5000/user/${accessToken}`);
+      const userData = await axios.get(`http://localhost:5000/user/${accessToken}`);
 
       const associatedFeels = [];
       if (submood1 && submood1 !== '') {
@@ -492,6 +491,9 @@ function Result() {
       });
       console.log(genres);
       setGenre(genres);
+
+      const moodStatsData = await axios.get(`http://localhost:5000/user/statistics/${userData.data.id}`);
+      setMoodStatisticsData(moodStatsData.data);
 
       let newName = await axios.post(`http://localhost:5000/playlist/generatetitle?coremood=${mood}`);
       console.log(newName);

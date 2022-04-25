@@ -19,6 +19,7 @@
     "image-to-base64": "^2.2.0",
     "lyrics-finder": "^21.7.0",
     "lyrics-searcher": "^1.0.58",
+    "moment": "^2.29.3",
     "mongoose": "^6.2.1",
     "nodemon": "^2.0.15"
   },

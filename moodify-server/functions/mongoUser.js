@@ -1,4 +1,7 @@
+const moment = require('moment');
+
 const User = require('../models/user');
+const Mood = require('../models/mood');
 
 async function findUser(userId) {
   try {
@@ -81,6 +84,32 @@ async function logout(id) {
   }
 }
 
+// return data on a user's mood selection
+async function moodSelectData(userId) {
+  try {
+    const data = await Mood.find({ userId });
+
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+function convertTime(timeStamps) {
+  const timeStampsToMonths = timeStamps.map((time) => moment(time).format('MM/YYYY'));
+
+  const timeStampsDict = {};
+  for (const time of timeStampsToMonths) {
+    if (!(time in timeStampsDict)) {
+      timeStampsDict[time] = 1;
+    } else {
+      timeStampsDict[time] += 1;
+    }
+  }
+
+  return timeStampsDict;
+}
+
 module.exports = {
-  findUser, postUser, checkUser, logout, saveUser,
+  findUser, postUser, checkUser, logout, saveUser, moodSelectData, convertTime,
 };
