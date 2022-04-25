@@ -6,6 +6,7 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import CustomButton from 'react-bootstrap/Button';
 import Cookies from 'js-cookie';
+import SpotifyPlayer from 'react-spotify-web-playback';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
 import Playlist from '../components/Playlist';
@@ -75,6 +76,8 @@ function Result() {
   const [persImgLink, setPersImgLink] = useState();
   const [communityPlaylistActive, setCommunityPlaylistActive] = useState(true);
   const [songIds, setSongIds] = useState('');
+  const [songUris, setSongUris] = useState();
+  const [curSong, setCurSong] = useState();
   const [showMoodStatsModal, setShowMoodStatsModal] = useState(false);
   const [moodStatisticsData, setMoodStatisticsData] = useState({});
 
@@ -173,6 +176,7 @@ function Result() {
     clearFilters();
 
     setFilter(songs);
+    setSongUris(songs.map((item) => item.uri));
     setCommunityPlaylistActive(true);
     setImgLink(persImgLink);
     setName(persName);
@@ -182,10 +186,26 @@ function Result() {
     clearFilters();
 
     setFilter(personalizedSongs);
+    setSongUris(personalizedSongs.map((item) => item.uri));
     setCommunityPlaylistActive(false);
     setImgLink(commImgLink);
     setName(commName);
   };
+
+  function playerCallback(state) {
+    setCurSong(state.track.id);
+    console.log(state.track.id);
+  }
+
+  const playback = (
+    <SpotifyPlayer
+      name="Moodify Web Player"
+      token={accessToken}
+      uris={songUris}
+      showSaveIcon
+      callback={(state) => { playerCallback(state); }}
+    />
+  );
 
   const playlistCreatedToast = (
     <Toast style={toastStyle}>
@@ -472,6 +492,9 @@ function Result() {
       const personalizedData = await axios.get(`http://localhost:5000/playlist/personal/${accessToken}?cm=${mood}`);
       setPersonalizedSongs(personalizedData.data);
 
+      const uris = data.data.map((item) => item.uri);
+
+      setSongUris(uris);
       setSongs(data.data);
       setFilter(data.data);
       console.log(data.data);
@@ -662,15 +685,19 @@ function Result() {
           onClickLeft={clickedCommunityPlaylist}
           onClickRight={clickedPersonalizedPlaylist}
         />
+        <br />
+        {playback}
+        {toastContent}
       </div>
       {toastContent}
       {moodStatsModal}
 
       <Card className="rec-playlist">
         <Card.Body>
-          <Playlist songs={filter} />
+          <Playlist songs={filter} curSong={curSong} />
         </Card.Body>
       </Card>
+
     </div>
   );
 }

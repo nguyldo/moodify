@@ -9,7 +9,8 @@ import Button from './Button';
 const axios = require('axios');
 
 const Song = (props) => {
-  const { name, artists, id, albumName, albumLink, image, saved } = props;
+  const { name, artists, id, albumName, albumLink, image, saved, bool } = props;
+  // console.log(props);
 
   const [heart, setHeart] = useState(saved ? '/heart-green.svg' : '/heart-black.svg');
   const [creditModalShow, setCreditModalShow] = useState(false);
@@ -322,8 +323,16 @@ const Song = (props) => {
       });
   }
 
+  const style = {
+    backgroundColor: 'white',
+  };
+
+  if (bool) {
+    style.backgroundColor = '#cccccc';
+  }
+
   return (
-    <tr key={id} className="playlist-song">
+    <tr key={id} className="playlist-song" style={style}>
       <td className="c0"><button onClick={() => isHeart(id)} type="button" className="button-wrapper"><img src={heart} className="playlist-song-heart" alt="heart" /></button></td>
       <td className="c1"><img src={image} className="playlist-song-image" alt="album" /></td>
       <td className="c2">
@@ -369,7 +378,9 @@ const Song = (props) => {
 };
 
 function Playlist(props) {
-  const { songs } = props;
+  const { songs, curSong } = props;
+  // console.log('songs');
+  // console.log(songs);
 
   return (
     <table className="playlist-table">
@@ -381,18 +392,23 @@ function Playlist(props) {
         <td className="c4" />
       </tr>
       {songs && songs.length > 0 ? (
-        songs.map((song) => (
-          <Song
-            key={song.id}
-            id={song.id}
-            name={song.name}
-            artists={song.artists}
-            albumName={song.album}
-            albumLink={song.albumUrl}
-            image={song.image.url}
-            saved={song.existsInSavedTracks}
-          />
-        ))
+        songs.map((song) => {
+          let bool = false;
+          if (song.id === curSong) { bool = true; }
+          return (
+            <Song
+              key={song.id}
+              id={song.id}
+              name={song.name}
+              artists={song.artists}
+              albumName={song.album}
+              albumLink={song.albumUrl}
+              image={song.image.url}
+              saved={song.existsInSavedTracks}
+              bool={bool}
+            />
+          );
+        })
       ) : (<div />)}
     </table>
   );
