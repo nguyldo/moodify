@@ -1,5 +1,6 @@
 // Server Imports
 const express = require('express');
+const lyricsFinder = require('lyrics-finder');
 const Song = require('../models/song');
 
 const songRoutes = express.Router();
@@ -142,6 +143,21 @@ songRoutes.get('/get/credits', async (req, res) => {
       };
       return backup;
     }
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+});
+
+// gets song lyrics using Google scraper
+// returns lyrics if found
+// http://localhost:5000/song/lyrics/${artist}/${title}
+songRoutes.get('/lyrics/:artist/:title', async (req, res) => {
+  const { artist, title } = req.params;
+
+  try {
+    const lyrics = await lyricsFinder(artist, title) || 'There are no available lyrics!';
+    res.status(200).send(lyrics);
   } catch (error) {
     console.log(error);
     res.sendStatus(400);

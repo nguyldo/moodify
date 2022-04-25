@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Function Imports
 const {
-  postUser, findUser, checkUser, logout, saveUser,
+  postUser, findUser, checkUser, logout, saveUser, moodSelectData, convertTime,
 } = require('../functions/mongoUser');
 const { checkMood } = require('../functions/mongoMood');
 const { checkPlaylistFollow } = require('../functions/spotifyPlaylist');
@@ -194,13 +194,43 @@ router.put('/follow/artist', async (req, res) => {
 
 // saves an album to user's albums in their Spotify Account
 // returns 200 if successul, 400 if unsuccessfull
-// http://localhost:5000/user/follow/artist?id={id}&token={token}
+// http://localhost:5000/user/follow/album?id={id}&token={token}
 router.put('/follow/album', async (req, res) => {
   const { id, token } = req.query;
 
   try {
     await followAlbum(id, token);
     res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+});
+
+router.get('/statistics/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const data = {};
+    const moodData = await moodSelectData(id);
+    const userData = await findUser(id);
+    const labels = [];
+
+    for (const i of moodData) {
+      data[i.type] = {
+        timestamps: convertTime(i.timeStamp),
+        count: i.totalCount,
+      };
+
+      for (const j of Object.keys(data[i.type].timestamps)) {
+        if (!labels.includes(j)) labels.push(j);
+      }
+    }
+
+    labels.sort();
+    data.labels = labels;
+    data.numLogins = userData.logins;
+    res.json(data);
   } catch (error) {
     console.log(error);
     res.sendStatus(400);

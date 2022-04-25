@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import {
-  Col, Row, Container, Card, Toast,
+  Col, Row, Container, Card, Toast, Modal,
 } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import CustomButton from 'react-bootstrap/Button';
@@ -11,6 +11,7 @@ import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
 import Playlist from '../components/Playlist';
 import Toggle from '../components/Toggle';
+import MoodStatistics from '../components/MoodStatistics';
 
 function Result() {
   const accessToken = Cookies.get('SpotifyAccessToken');
@@ -77,6 +78,8 @@ function Result() {
   const [songIds, setSongIds] = useState('');
   const [songUris, setSongUris] = useState();
   const [curSong, setCurSong] = useState();
+  const [showMoodStatsModal, setShowMoodStatsModal] = useState(false);
+  const [moodStatisticsData, setMoodStatisticsData] = useState({});
 
   function isMostPopular() {
     const temp = [...filter];
@@ -445,9 +448,23 @@ function Result() {
     </Toast>
   );
 
+  const moodStatsModal = (
+    <Modal
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      show={showMoodStatsModal}
+    >
+      <Modal.Body className="modal-text">
+        <MoodStatistics data={moodStatisticsData} />
+        <Button style={{ textAlign: 'center' }} onClick={() => setShowMoodStatsModal(false)} color="green" type="wide" text="Close" />
+      </Modal.Body>
+    </Modal>
+  );
+
   React.useEffect(async () => {
     try {
-      await axios.get(`http://localhost:5000/user/${accessToken}`);
+      const userData = await axios.get(`http://localhost:5000/user/${accessToken}`);
 
       const associatedFeels = [];
       if (submood1 && submood1 !== '') {
@@ -498,6 +515,9 @@ function Result() {
       console.log(genres);
       setGenre(genres);
 
+      const moodStatsData = await axios.get(`http://localhost:5000/user/statistics/${userData.data.id}`);
+      setMoodStatisticsData(moodStatsData.data);
+
       let newName = await axios.post(`http://localhost:5000/playlist/generatetitle?coremood=${mood}`);
       console.log(newName);
       newName = newName.data.split(' ').slice(1).join(' ');
@@ -523,6 +543,10 @@ function Result() {
       console.log(error);
     }
   }, []);
+
+  async function showMoodStats() {
+    setShowMoodStatsModal(true);
+  }
 
   let suggestButton;
   if (submood1 == null) {
@@ -616,7 +640,7 @@ function Result() {
       </Container>
 
       <br />
-      <div style={{ textAlign: 'left' }}>
+      <div style={{ position: 'absolute', left: '5%' }}>
         <button
           className="button-wrapper"
           type="button"
@@ -634,7 +658,11 @@ function Result() {
         <Button color="#2C2C2C" type="pill" filterActive={filterExplicitActive} text={filterExplicitText} onClick={() => isFilterExplicitActive()} />
         <Button color="#2C2C2C" type="pill" filterActive={filterPopActive} text={filterPopText} onClick={() => isFilterPopActive(filterPopText)} />
         <Button color="#2C2C2C" type="pill" filterActive={filterGenreActive} text={filterGenreText} onClick={() => isFilterGenreActive(filterPopText)} />
+      </div>
+
+      <div style={{ position: 'absolute', right: '5%', marginTop: '5px' }}>
         {suggestButton}
+        <Button color="green" type="wide" text="Mood Statistics" onClick={() => showMoodStats()} />
         <CustomButton
           style={buttonStyle}
           onClick={() => {
@@ -647,6 +675,9 @@ function Result() {
         >
           <i className="bi bi-box-arrow-up" style={customStyle} />
         </CustomButton>
+      </div>
+
+      <div style={{ marginTop: '10px' }}>
         <Toggle
           leftText="Community"
           rightText="Personalized"
@@ -658,6 +689,8 @@ function Result() {
         {playback}
         {toastContent}
       </div>
+      {toastContent}
+      {moodStatsModal}
 
       <Card className="rec-playlist">
         <Card.Body>
