@@ -9,7 +9,7 @@ import Button from './Button';
 const axios = require('axios');
 
 const Song = (props) => {
-  const { name, artists, id, albumName, albumLink, image, saved, bool } = props;
+  const { name, artists, id, albumName, albumLink, image, saved, bool, uri, play } = props;
   // console.log(props);
 
   const [heart, setHeart] = useState(saved ? '/heart-green.svg' : '/heart-black.svg');
@@ -337,6 +337,7 @@ const Song = (props) => {
       <td className="c1"><img src={image} className="playlist-song-image" alt="album" /></td>
       <td className="c2">
         <span className="playlist-song-name">{name}</span>
+        <button onClick={() => play(uri)} type="button" className="button-wrapper"><img src="/play-fill.svg" alt="play" /></button>
         <br />
         <span className="playlist-song-album"><a className="album-link" target="_blank" rel="noreferrer" href={albumLink}>{albumName}</a></span>
       </td>
@@ -378,7 +379,7 @@ const Song = (props) => {
 };
 
 function Playlist(props) {
-  const { songs, curSong } = props;
+  const { songs, curSong, playCallback } = props;
   // console.log('songs');
   // console.log(songs);
 
@@ -406,6 +407,8 @@ function Playlist(props) {
               image={song.image.url}
               saved={song.existsInSavedTracks}
               bool={bool}
+              uri={song.uri}
+              play={playCallback}
             />
           );
         })
