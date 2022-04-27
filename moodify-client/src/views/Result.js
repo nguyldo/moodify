@@ -80,6 +80,7 @@ function Result() {
   const [curSong, setCurSong] = useState();
   const [showMoodStatsModal, setShowMoodStatsModal] = useState(false);
   const [moodStatisticsData, setMoodStatisticsData] = useState({});
+  const [playPlayback, setPlayPlayback] = useState(false);
 
   function isMostPopular() {
     const temp = [...filter];
@@ -197,6 +198,11 @@ function Result() {
     console.log(state.track.id);
   }
 
+  const startPlayback = (uri) => {
+    setSongUris(uri);
+    setPlayPlayback(true);
+  };
+
   const playback = (
     <SpotifyPlayer
       name="Moodify Web Player"
@@ -204,6 +210,7 @@ function Result() {
       uris={songUris}
       showSaveIcon
       callback={(state) => { playerCallback(state); }}
+      play={playPlayback}
     />
   );
 
@@ -694,7 +701,7 @@ function Result() {
 
       <Card className="rec-playlist">
         <Card.Body>
-          <Playlist songs={filter} curSong={curSong} />
+          <Playlist songs={filter} curSong={curSong} playCallback={startPlayback} />
         </Card.Body>
       </Card>
 
