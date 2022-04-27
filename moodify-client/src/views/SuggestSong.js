@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import {
-  Col, Row, Container, Card, Form, Table,
+  Col, Row, Container, Card, Form, Table, Toast,
 } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Button from '../components/Button';
 import logo from '../images/logo-circle.png';
+import '../styles/playlist.css';
 
 function SuggestSong() {
   const accessToken = Cookies.get('SpotifyAccessToken');
@@ -24,6 +25,8 @@ function SuggestSong() {
   const [songTitle, setSong] = useState('');
   const [songList, setSongList] = useState([]);
   const [userID, setUserID] = useState('');
+  const [showAddSongAlert, setAddSongAlert] = useState(false);
+  const [showAddSongFailAlert, setAddSongFailAlert] = useState(false);
 
   const results = [];
 
@@ -41,6 +44,7 @@ function SuggestSong() {
         artistUrl: element.artistUrl,
         songAlbum: element.songAlbum,
         albumUrl: element.albumUrl,
+        imageUrl: element.imageUrl,
         popularity: element.popularity,
         explicit: element.explicit,
       });
@@ -65,6 +69,38 @@ function SuggestSong() {
       });
   };
 
+  const addSongAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setAddSongAlert(false)}
+      show={showAddSongAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text" style={{ color: 'black' }}>Successfully added song!</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setAddSongAlert(false)} />
+    </Toast>
+  );
+
+  const addSongFailAlert = (
+    <Toast
+      className="alert"
+      style={{
+        position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)',
+      }}
+      onClose={() => setAddSongFailAlert(false)}
+      show={showAddSongFailAlert}
+      delay={3000}
+      autohide
+    >
+      <Toast.Body className="alert-text" style={{ color: 'black' }}>Song already exists</Toast.Body>
+      <Button color="green" type="wide" text="OK" onClick={() => setAddSongFailAlert(false)} />
+    </Toast>
+  );
+
   const sendSong = (id, title, artist, artistUrl, album, albumUrl, popularity, explicit) => {
     const song = {
       songId: id,
@@ -83,10 +119,10 @@ function SuggestSong() {
         axios.put(`http://localhost:5000/user/recommended?userId=${userID}&songId=${song.songId}`)
           .then((data) => {
             console.log(data);
-            alert('Song successfully added');
+            setAddSongAlert(true);
           }).catch((err) => {
             console.log(err);
-            alert('Song already exists');
+            setAddSongFailAlert(true);
           });
         axios.post(`http://localhost:5000/user/update/mood?type=${mood}&token=${accessToken}`)
           .then(() => {
@@ -157,27 +193,30 @@ function SuggestSong() {
           </Col>
         </Row>
       </Form>
+      {addSongAlert}
+      {addSongFailAlert}
       <br />
       <h4 style={{ textAlign: 'left' }}>Song List</h4>
       <Card>
         <Card.Body style={{ color: 'black' }}>
-          <Table>
+          <Table borderless>
             <thead>
               <tr>
+                <th> </th>
                 <th>Song Title</th>
                 <th>Artist</th>
                 <th>Album</th>
-                {/*
-                <th />
-                */}
               </tr>
             </thead>
             {songList.map((list) => (
               <tbody>
                 <tr key={list.songId}>
+                  <td><img style={{ width: '50px', height: '50px' }} alt="album-img" src={list.imageUrl} /></td>
                   <td>{list.songName}</td>
-                  <td>{list.songArtist.join(', ')}</td>
-                  <td>{list.songAlbum}</td>
+                  <td>
+                    {list.songArtist.map((artist, idx) => <span className="artist-comma"><a className="artist-link" target="_blank" rel="noreferrer" href={list.artistUrl[idx]}>{artist}</a></span>)}
+                  </td>
+                  <td><a className="artist-link" target="_blank" rel="noreferrer" href={list.albumUrl}>{list.songAlbum}</a></td>
                   <td>
                     <Button
                       color="green"
