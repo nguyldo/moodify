@@ -23,36 +23,48 @@ h1, h2, h3, h4 {
 
 .excited {
     background-color: #F3884B;
+    height: 100vh;
+    min-height: 100vh;
     padding: 1%;
     text-align: center;
 }
 
 .content {
     background-color: #75CF7E;
+    height: 100vh;
+    min-height: 100vh;
     padding: 1%;
     text-align: center;
 }
 
 .happy {
     background-color: #FFE14A;
+    height: 100vh;
+    min-height: 100vh;
     padding: 1%;
     text-align: center;
 }
 
 .bad {
     background-color: #CB6DF8;
+    height: 100vh;
+    min-height: 100vh;
     padding: 1%;
     text-align: center;
 }
 
 .sad {
     background-color: #6DC6F8;
+    height: 100vh;
+    min-height: 100vh;
     padding: 1%;
     text-align: center;
 }
 
 .angry {
     background-color: #FA6967;
+    height: 100vh;
+    min-height: 100vh;
     padding: 1%;
     text-align: center;
 }
